@@ -422,7 +422,7 @@
 		<docx4j-openxml.version>${docx4j.version}</docx4j-openxml.version>
 		<freemarker.version>2.3.29</freemarker.version>
 		<httl.version>1.0.12</httl.version>
-		<jackson.version>2.9.9</jackson.version>
+		<jackson.version>2.18.9</jackson.version>
 		<java.version>1.8</java.version>
 		<javax-activation.version>1.1.1</javax-activation.version>
 		<javax.mail-api.version>1.6.2</javax.mail-api.version>
@@ -433,7 +433,7 @@
 		<persistence.version>2.7.6</persistence.version>
 		<rythm.version>1.3.0</rythm.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
-		<slf4j.version>1.7.26</slf4j.version>
+		<slf4j.version>2.0.18</slf4j.version>
 		<thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
 		<velocity.version>2.2</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
@@ -442,19 +442,19 @@
 		<maven.version>3.0</maven.version>
 		<maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
 		<maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
-		<maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
-		<maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+		<maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
+		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
 		<maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
-		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-		<maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
-		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
-		<maven-install-plugin.version>3.0.0-M1</maven-install-plugin.version>
-		<maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
-		<maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
-		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
-		<maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+		<maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
+		<maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
+		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+		<maven-install-plugin.version>3.1.4</maven-install-plugin.version>
+		<maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+		<maven-release-plugin.version>3.3.1</maven-release-plugin.version>
+		<maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
 		<maven-surefire-plugin.vertsion>2.22.1</maven-surefire-plugin.vertsion>
-		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
 		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
 		<maven-nexus-yuicompressor-plugin.version>1.1.0</maven-nexus-yuicompressor-plugin.version>
 		<maven-war-plugin.version>3.2.2</maven-war-plugin.version>
