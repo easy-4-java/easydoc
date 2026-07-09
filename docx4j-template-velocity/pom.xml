@@ -4,7 +4,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.github.hiwepy</groupId>
+		<groupId>io.github.hiwepy</groupId>
 		<artifactId>docx4j-template</artifactId>
 		<version>1.0.2-SNAPSHOT</version>
 	</parent>
