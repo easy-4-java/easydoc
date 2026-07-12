@@ -1,95 +1,135 @@
-target/
-bin/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-.flattened-pom.xml
-.fastRequest
-Cargo.lock
-*.swp
-*.swo
-
-### STS ###
-.apt_generated
+### IDE ###
+*.iml
+*.ipr
+*.iws
+.idea/
 .classpath
 .factorypath
 .project
 .settings
 .springBeans
+.apt_generated
 .sts4-cache
+.metadata
+.recommenders
 rebel.xml
+.vscode/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+### Gradle ###
+.gradle
+!gradle/wrapper/gradle-wrapper.jar
+
+### Maven ###
+target/
+dependency-reduced-pom.xml
+pom.xml.versionsBackup
+.flattened-pom.xml
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 
 ### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
+nbproject/private/
+nbbuild/
+nbdist/
+.nb-gradle/
+dist/
+
+### Build ###
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+build.log
+bin/
+lib/
+codes/
+/code
+gen_code
 
-### VS Code ###
-.vscode/
-.claude/
+### Logs ###
+logs/
+*.log
+log.*/
+transaction-logs
 
-### Mac OS ###
+### Archives ###
+*.jar
+*.war
+*.ear
+*.tar
+*.gz
+!/libs/*.jar
+
+### Temporary files ###
+*#
+*.sw?
+*~
+.#*
+.*.md.html
+*.cache
+*.diff
+*.patch
+*.tmp
+*.java~
+*.properties~
+*.xml~
+
+### System files ###
 .DS_Store
+Thumbs.db
+Servers
 
-**/dependency-reduced-pom.xml
+### Application specific ###
+MANIFEST.MF
+_site/
+activemq-data
+dump.rdb
+interpolated*.xml
+manifest.yml
+overridedb.*
+secrets.yml
+upload
 
-### Python
+### Node / Frontend ###
+node_modules/
+**/.output/
+**/.vite/
+**/.cache/
+**/.parcel-cache/
+**/*.tsbuildinfo
+**/.env.local
+**/.env.*.local
+**/coverage/
+**/storybook-static/
+**/boba-tea-shop/supervisor-agent/**/static/
+
+### Python ###
 __pycache__/
 *.py[cod]
 *$py.class
 *.egg-info/
-
-### Docs
-docs/_build
 .venv/
 
+### Docs ###
+docs/_build
 
-# vibe coding
+### Rust ###
+Cargo.lock
+
+### Server ###
+/server/nacos-server/data
+/server/nacos-server/logs
+
+### AI / vibe coding ###
 .claude
 openspec
 AGENTS.md
 CLAUDE.md
-
-##Log
-logs/
-
-## Frontend (all frontend/ directories across examples and extensions)
-# Dependencies
-**/node_modules/
-# Build output
-**/dist/
-**/build/
-**/.output/
-# Vite / bundler caches
-**/.vite/
-**/.cache/
-**/.parcel-cache/
-# Type-check / tsc output
-**/*.tsbuildinfo
-# Env files (may contain secrets)
-**/.env.local
-**/.env.*.local
-# Coverage
-**/coverage/
-# Storybook
-**/storybook-static/
-# boba-tea-shop: generated static assets served by the supervisor-agent
-**/boba-tea-shop/supervisor-agent/**/static/
-
-##agentscope
 .agentscope/
-
-## harness db
 **/*.db
 
+### Development tools ###
+.fastRequest
+*.http
+*.json
+qodana.yaml
