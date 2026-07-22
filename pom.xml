@@ -3,12 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.github.hiwepy</groupId>
-	<artifactId>docx4j-template</artifactId>
+	<groupId>io.github.easy4j</groupId>
+	<artifactId>easydoc</artifactId>
 	<version>1.0.x.20260630-SNAPSHOT</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Building doc documents based on xhtml templates using docx4j</description>
-	<url>https://github.com/hiwepy/${project.artifactId}</url>
+	<url>https://github.com/easy-4-java/easydoc</url>
 	<packaging>pom</packaging>
 
 	<licenses>
@@ -19,9 +19,9 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:https:github.com/hiwepy/${project.artifactId}.git</connection>
-		<developerConnection>scm:git:https:github.com/hiwepy/${project.artifactId}.git</developerConnection>
-		<url>https:github.com/hiwepy/${project.artifactId}</url>
+		<connection>scm:git:https://github.com/easy-4-java/easydoc.git</connection>
+		<developerConnection>scm:git:https://github.com/easy-4-java/easydoc.git</developerConnection>
+		<url>https://github.com/easy-4-java/easydoc</url>
 		<tag>${project.artifactId}</tag>
 	</scm>
 
@@ -37,45 +37,42 @@
 	</developers>
 	
 	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<name>Maven Snapshots Repository</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
 		<repository>
-		    <id>ossrh</id>
-			<name>Maven Central Staging Repository</name>
-		    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		  </repository>
-	</distributionManagement>
-	<!-- 
-	<distributionManagement>
-        <repository>
-            <id>nexus-releases</id>
-            <name>Nexus Release Repository</name>
-            <url>http://192.168.1.50:8081/repository/maven-releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>nexus-snapshots</id>
-            <name>Nexus Snapshot Repository</name>
-            <url>http://192.168.1.50:8081/repository/maven-snapshots/</url>
+			<id>2624322-release-6F6h6R</id>
+			<url>https://packages.aliyun.com/6927b116e6c3e0425dbdf60d/maven/2624322-release-6f6h6r</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<snapshotRepository>
+			<id>2624322-snapshot-3EoOv3</id>
+			<url>https://packages.aliyun.com/6927b116e6c3e0425dbdf60d/maven/2624322-snapshot-3eoov3</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 			<uniqueVersion>true</uniqueVersion>
-        </snapshotRepository>
-    </distributionManagement> -->
+		</snapshotRepository>
+	</distributionManagement>
 	
 	<modules>
-		<module>docx4j-template-beetl</module>
-		<module>docx4j-template-bom</module>
-		<module>docx4j-template-core</module>
-		<module>docx4j-template-freemarker</module>
-		<module>docx4j-template-httl</module>
-		<module>docx4j-template-jetbrick</module>
-		<module>docx4j-template-jsp</module>
-		<module>docx4j-template-rythm</module>
-		<module>docx4j-template-thymeleaf</module>
-		<module>docx4j-template-velocity</module>
-		<module>docx4j-template-webit</module>
-		<module>docx4j-template-xhtml</module>
+		<module>easydoc-beetl</module>
+		<module>easydoc-bom</module>
+		<module>easydoc-core</module>
+		<module>easydoc-freemarker</module>
+		<module>easydoc-httl</module>
+		<module>easydoc-jetbrick</module>
+		<module>easydoc-jsp</module>
+		<module>easydoc-rythm</module>
+		<module>easydoc-thymeleaf</module>
+		<module>easydoc-velocity</module>
+		<module>easydoc-webit</module>
+		<module>easydoc-xhtml</module>
 	</modules>
 
 	<build>
@@ -93,7 +90,6 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>${maven-compiler-plugin.version}</version>
 					<configuration>
-						<defaultLibBundleDir>lib</defaultLibBundleDir>
 						<source>${java.version}</source>
 						<target>${java.version}</target>
 						<encoding>${project.build.sourceEncoding}</encoding>
@@ -186,9 +182,7 @@
 					<artifactId>maven-source-plugin</artifactId>
 					<version>${maven-source-plugin.version}</version>
 					<configuration>
-						<testFailureIgnore>true</testFailureIgnore>
 						<attach>true</attach>
-						<encoding>${project.build.sourceEncoding}</encoding>
 					</configuration>
 					<executions>
 						<execution>
@@ -230,7 +224,6 @@
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>${maven-jar-plugin.version}</version>
 					<configuration>
-						<encoding>${project.build.sourceEncoding}</encoding>
 						<skipIfEmpty>true</skipIfEmpty>
 						<archive>
 							<manifest>
@@ -246,9 +239,6 @@
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>${maven-javadoc-plugin.version}</version>
 					<configuration>
-						<aggregate>true</aggregate>
-						<argLine>-Dfile.encoding=UTF-8</argLine>
-						<additionalparam>-Xdoclint:none</additionalparam>
 						<charset>${project.build.sourceEncoding}</charset>
 						<encoding>${project.build.sourceEncoding}</encoding>
 						<docencoding>${project.build.sourceEncoding}</docencoding>
@@ -407,14 +397,14 @@
 		<antlr4.version>4.7.1</antlr4.version>
 		<beetl.version>3.1.3.RELEASE</beetl.version>
 		<commons-beanutils.version>1.9.3</commons-beanutils.version>
-		<commons-lang3.version>3.8.1</commons-lang3.version>
+		<commons-lang3.version>3.18.0</commons-lang3.version>
 		<commons-logging.version>1.2</commons-logging.version>
-		<commons-io.version>2.6</commons-io.version>
+		<commons-io.version>2.16.1</commons-io.version>
 		<!-- Docx4j Core -->
-		<docx4j.version>11.1.3</docx4j.version>
-		<docx4j-export-fo.version>8.1.4</docx4j-export-fo.version>
+		<docx4j.version>8.3.15</docx4j.version>
+		<docx4j-export-fo.version>8.3.15</docx4j-export-fo.version>
 		<!-- Docx4j ImportXHTML -->
-		<docx4j-importxhtml.version>8.0.0</docx4j-importxhtml.version>
+		<docx4j-importxhtml.version>8.3.15</docx4j-importxhtml.version>
 		<docx4j-xhtmlrenderer.version>3.0.0</docx4j-xhtmlrenderer.version>
 		<!-- Docx4j JAXB -->
 		<docx4j-jaxb.version>${docx4j.version}</docx4j-jaxb.version>
@@ -424,6 +414,9 @@
 		<httl.version>1.0.12</httl.version>
 		<jackson.version>2.18.9</jackson.version>
 		<java.version>1.8</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<jaxb-impl.version>2.3.9</jaxb-impl.version>
 		<javax-activation.version>1.1.1</javax-activation.version>
 		<javax.mail-api.version>1.6.2</javax.mail-api.version>
 		<jetbrick.version>2.1.10</jetbrick.version>
@@ -433,7 +426,7 @@
 		<persistence.version>2.7.6</persistence.version>
 		<rythm.version>1.3.0</rythm.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
-		<slf4j.version>2.0.18</slf4j.version>
+		<slf4j.version>2.0.17</slf4j.version>
 		<thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
 		<velocity.version>2.2</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>

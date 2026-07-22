@@ -1,0 +1,294 @@
+﻿<table class="MsoNormalTable ke-zeroborder" border="0" cellspacing="0" cellpadding="0" width="559" style="width:419.25pt;">
+	<tbody>
+		<tr>
+			<td width="54" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					周次<span>&nbsp; </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					授课主题 <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					备注 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>1 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<b>政策科学的历史和核心概念（讲授）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>2 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<b>中国的政策主要体系、制定主体、体现形态（讨论）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>3 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<b>影响公共政策的主要因素（讲授）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>4 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<b>中国环境政策问题（讨论）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>5 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<b>政策制订和分析的一般环节（讲授）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>6 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<b>长兴县等地实行的教育券制度（讨论）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>7 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<b>集体行动与公共利益（讲授）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>8 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<b>从“收容遣送”到“救助管理”（讨论）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>9 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<b>物品的分类与政策处置（讲授）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>10 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<b>三峡工程决策过程（讨论）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>11 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<b>政策研究的新进展及其与诸多理论的关系（讲授）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>12 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<b>政府购买公共服务的案例（讨论）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>13 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<b>公共政策中的价值悖论（讲授）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>14 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<b>小商小贩的管理问题（讨论）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>15 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<b>政策制订和分析的方法和方法论（讲授）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid windowtext 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="54" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>16 </span>
+				</p>
+			</td>
+			<td width="394" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<b>小结及复习（讲授与互动）</b> <span></span>
+				</p>
+			</td>
+			<td width="111" valign="top" style="border:solid black 1.0pt;">
+				<p class="MsoNormal">
+					<span>3</span>课时 <span></span>
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<br />

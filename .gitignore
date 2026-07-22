@@ -133,3 +133,7 @@ CLAUDE.md
 *.http
 *.json
 qodana.yaml
+
+# CodeGraph local index
+.codegraph/
+.codegraph/

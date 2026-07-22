@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>测试标题</title>
+<style type="text/css">
+body {
+	font-family: SimSun;
+}
+
+.tb {
+	border-collapse: collapse;
+	empty-cells: show;
+	width: 100%; /*竖版时100%宽度不正确*/
+}
+
+.tb th {
+	text-align: center;
+	border: 1px solid #000000; /* pdf 输出时边颜色受 color 影响，所以指定 #000000 */
+}
+
+.tb td {
+	border: 1px solid #000000; /* pdf 输出时边颜色受 color 影响，所以指定 #000000 */
+}
+
+p {
+	/*不支持 text-indent 样式，用中文全角空格（　） */
+	/*text-indent: 2em;*/
+	
+}
+</style>
+</head>
+<body>
+	<div style="text-align: center">
+		<h1>标题1:大家好</h1>
+	</div>
+	<h2>标题2:大家好</h2>
+	<h3>标题3:大家好</h3>
+	<p>
+		这是一个中文段落。这是一个中文段落。这是一个中文段落。这是一个中文段落。这是一个中文段落。这是一个中文段落。这是一个中文段落。这是一个中文段落。这是一个中文段落。这是一个中文段落。</p>
+	<p />
+	<table class="tb">
+		<!-- 100%宽 -->
+		<tr>
+			<td>a</td>
+		</tr>
+	</table>
+	<p />
+	<table class="tb" style="width: 400px">
+		<!-- 定宽 -->
+		<tr>
+			<th>第一列</th>
+			<th>第二列</th>
+			<th>第三列</th>
+			<th>第四列</th>
+		</tr>
+		<tr>
+			<td>abc</td>
+			<td>efg</td>
+			<td>efg</td>
+			<td>efg</td>
+		</tr>
+		<tr>
+			<td>abc</td>
+			<td style="color: #dc1619; font-weight: bold">efg</td>
+			<!--color属性不可以使用英文（red） -->
+			<td>efg</td>
+			<td>efg</td>
+		</tr>
+	</table>
+	<p />
+	<div style="text-align: center">
+		<h1>表1</h1>
+	</div>
+	<table class="tb" style="width: 400px; margin: auto">
+		<!-- 定宽居中 -->
+		<tr>
+			<th>第一列</th>
+			<th>第二列</th>
+			<th>第三列</th>
+			<th>第四列</th>
+		</tr>
+		<tr>
+			<td>abc</td>
+			<td>efg</td>
+			<td>efg</td>
+			<td>efg</td>
+		</tr>
+		<tr>
+			<td>abc</td>
+			<td style="color: #dc1619; font-weight: bold">efg</td>
+			<!--color属性不可以使用英文（red） -->
+			<td>efg</td>
+			<td>efg</td>
+		</tr>
+	</table>
+	<p />
+	<!-- docx 输出图时左边会有上点间距 -->
+	<h1>图1</h1>
+	<!-- 缩小图片 -->
+	<img src="chart.jpg" width="50" height="30">
+	<p />
+	<h1>图2</h1>
+	<img src="chart.jpg">
+	<p />
+	<div style="text-align: center">
+		<!-- 图片居中 -->
+		<h1>图3</h1>
+		<img src="chart.jpg">
+	</div>
+</body>
+</html>
