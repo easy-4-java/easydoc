@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.github.easy4j</groupId>
 	<artifactId>easydoc</artifactId>
-	<version>1.0.x.20260630-SNAPSHOT</version>
+	<version>3.0.x.20260630-SNAPSHOT</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Building doc documents based on xhtml templates using docx4j</description>
 	<url>https://github.com/easy-4-java/easydoc</url>
@@ -401,10 +401,10 @@
 		<commons-logging.version>1.2</commons-logging.version>
 		<commons-io.version>2.16.1</commons-io.version>
 		<!-- Docx4j Core -->
-		<docx4j.version>8.3.15</docx4j.version>
-		<docx4j-export-fo.version>8.3.15</docx4j-export-fo.version>
+		<docx4j.version>11.5.2</docx4j.version>
+		<docx4j-export-fo.version>11.5.2</docx4j-export-fo.version>
 		<!-- Docx4j ImportXHTML -->
-		<docx4j-importxhtml.version>8.3.15</docx4j-importxhtml.version>
+		<docx4j-importxhtml.version>11.4.11</docx4j-importxhtml.version>
 		<docx4j-xhtmlrenderer.version>3.0.0</docx4j-xhtmlrenderer.version>
 		<!-- Docx4j JAXB -->
 		<docx4j-jaxb.version>${docx4j.version}</docx4j-jaxb.version>
@@ -413,9 +413,10 @@
 		<freemarker.version>2.3.29</freemarker.version>
 		<httl.version>1.0.12</httl.version>
 		<jackson.version>2.18.9</jackson.version>
-		<java.version>1.8</java.version>
+		<java.version>21</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<maven.compiler.release>${java.version}</maven.compiler.release>
 		<jaxb-impl.version>2.3.9</jaxb-impl.version>
 		<javax-activation.version>1.1.1</javax-activation.version>
 		<javax.mail-api.version>1.6.2</javax.mail-api.version>
