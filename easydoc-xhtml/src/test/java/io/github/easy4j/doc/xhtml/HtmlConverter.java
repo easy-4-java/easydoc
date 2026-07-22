@@ -207,7 +207,8 @@ public class HtmlConverter {
         String fontFamily = "SimSun";
 
         URL simsunUrl = this.getClass().getResource("/org/noahx/html2docx/simsun.ttc"); //加载字体文件（解决linux环境下无中文字体问题）
-        PhysicalFonts.addPhysicalFonts(fontFamily, simsunUrl);
+        // docx4j 8+ 接受 URI；URL→URI 以兼容 JDK 8/17/21 三线同一源码
+        PhysicalFonts.addPhysicalFonts(fontFamily, simsunUrl.toURI());
         PhysicalFont simsunFont = PhysicalFonts.get(fontFamily);
         fontMapper.put(fontFamily, simsunFont);
 
