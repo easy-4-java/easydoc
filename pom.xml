@@ -401,10 +401,10 @@
 		<commons-logging.version>1.2</commons-logging.version>
 		<commons-io.version>2.16.1</commons-io.version>
 		<!-- Docx4j Core -->
-		<docx4j.version>11.5.2</docx4j.version>
-		<docx4j-export-fo.version>11.5.2</docx4j-export-fo.version>
+		<docx4j.version>11.1.3</docx4j.version>
+		<docx4j-export-fo.version>8.1.4</docx4j-export-fo.version>
 		<!-- Docx4j ImportXHTML -->
-		<docx4j-importxhtml.version>11.4.8</docx4j-importxhtml.version>
+		<docx4j-importxhtml.version>8.0.0</docx4j-importxhtml.version>
 		<docx4j-xhtmlrenderer.version>3.0.0</docx4j-xhtmlrenderer.version>
 		<!-- Docx4j JAXB -->
 		<docx4j-jaxb.version>${docx4j.version}</docx4j-jaxb.version>
