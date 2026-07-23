@@ -44,24 +44,10 @@
 	        <artifactId>docx4j-JAXB-Internal</artifactId>
 	    </dependency> -->
 	        
-	    <!-- Docx4j JAXB MOXy -->
-	
-	    <!-- jaxb.properties files specifying that docx4j should use the EclipseLink MOXy (JAXB) runtime -->
+	    <!-- Docx4j JAXB MOXy（Jakarta；EclipseLink 4.x 由该模块传递引入） -->
 	    <dependency>
 	      	<groupId>org.docx4j</groupId>
 	      	<artifactId>docx4j-JAXB-MOXy</artifactId>
-	    </dependency>
-	    <dependency>
-	      	<groupId>org.eclipse.persistence</groupId>
-	      	<artifactId>org.eclipse.persistence.asm</artifactId>
-	    </dependency>
-	    <dependency>
-	     	<groupId>org.eclipse.persistence</groupId>
-	      	<artifactId>org.eclipse.persistence.core</artifactId>
-	    </dependency>
-	    <dependency>
-	      	<groupId>org.eclipse.persistence</groupId>
-	      	<artifactId>org.eclipse.persistence.moxy</artifactId>
 	    </dependency>
 	     
 	    <!-- Docx4j JAXB ReferenceImpl

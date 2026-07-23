@@ -17,7 +17,7 @@ package io.github.easy4j.doc;
 
 import java.io.File;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.docx4j.jaxb.Context;

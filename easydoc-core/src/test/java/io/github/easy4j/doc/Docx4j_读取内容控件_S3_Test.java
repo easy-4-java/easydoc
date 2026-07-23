@@ -20,7 +20,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;  
 import java.util.List;  
   
-import javax.xml.bind.JAXBElement;  
+import jakarta.xml.bind.JAXBElement;  
   
 import org.docx4j.TextUtils;  
 import org.docx4j.TraversalUtil;  
@@ -40,7 +40,7 @@ import org.docx4j.wml.SdtPr;
 import org.docx4j.wml.SdtPr.Alias;  
 import org.docx4j.wml.SdtRun;  
 import org.docx4j.wml.Tag;  
-import org.jvnet.jaxb2_commons.ppp.Child;  
+import org.jvnet.jaxb.lang.Child;  
 /**
  * Docx4j读取word 2007内容控件
  * http://53873039oycg.iteye.com/blog/2193684
@@ -139,7 +139,7 @@ class SdtFinder extends CallbackImpl {
     List<Child> sdtList = new ArrayList<Child>();  
   
     public List<Object> apply(Object o) {  
-        if (o instanceof javax.xml.bind.JAXBElement  
+        if (o instanceof jakarta.xml.bind.JAXBElement  
                 && (((JAXBElement) o).getName().getLocalPart().equals("sdt"))) {  
             sdtList.add((Child) XmlUtils.unwrap(o));  
         } else if (o instanceof SdtBlock) {  
@@ -153,7 +153,7 @@ class SdtFinder extends CallbackImpl {
         List children = getChildren(parent);  
         if (children != null) {  
             for (Object o : children) {  
-                if (o instanceof javax.xml.bind.JAXBElement  
+                if (o instanceof jakarta.xml.bind.JAXBElement  
                         && (((JAXBElement) o).getName().getLocalPart()  
                                 .equals("sdt"))) {  
                     ((Child) ((JAXBElement) o).getValue()).setParent(XmlUtils  

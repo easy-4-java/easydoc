@@ -160,7 +160,7 @@ public class Docx4j_创建批注_S3_Test {
             comment.setDate(toXMLCalendar(date));  
         }  
         P commentP = factory.createP();  
-        comment.getEGBlockLevelElts().add(commentP);  
+        comment.getContent().add(commentP);  
         R commentR = factory.createR();  
         commentP.getContent().add(commentR);  
         Text commentText = factory.createText();  

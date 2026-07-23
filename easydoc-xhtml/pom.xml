@@ -34,14 +34,10 @@
 			<artifactId>jsoup</artifactId>
 		</dependency>
 		
- 		<!-- Docx4j ImportXHTML -->
+ 		<!-- Docx4j ImportXHTML（Jakarta 线，内置 openhtmltopdf） -->
 		<dependency>
 		    <groupId>org.docx4j</groupId>
-		    <artifactId>xhtmlrenderer</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.docx4j</groupId>
-		    <artifactId>docx4j-ImportXHTML</artifactId>
+		    <artifactId>docx4j-ImportXHTML-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
