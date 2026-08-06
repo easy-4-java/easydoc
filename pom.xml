@@ -24,16 +24,17 @@
 		<tag>${project.artifactId}</tag>
 	</scm>
 
-	<developers>
-		<developer>
-			<name>hiwepy</name>
-			<email>hnxyhcwdl1003@163.com</email>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>+8</timezone>
-		</developer>
-	</developers>
+	    <developers>
+        <developer>
+            <name>Loong Wan</name>
+            <email>hiwepy@gmail.com</email>
+            <url>https://github.com/loong10k</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
 	
 	<distributionManagement>
 		<repository>
