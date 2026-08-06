@@ -2,14 +2,11 @@
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-![Java](https://img.shields.io/badge/Java-17-orange) ![License](https://img.shields.io/badge/License-Apache%202.0-blue)
-
 基于 [docx4j](https://www.docx4java.org/) 与多种模板引擎实现的 Word（.docx）快速输出组件。支持从模板（Freemarker、Velocity、Thymeleaf、Beetl、Rythm、Jetbrick、HTTL、Webit、JSP）或直接由 XHTML 渲染 WordprocessingML 文档。
 
-<a id="1-project-overview"></a>
 ## 目录
 
-- [1. 项目概览](#1-project-overview)
+- [1. 项目概览](#1-项目概览)
 - [2. 功能与状态](#2-features--status)
 - [3. 环境要求与兼容性](#3-requirements--compatibility)
 - [4. 架构与模块](#4-architecture--modules)

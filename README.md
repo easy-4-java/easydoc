@@ -2,8 +2,6 @@
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-![Java](https://img.shields.io/badge/Java-17-orange) ![License](https://img.shields.io/badge/License-Apache%202.0-blue)
-
 A Word (.docx) generation component built on [docx4j](https://www.docx4java.org/) and a variety of template engines. Render WordprocessingML documents from templates (Freemarker, Velocity, Thymeleaf, Beetl, Rythm, Jetbrick, HTTL, Webit, JSP) or directly from XHTML.
 
 ## Table of Contents
