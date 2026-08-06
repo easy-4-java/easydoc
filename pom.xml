@@ -371,7 +371,8 @@
                 <lombok.version>1.18.46</lombok.version>
                 <additionalparam>-Xdoclint:none -Xlint:unchecked</additionalparam>
                 <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
-            </properties>
+            
+		<jaxb-namespaceprefixmapper.version>6.1.0</jaxb-namespaceprefixmapper.version></properties>
         </profile>
         <!-- 发布到 Maven Central Portal：mvn -Prelease deploy（GPG 签名 + 源码 + Javadoc + Central 发布插件） -->
 
@@ -718,7 +719,7 @@
             <dependency>
                 <groupId>com.googlecode.jaxb-namespaceprefixmapper-interfaces</groupId>
                 <artifactId>JAXBNamespacePrefixMapper</artifactId>
-                <version>6.1.0</version>
+                <version>${jaxb-namespaceprefixmapper.version}</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
             <dependency>
