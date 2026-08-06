@@ -8,18 +8,24 @@
   <version>1.0.x.20260630-SNAPSHOT</version>
   <description>Building doc documents based on xhtml templates using docx4j</description>
   <packaging>pom</packaging>
+
+  <!-- 开源协议采用 Apache 2.0 协议 -->
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
       <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
     </license>
   </licenses>
+
+  <!-- 源码仓库（SCM）信息 -->
   <scm>
     <connection>scm:git:https://github.com/easy-4-java/easydoc.git</connection>
     <developerConnection>scm:git:https://github.com/easy-4-java/easydoc.git</developerConnection>
     <url>https://github.com/easy-4-java/easydoc</url>
     <tag>${project.artifactId}</tag>
   </scm>
+
+  <!-- 开发者信息 -->
   <developers>
     <developer>
       <name>Loong Wan</name>
@@ -31,6 +37,8 @@
       <timezone>+8</timezone>
     </developer>
   </developers>
+
+  <!-- 制品发布仓库配置（distributionManagement） -->
   <distributionManagement>
     <repository>
       <id>2624322-release-6F6h6R</id>
@@ -55,7 +63,11 @@
     <module>easydoc-webit</module>
     <module>easydoc-xhtml</module>
   </modules>
+
+  <!-- 构建配置（Build） -->
   <build>
+
+    <!-- 插件版本统一管理（pluginManagement） -->
     <pluginManagement>
       <plugins>
         <plugin>
@@ -63,6 +75,8 @@
           <artifactId>maven-clean-plugin</artifactId>
           <version>${maven-clean-plugin.version}</version>
         </plugin>
+
+        <!-- Maven 编译插件：统一 Java 版本参数与 Lombok 注解处理 -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
@@ -109,6 +123,8 @@
             </execution>
           </executions>
         </plugin>
+
+        <!-- GPG 签名插件：对制品进行 PGP 签名（Maven Central 发布要求） -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
@@ -148,6 +164,8 @@
             <goals>deploy</goals>
           </configuration>
         </plugin>
+
+        <!-- Maven 源码插件：打包 sources.jar（Maven Central 发布要求） -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
@@ -198,6 +216,8 @@
             </archive>
           </configuration>
         </plugin>
+
+        <!-- Maven Javadoc 插件：打包 javadoc.jar（Maven Central 发布要求） -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
@@ -234,10 +254,12 @@
       </plugins>
     </pluginManagement>
     <plugins>
+
+      <!-- JaCoCo 覆盖率插件：生成覆盖率报告并校验测试覆盖率（目标 90%） -->
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>${jacoco-maven-plugin.version}</version>
+        <version>${maven-jacoco-plugin.version}</version>
         <executions>
           <execution>
             <id>prepare-agent</id>
@@ -276,6 +298,8 @@
           </execution>
         </executions>
       </plugin>
+
+      <!-- Maven 编译插件：统一 Java 版本参数与 Lombok 注解处理 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -297,27 +321,35 @@
       </plugin>
     </plugins>
   </build>
+
+  <!-- 构建 Profile 配置 -->
   <profiles>
     <profile>
       <id>disable-javadoc-doclint</id>
       <activation>
         <jdk>[1.8,)</jdk>
       </activation>
+
+  <!-- 版本属性定义：Java 版本、依赖版本与 Maven 插件版本统一管理 -->
       <properties>
-        <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
+        <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
         <lombok.version>1.18.46</lombok.version>
         <additionalparam>-Xdoclint:none -Xlint:unchecked</additionalparam>
-        <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
+        <maven-jacoco-plugin.version>0.8.15</maven-jacoco-plugin.version>
       </properties>
     </profile>
     <profile>
       <id>release</id>
+
+  <!-- 构建配置（Build） -->
       <build>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
           </plugin>
+
+          <!-- Maven 编译插件：统一 Java 版本参数与 Lombok 注解处理 -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
@@ -334,10 +366,14 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
           </plugin>
+
+          <!-- Maven 源码插件：打包 sources.jar（Maven Central 发布要求） -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
           </plugin>
+
+          <!-- Maven Javadoc 插件：打包 javadoc.jar（Maven Central 发布要求） -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
@@ -346,6 +382,8 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-install-plugin</artifactId>
           </plugin>
+
+          <!-- GPG 签名插件：对制品进行 PGP 签名（Maven Central 发布要求） -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
@@ -367,8 +405,12 @@
     </profile>
     <profile>
       <id>central</id>
+
+  <!-- 构建配置（Build） -->
       <build>
         <plugins>
+
+          <!-- GPG 签名插件：对制品进行 PGP 签名（Maven Central 发布要求） -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
@@ -383,10 +425,12 @@
               </execution>
             </executions>
           </plugin>
+
+          <!-- Central Publishing 插件：发布制品到 Maven Central Portal -->
           <plugin>
             <groupId>org.sonatype.central</groupId>
             <artifactId>central-publishing-maven-plugin</artifactId>
-            <version>${central-publishing-maven-plugin.version}</version>
+            <version>${maven-central-publishing-plugin.version}</version>
             <extensions>true</extensions>
             <configuration>
               <publishingServerId>central</publishingServerId>
@@ -398,6 +442,8 @@
       </build>
     </profile>
   </profiles>
+
+  <!-- 版本属性定义：Java 版本、依赖版本与 Maven 插件版本统一管理 -->
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <antlr4.version>4.7.1</antlr4.version>
@@ -453,7 +499,11 @@
     <maven-nexus-yuicompressor-plugin.version>1.1.0</maven-nexus-yuicompressor-plugin.version>
     <maven-war-plugin.version>3.2.2</maven-war-plugin.version>
   </properties>
+
+  <!-- 依赖版本统一管理（dependencyManagement） -->
   <dependencyManagement>
+
+  <!-- 项目依赖（dependencies） -->
     <dependencies>
       <dependency>
         <groupId>junit</groupId>
@@ -686,6 +736,8 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <!-- 项目依赖（dependencies） -->
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>
