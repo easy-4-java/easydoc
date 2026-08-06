@@ -1,0 +1,54 @@
+# CI workflow for the feature/1.0.x line (JDK 8)
+#
+# Triggers:
+#   - push / pull_request on the feature/1.0.x branch
+#   - manual workflow_dispatch
+#
+# Runs `./mvnw -B clean verify` which includes the JaCoCo coverage gate
+# (90% line coverage, haltOnFailure=false) configured in the POM.
+name: CI
+
+on:
+  push:
+    branches: [feature/1.0.x]
+  pull_request:
+    branches: [feature/1.0.x]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: JDK 8 Build & Verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+
+      - name: Build and verify with JaCoCo coverage gate
+        run: ./mvnw -B --no-transfer-progress clean verify
+
+      - name: Upload JaCoCo coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-coverage
+          path: target/site/jacoco
+          retention-days: 14
+
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports
+          retention-days: 14
