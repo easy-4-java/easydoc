@@ -1,6 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.github.easy4j</groupId>
@@ -65,13 +64,13 @@
 	<build>
 		<pluginManagement>
 			<plugins>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-clean-plugin -->
+				
 				<plugin>
 				    <groupId>org.apache.maven.plugins</groupId>
 				    <artifactId>maven-clean-plugin</artifactId>
 				    <version>${maven-clean-plugin.version}</version>
 				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
@@ -83,13 +82,13 @@
 						<maxmem>512M</maxmem>
 					</configuration>
 				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-deploy-plugin -->
+				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>${maven-deploy-plugin.version}</version>
 				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-enforcer-plugin -->
+				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-enforcer-plugin</artifactId>
@@ -105,13 +104,13 @@
 								<rules>
 									<requireMavenVersion>
 										<message>
-	                                        <![CDATA[You are running an older version of Maven. This application requires at least Maven ${maven.version}.]]>
+	                                        You are running an older version of Maven. This application requires at least Maven ${maven.version}.
 										</message>
 										<version>[${maven.version}.0,)</version>
 									</requireMavenVersion>
 									<requireJavaVersion>
 										<message>
-	                                        <![CDATA[You are running an older version of Java. This application requires at least JDK ${java.version}.]]>
+	                                        You are running an older version of Java. This application requires at least JDK ${java.version}.
 										</message>
 										<version>[${java.version}.0,)</version>
 									</requireJavaVersion>
@@ -120,7 +119,7 @@
 						</execution>
 					</executions>
 				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-gpg-plugin -->
+				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-gpg-plugin</artifactId>
@@ -135,13 +134,13 @@
 						</execution>
 					</executions>
 				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-install-plugin -->
+				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-install-plugin</artifactId>
 					<version>${maven-install-plugin.version}</version>
 				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-resources-plugin -->
+				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
@@ -150,7 +149,7 @@
 						<encoding>${project.build.sourceEncoding}</encoding>
 					</configuration>
 				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-release-plugin -->
+				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
@@ -163,7 +162,7 @@
 						<goals>deploy</goals>
 					</configuration>
 				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-source-plugin -->
+				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
@@ -180,18 +179,16 @@
 						</execution>
 					</executions>
 				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
+				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>${maven-surefire-plugin.vertsion}</version>
 					<configuration>
-						<!-- 跳过单元测试 -->
+						
 						<skip>true</skip>
 						<skipTests>true</skipTests>
-						<!-- forkMode 可设置值有 “never”， “once”， “always” 和 “pertest”。 pretest： 
-							每一个测试创建一个新进程，为每个测试创建新的JVM是单独测试的最彻底方式，但也是最慢的，不适合hudson上持续回归。 once：在一个进程中进行所有测试。once为默认设置，在Hudson上持续回归时建议使用默认设置。 
-							always：在一个进程中并行的运行脚本，Junit4.7以上版本才可以使用，surefire的版本要在2.6以上提供这个功能，其中 threadCount：执行时，指定可分配的线程数量。只和参数parallel配合使用有效。默认：5。 -->
+						
 						<forkMode>once</forkMode>
 						<argLine>-Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=256m -Dfile.encoding=UTF-8</argLine>
 						<additionalClasspathElements>
@@ -205,7 +202,7 @@
 						</excludes>
 					</configuration>
 				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jar-plugin -->
+				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
@@ -220,7 +217,7 @@
 						</archive>
 					</configuration>
 				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin -->
+				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
@@ -249,7 +246,7 @@
 						<serverId>ossrh</serverId>
 						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 						<autoReleaseAfterClose>false</autoReleaseAfterClose>
-						<!-- <sslAllowAll>true</sslAllowAll> -->
+						
 						<stagingProgressPauseDurationSeconds>60</stagingProgressPauseDurationSeconds>
 						<stagingProgressTimeoutMinutes>20</stagingProgressTimeoutMinutes>
 						<detectBuildFailures>true</detectBuildFailures>
@@ -257,49 +254,7 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		<plugins>
-			<!--环境监察插件：代码编译前的环境监察 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-			</plugin>
-			<!-- 编译插件：编译主代码至主输出目录 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-			<!-- 资源插件：复制主资源文件至主输出目录 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-			</plugin>
-			<!-- 单元测试插件 ：执行测试用例 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-			</plugin>
-			<!-- jar包生成插件 ：创建项目jar包 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-			</plugin>
-			<!-- 源码插件:发布时自动将源码同时发布 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-			</plugin>
-			<!-- 安装插件：将项目输出构件安装到本地仓库 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-install-plugin</artifactId>
-			</plugin>
-			<!-- 发布插件 ：将项目输出构件部署到远程仓库 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+		</build>
 
 	<profiles>
 		<profile>
@@ -308,64 +263,65 @@
 					<jdk>[1.8,)</jdk>
 				</activation>
 			<properties>
-				<additionalparam>-Xdoclint:none -Xlint:unchecked</additionalparam>
+				<lombok.version>1.18.46</lombok.version>
+		<additionalparam>-Xdoclint:none -Xlint:unchecked</additionalparam>
 			</properties>
 		</profile>
 		<profile>
 			<id>release</id>
 			<build>
 				<plugins>
-					<!--环境监察插件：代码编译前的环境监察 -->
+					
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-enforcer-plugin</artifactId>
 					</plugin>
-					<!-- 编译插件：编译主代码至主输出目录 -->
+					
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-compiler-plugin</artifactId>
 					</plugin>
-					<!-- 资源插件：复制主资源文件至主输出目录 -->
+					
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-resources-plugin</artifactId>
 					</plugin>
-					<!-- 单元测试插件 ：执行测试用例 -->
+					
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
 					</plugin>
-					<!-- jar包生成插件 ：创建项目jar包 -->
+					
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-jar-plugin</artifactId>
 					</plugin>
-					<!-- 源码插件:发布时自动将源码同时发布 -->
+					
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
 					</plugin>
-					<!-- javadoc -->
+					
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
 					</plugin>
-					<!-- 安装插件：将项目输出构件安装到本地仓库 -->
+					
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-install-plugin</artifactId>
 					</plugin>
-					<!-- 签名插件：对构建的jar、javadoc、source使用gpg来签名 -->
+					
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
 					</plugin>
-					<!-- 发布插件 ：将项目输出构件部署到远程仓库 -->
+					
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-deploy-plugin</artifactId>
 					</plugin>
-					<!-- 版本自动升级插件 ：重置版本号 -->
+					
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-release-plugin</artifactId>
@@ -383,24 +339,24 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<antlr4.version>4.7.1</antlr4.version>
 		<beetl.version>3.1.3.RELEASE</beetl.version>
-		<commons-beanutils.version>1.9.3</commons-beanutils.version>
-		<commons-lang3.version>3.18.0</commons-lang3.version>
+		<commons-beanutils.version>1.11.0</commons-beanutils.version>
+		<commons-lang3.version>3.20.0</commons-lang3.version>
 		<commons-logging.version>1.2</commons-logging.version>
-		<commons-io.version>2.16.1</commons-io.version>
-		<!-- Docx4j Core -->
-		<!-- 2.0.x：JDK17 + javax 线，core 用 11.1.x；ImportXHTML 无 11.1 同号，锁 8.3.15 -->
+		<commons-io.version>2.22.0</commons-io.version>
+		
+		
 		<docx4j.version>11.1.3</docx4j.version>
 		<docx4j-export-fo.version>11.1.8</docx4j-export-fo.version>
-		<!-- Docx4j ImportXHTML -->
+		
 		<docx4j-importxhtml.version>8.3.15</docx4j-importxhtml.version>
 		<docx4j-xhtmlrenderer.version>3.0.0</docx4j-xhtmlrenderer.version>
-		<!-- Docx4j JAXB -->
+		
 		<docx4j-jaxb.version>${docx4j.version}</docx4j-jaxb.version>
-		<!-- Docx4j OpenXML -->
+		
 		<docx4j-openxml.version>${docx4j.version}</docx4j-openxml.version>
 		<freemarker.version>2.3.29</freemarker.version>
 		<httl.version>1.0.12</httl.version>
-		<jackson.version>2.18.9</jackson.version>
+		<jackson.version>2.17.2</jackson.version>
 		<java.version>17</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
@@ -410,12 +366,12 @@
 		<javax.mail-api.version>1.6.2</javax.mail-api.version>
 		<jetbrick.version>2.1.10</jetbrick.version>
 		<jsoup.version>1.13.1</jsoup.version>
-		<junit.version>4.12</junit.version>
+		<junit.version>4.13.2</junit.version>
 		<ognl.version>3.2.13</ognl.version>
 		<persistence.version>2.7.6</persistence.version>
 		<rythm.version>1.3.0</rythm.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
-		<slf4j.version>2.0.17</slf4j.version>
+		<slf4j.version>2.0.18</slf4j.version>
 		<thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
 		<velocity.version>2.2</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
@@ -426,18 +382,18 @@
 		<maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
 		<maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
 		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
-		<maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
+		<maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
 		<maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
 		<maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
 		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
 		<maven-install-plugin.version>3.1.4</maven-install-plugin.version>
 		<maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
-		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+		<maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
 		<maven-release-plugin.version>3.3.1</maven-release-plugin.version>
 		<maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
 		<maven-surefire-plugin.vertsion>2.22.1</maven-surefire-plugin.vertsion>
 		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
-		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
+		<maven-nexus-staging-plugin.version>1.7.0</maven-nexus-staging-plugin.version>
 		<maven-nexus-yuicompressor-plugin.version>1.1.0</maven-nexus-yuicompressor-plugin.version>
 		<maven-war-plugin.version>3.2.2</maven-war-plugin.version>
 
@@ -446,84 +402,74 @@
 	<dependencyManagement>
 		<dependencies>
 
-			<!-- ######################测试工具包###################### -->
+			
 
-			<!--junit : Junit测试是程序员测试，即白盒测试 -->
+			
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
 			</dependency>
 
-			<!-- servlet 基础依赖包 -->
+			
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
 				<version>${servlet-api.version}</version>
 			</dependency>
 
-			<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+			
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
 
-			<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+			
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-simple</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
 
-			<!-- ######################基础常用工具包###################### -->
+			
 
-			<!-- 常用功能包括类型转换和动态bean的创建 -->
+			
 			<dependency>
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
 				<version>${commons-beanutils.version}</version>
 			</dependency>
-			<!-- Commons项目中用来处理Java基本对象方法的工具类包， 可以简化很多平时经常要用到的写法， 例如判断字符串是否为空等等 -->
+			
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>${commons-lang3.version}</version>
 			</dependency>
-			<!-- Commons项目中用来处理IO的一些工具类包 -->
+			
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>${commons-io.version}</version>
 			</dependency>
 
-			<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
-			<!-- Jsoup is a Java library for working with real-world HTML. It provides 
-				a very convenient API for extracting and manipulating data, using the best 
-				of DOM, CSS, and jquery-like methods. jsoup implements the WHATWG HTML5 specification, 
-				and parses HTML to the same DOM as modern browsers do. -->
+			
+			
 			<dependency>
 				<groupId>org.jsoup</groupId>
 				<artifactId>jsoup</artifactId>
 				<version>${jsoup.version}</version>
 			</dependency>
 
-			<!-- ###################### Docx4j ###################### -->
 			
-			<!-- https://www.docx4java.org/downloads.html -->
 			
-			<!-- docx4j是一个开源的(Apache许可证v2)Java库，专门用来创建、编辑和保存Microsoft Open XML文档（包括Word 
-				docx, Powerpoint pptx和Excel xlsx）的Java类库。 docx4j最初是由Plutext Pty Ltd于2008年创建。 
-				docx4j与微软的OpenXML SDK类似，但是是面向Java的。它使用JAXB在内存中创建Java对象。它的功能强大，对于支持的文档的格式，你可以用docx4j做出你想要的效果。它的功能有： 
-				1、 打开已存在的docx/pptx/xlsx(从文件系统, SMB/CIFS, 使用VFS从WebDAV等) 2、创建新的docx文档 3、用程序来处理docx文档 
-				4、CustomXML绑定(使用OpenDoPE插件来处理重复绑定和条件绑定) 5、将文件保存成HTML或PDF 6、Diff/比较文档、段落 7、导入二进制文档(使用Apache 
-				POI的HWPF) 8、处理Word 2007的xmlPackage(pkg)格式 9、将docx保存成docx(压缩格式)或者JCR（未压缩格式） 
-				10、字体支持（字体替换，使用文档中嵌入的任何字体） 但首先你需要花时间理解JAXB和Open XML文件结构。你可以使用在线的webapp来查看docx/xlsx/pptx的文件结构，或者下载到本地的应用Word 
-				AddIn来查看docx的文件结构。 http://www.docx4java.org/downloads.html -->
+			
+			
+			
 
-			<!-- Docx4j Core -->
+			
 
-			<!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-core -->
+			
 			<dependency>
 				<groupId>org.docx4j</groupId>
 				<artifactId>docx4j-core</artifactId>
@@ -544,62 +490,56 @@
 				</exclusions>
 			</dependency>
 			 
-			<!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-export-fo -->
-			<!-- Export docx to PDF via XSL FO, using Apache FOP -->
+			
+			
 			<dependency>
 			    <groupId>org.docx4j</groupId>
 			    <artifactId>docx4j-export-fo</artifactId>
 			    <version>${docx4j-export-fo.version}</version>
 			</dependency>
 
-			<!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-docx-anon -->
+			
 			<dependency>
 			    <groupId>org.docx4j</groupId>
 			    <artifactId>docx4j-docx-anon</artifactId>
 			    <version>${docx4j.version}</version>
 			</dependency>
 						
-			<!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-diffx -->
+			
 			<dependency>
 			    <groupId>org.docx4j</groupId>
 			    <artifactId>docx4j-diffx</artifactId>
 			    <version>${docx4j.version}</version>
 			</dependency>
 									
-			<!-- Docx4j ImportXHTML -->
+			
 
-			<!-- docx4j-ImportXHTML converts XHTML to OpenXML WordML (docx) using docx4j  -->
+			
 			<dependency>
 				<groupId>org.docx4j</groupId>
 				<artifactId>docx4j-ImportXHTML</artifactId>
 				<version>${docx4j-importxhtml.version}</version>
 			</dependency>
-			<!-- Modified flyingsaucer XML/XHTML and CSS 2.1 renderer, to support docx (and eventually pptx) output -->
+			
 			<dependency>
 				<groupId>org.docx4j</groupId>
 				<artifactId>xhtmlrenderer</artifactId>
 				<version>${docx4j-xhtmlrenderer.version}</version>
 			</dependency>
 			
-			<!-- Docx4j JAXB -->
 			
-			<!-- 
-		    	docx4j-JAXB-Internal (which is available but deprecated in Java 9 and 10) ,
-		    	docx4j-JAXB-MOXy (for docx4j 8 or 11),
-		    	docx4j-JAXB-ReferenceImpl (for docx4j 8 or 11), 
-		    	You should use one and only one of docx4j-JAXB-*
-		    -->
 			
-			<!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-JAXB-Internal -->
-			<!-- config specifying that docx4j should use the JAXB Internal implementation
-				 (which is available but deprecated in Java 9 and 10)  -->
+			
+			
+			
+			
 			<dependency>
 			    <groupId>org.docx4j</groupId>
 			    <artifactId>docx4j-JAXB-Internal</artifactId>
 			    <version>${docx4j-jaxb.version}</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-JAXB-MOXy -->
-			<!-- config specifying that docx4j should use the EclipseLink MOXy (JAXB) runtime   -->
+			
+			
 			<dependency>
 			    <groupId>org.docx4j</groupId>
 			    <artifactId>docx4j-JAXB-MOXy</artifactId>
@@ -630,105 +570,105 @@
 				<artifactId>org.eclipse.persistence.moxy</artifactId>
 				<version>${persistence.version}</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-JAXB-ReferenceImpl -->
-			<!-- config specifying that docx4j should use the JAXB reference impls  -->
+			
+			
 			<dependency>
 			    <groupId>org.docx4j</groupId>
 			    <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
 			    <version>${docx4j-jaxb.version}</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/com.googlecode.jaxb-namespaceprefixmapper-interfaces/JAXBNamespacePrefixMapper -->
+			
 			<dependency>
 			    <groupId>com.googlecode.jaxb-namespaceprefixmapper-interfaces</groupId>
 			    <artifactId>JAXBNamespacePrefixMapper</artifactId>
 			    <version>6.1.0</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
+			
 			<dependency>
 			    <groupId>com.sun.xml.bind</groupId>
 			    <artifactId>jaxb-impl</artifactId>
 			    <version>${jaxb-impl.version}</version>
 			</dependency>
 			
-			<!-- Docx4j OpenXML -->
 			
-			<!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-openxml-objects -->
+			
+			
 			<dependency>
 			    <groupId>org.docx4j</groupId>
 			    <artifactId>docx4j-openxml-objects</artifactId>
 			    <version>${docx4j-openxml.version}</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-openxml-objects-pml -->
-			<!-- Our JAXB representation of OpenXML Presentation Markup Language (pml)  -->
+			
+			
 			<dependency>
 			    <groupId>org.docx4j</groupId>
 			    <artifactId>docx4j-openxml-objects-pml</artifactId>
 			    <version>${docx4j-openxml.version}</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-openxml-objects-sml -->
-			<!-- Our JAXB representation of OpenXML Spreadsheet Markup Language (sml)  -->
+			
+			
 			<dependency>
 			    <groupId>org.docx4j</groupId>
 			    <artifactId>docx4j-openxml-objects-sml</artifactId>
 			    <version>${docx4j-openxml.version}</version>
 			</dependency>
 			
-			<!-- https://mvnrepository.com/artifact/ognl/ognl -->
+			
 			<dependency>
 				<groupId>ognl</groupId>
 				<artifactId>ognl</artifactId>
 				<version>${ognl.version}</version>
 			</dependency>
 			
-			<!-- beetl模板 -->
-			<!-- https://mvnrepository.com/artifact/com.ibeetl/beetl -->
+			
+			
 			<dependency>
 				<groupId>com.ibeetl</groupId>
 				<artifactId>beetl</artifactId>
 				<version>${beetl.version}</version>
 			</dependency>
-			<!-- freemarker模板 -->
-			<!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
+			
+			
 			<dependency>
 				<groupId>org.freemarker</groupId>
 				<artifactId>freemarker</artifactId>
 				<version>${freemarker.version}</version>
 			</dependency>
-			<!-- httl模板 -->
-			<!-- https://mvnrepository.com/artifact/org.perfcake/httl -->
+			
+			
 			<dependency>
 				<groupId>org.perfcake</groupId>
 				<artifactId>httl</artifactId>
 				<version>${httl.version}</version>
 			</dependency>
-			<!-- jetbrick模板 -->
-			<!-- https://mvnrepository.com/artifact/com.github.subchen/jetbrick-template -->
+			
+			
 			<dependency>
 				<groupId>com.github.subchen</groupId>
 				<artifactId>jetbrick-template</artifactId>
 				<version>${jetbrick.version}</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.antlr/antlr4-runtime -->
+			
 			<dependency>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-runtime</artifactId>
 				<version>${antlr4.version}</version>
 			</dependency>
-			<!-- rythm模板 -->
-			<!-- https://mvnrepository.com/artifact/org.rythmengine/rythm-engine -->
+			
+			
 			<dependency>
 				<groupId>org.rythmengine</groupId>
 				<artifactId>rythm-engine</artifactId>
 				<version>${rythm.version}</version>
 			</dependency>
-			<!-- thymeleaf模板 -->
-			<!-- https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf -->
+			
+			
 			<dependency>
 				<groupId>org.thymeleaf</groupId>
 				<artifactId>thymeleaf</artifactId>
 				<version>${thymeleaf.version}</version>
 			</dependency>
-			<!-- velocity模板 -->
+			
 			<dependency>
 		       <groupId>org.apache.velocity</groupId>
 		       <artifactId>velocity-engine-core</artifactId>
@@ -758,31 +698,14 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			<!-- webit模板 -->
+			
 			<dependency>
 				<groupId>com.github.zqq90.webit-script</groupId>
 				<artifactId>webit-script</artifactId>
 				<version>${webit-script.version}</version>
 			</dependency>
 
-		</dependencies>
+		<dependency><groupId>org.projectlombok</groupId><artifactId>lombok</artifactId><version>${lombok.version}</version><scope>provided</scope></dependency></dependencies>
 	</dependencyManagement>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-
-</project>
+	<dependencies><dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId></dependency><dependency><groupId>junit</groupId><artifactId>junit</artifactId><scope>test</scope></dependency><dependency><groupId>org.projectlombok</groupId><artifactId>lombok</artifactId><scope>provided</scope></dependency></dependencies></project>
