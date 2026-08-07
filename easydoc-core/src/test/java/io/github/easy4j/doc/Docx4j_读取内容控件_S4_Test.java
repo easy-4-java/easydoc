@@ -41,7 +41,7 @@ import org.docx4j.wml.SdtPr;
 import org.docx4j.wml.SdtPr.Alias;  
 import org.docx4j.wml.SdtRun;  
 import org.docx4j.wml.Tag;  
-import org.jvnet.jaxb.lang.Child;
+import org.jvnet.jaxb2_commons.ppp.Child;
 
 //能区分纯文本和格式文本(格式文本能插入公式,纯文本不能)  
 public class Docx4j_读取内容控件_S4_Test {  

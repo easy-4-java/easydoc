@@ -40,7 +40,7 @@ import org.docx4j.wml.SdtPr;
 import org.docx4j.wml.SdtPr.Alias;  
 import org.docx4j.wml.SdtRun;  
 import org.docx4j.wml.Tag;  
-import org.jvnet.jaxb.lang.Child;  
+import org.jvnet.jaxb2_commons.ppp.Child;
 /**
  * Docx4j读取word 2007内容控件
  * http://53873039oycg.iteye.com/blog/2193684
@@ -133,7 +133,7 @@ public class Docx4j_读取内容控件_S3_Test {
         TextUtils.extractText(contentAcc, stringWriter);  
         return stringWriter.toString();  
     }  
-}  
+}
   
 class SdtFinder extends CallbackImpl {  
     List<Child> sdtList = new ArrayList<Child>();  
@@ -171,4 +171,4 @@ class SdtFinder extends CallbackImpl {
             }  
         }  
     }  
-}  
+}
