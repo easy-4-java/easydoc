@@ -1,7 +1,7 @@
-# CI workflow for the feature/2.0.x line (JDK 17)
+# CI workflow for the main line (JDK 17)
 #
 # Triggers:
-#   - push / pull_request on the feature/2.0.x branch
+#   - push / pull_request on the main branch
 #   - manual workflow_dispatch
 #
 # Runs `mvn -B clean verify` which includes the JaCoCo coverage gate
@@ -10,9 +10,9 @@ name: CI
 
 on:
   push:
-    branches: [feature/2.0.x]
+    branches: [main]
   pull_request:
-    branches: [feature/2.0.x]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
