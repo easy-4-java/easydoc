@@ -4,7 +4,7 @@
 #   - push / pull_request on the feature/1.0.x branch
 #   - manual workflow_dispatch
 #
-# Runs `./mvnw -B clean verify` which includes the JaCoCo coverage gate
+# Runs `mvn -B clean verify` which includes the JaCoCo coverage gate
 # (90% line coverage, haltOnFailure=false) configured in the POM.
 name: CI
 
@@ -25,21 +25,21 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up JDK 8
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '8'
           cache: maven
 
       - name: Build and verify with JaCoCo coverage gate
-        run: ./mvnw -B --no-transfer-progress clean verify
+        run: mvn -B --no-transfer-progress clean verify
 
       - name: Upload JaCoCo coverage report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: jacoco-coverage
           path: target/site/jacoco
@@ -47,7 +47,7 @@ jobs:
 
       - name: Upload surefire reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: surefire-reports
           path: target/surefire-reports
