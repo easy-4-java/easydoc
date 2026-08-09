@@ -62,6 +62,12 @@
 		    <artifactId>ognl</artifactId>
 		</dependency>
 
+		<!-- JAXB Runtime for Jakarta XML Bind -->
+		<dependency>
+		    <groupId>org.glassfish.jaxb</groupId>
+		    <artifactId>jaxb-runtime</artifactId>
+		</dependency>
+
 	</dependencies>
 	
 </project>

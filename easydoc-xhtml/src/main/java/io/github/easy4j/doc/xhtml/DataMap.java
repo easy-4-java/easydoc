@@ -25,7 +25,7 @@ import org.jsoup.Connection.KeyVal;
 /**
  * 
  * TODO
- * @author <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class DataMap {
 

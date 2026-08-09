@@ -12,7 +12,7 @@ import org.docx4j.XmlUtils;
 * <p>
 * XXX: 主要在上传模板时处理一下, 后续
 *
-* @author liliang
+* @author <a href="https://github.com/loong10k">Loong Wan</a>
 * @since 2018-11-07
 */
 public class DocxVariableClearUtils {

@@ -18,6 +18,11 @@ package io.github.easy4j.doc.handler;
 import java.io.File;
 import java.io.FileFilter;
 
+/**
+ * Class for OutputDirFilterHandler.
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ */
 public class OutputDirFilterHandler implements FileFilter {
 
 	protected String outdir;

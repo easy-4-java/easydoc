@@ -24,6 +24,11 @@ import org.docx4j.TextUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 
+/**
+ * Class for WordprocessingMLPackageExtractor.
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ */
 public class WordprocessingMLPackageExtractor {
 
 	private static final WordprocessingMLPackageExtractor WML_PACKAGE_EXTRACTOR = new WordprocessingMLPackageExtractor();

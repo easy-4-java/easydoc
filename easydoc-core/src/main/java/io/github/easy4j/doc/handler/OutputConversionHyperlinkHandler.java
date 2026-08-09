@@ -20,6 +20,11 @@ import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.OpcPackage;
 import org.docx4j.openpackaging.parts.Part;
 
+/**
+ * Class for OutputConversionHyperlinkHandler.
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ */
 public class OutputConversionHyperlinkHandler implements ConversionHyperlinkHandler {
 
 	private static final OutputConversionHyperlinkHandler OUTPUT_CONVERSION_HYPERLINK_HANDLER = new OutputConversionHyperlinkHandler();

@@ -112,6 +112,11 @@ import org.docx4j.wml.UnderlineEnumeration;
  * @author <a href="https://github.com/easy-4-java">hiwepy</a>
  */
 @SuppressWarnings("unchecked")
+/**
+ * Class for WmlElementUtils.
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ */
 public final class WmlElementUtils {
 
 	protected static ObjectFactory factory = Context.getWmlObjectFactory();

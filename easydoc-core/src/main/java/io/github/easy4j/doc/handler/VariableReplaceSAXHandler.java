@@ -16,6 +16,11 @@ import ognl.DefaultTypeConverter;
 import ognl.Ognl;
 import ognl.OgnlContext;
 
+/**
+ * Class for VariableReplaceSAXHandler.
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ */
 public class VariableReplaceSAXHandler extends SAXHandler implements ContentHandler {
 	
 	/**
