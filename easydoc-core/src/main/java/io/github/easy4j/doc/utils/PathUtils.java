@@ -24,6 +24,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 
+/**
+ * Class for PathUtils.
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ */
 public final class PathUtils {
 
     public static URL fileAsUrl(String file) {

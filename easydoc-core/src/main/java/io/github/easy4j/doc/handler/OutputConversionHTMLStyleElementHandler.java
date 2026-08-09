@@ -29,6 +29,11 @@ import io.github.easy4j.doc.Docx4jConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Class for OutputConversionHTMLStyleElementHandler.
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ */
 public class OutputConversionHTMLStyleElementHandler implements ConversionHTMLStyleElementHandler {
 
 	private static final OutputConversionHTMLStyleElementHandler OUTPUT_CONVERSION_HTMLSTYLE_ELEMENT_HANDLER = new OutputConversionHTMLStyleElementHandler();

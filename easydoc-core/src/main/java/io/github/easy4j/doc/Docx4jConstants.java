@@ -16,6 +16,11 @@
 package io.github.easy4j.doc;
 
 
+/**
+ * Class for Docx4jConstants.
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ */
 public final class Docx4jConstants {
 	
 	public static final String DEFAULT_CHARSETNAME = "UTF-8";

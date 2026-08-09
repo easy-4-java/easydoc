@@ -29,7 +29,7 @@ import org.apache.commons.io.FileUtils;
 
 /**
  * To change this template, choose Tools | Templates and open the template in the editor.
- * @author <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WmlZipUtils {
 

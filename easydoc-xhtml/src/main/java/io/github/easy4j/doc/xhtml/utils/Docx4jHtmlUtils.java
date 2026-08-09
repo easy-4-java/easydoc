@@ -26,7 +26,7 @@ import io.github.easy4j.doc.xhtml.io.WordprocessingMLPackageBuilder;
 
 /**
  * TODO
- * @author <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class Docx4jHtmlUtils {
 

@@ -12,7 +12,7 @@ import java.util.Map;
 import ognl.MemberAccess;
 
 /**
- * @author <a href="https://github.com/vindell">wandl</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * https://cloud.tencent.com/developer/article/1554323
  */
 public class DefaultMemberAccess implements MemberAccess {

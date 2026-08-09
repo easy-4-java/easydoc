@@ -23,7 +23,7 @@ import java.nio.charset.Charset;
 /**
  * 
  * TODO
- * @author <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public final class JspWriterPrinter extends JspWriter {
     private final Writer os;

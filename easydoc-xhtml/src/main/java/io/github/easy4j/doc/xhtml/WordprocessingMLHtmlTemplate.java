@@ -33,7 +33,7 @@ import org.jsoup.nodes.Document;
 
 /**
  * 该模板仅负责将原生的HTML元素转换成XHTML后，作为模板生成WordprocessingMLPackage对象
- * @author <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WordprocessingMLHtmlTemplate implements WordprocessingMLTemplate {
 
