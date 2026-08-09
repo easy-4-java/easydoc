@@ -15,6 +15,11 @@
  */
 package io.github.easy4j.doc.jsp.engine.runtime;
 
+/**
+ * Interface for OriginalStream.
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ */
 public interface OriginalStream {
 
     public Object getOriginStream();

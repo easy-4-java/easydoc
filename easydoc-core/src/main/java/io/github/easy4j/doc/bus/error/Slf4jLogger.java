@@ -23,7 +23,7 @@ import net.engio.mbassy.bus.error.PublicationError;
 
 /**
  * Slf4j记录事件错误信息
- * @author 		： <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class Slf4jLogger implements IPublicationErrorHandler {
 

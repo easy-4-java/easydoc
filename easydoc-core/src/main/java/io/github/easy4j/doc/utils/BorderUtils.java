@@ -23,7 +23,7 @@ import org.docx4j.wml.TblBorders;
 
 /**
  * TODO
- * @author <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class BorderUtils {
 	

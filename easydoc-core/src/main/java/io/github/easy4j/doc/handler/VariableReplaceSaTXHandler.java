@@ -19,6 +19,11 @@ import ognl.DefaultTypeConverter;
 import ognl.Ognl;
 import ognl.OgnlContext;
 
+/**
+ * Class for VariableReplaceSaTXHandler.
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ */
 public class VariableReplaceSaTXHandler extends StAXHandlerAbstract {
 	
 	/**

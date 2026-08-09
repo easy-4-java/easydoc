@@ -23,7 +23,7 @@ import io.github.easy4j.doc.jsp.engine.runtime.OriginalStream;
 /**
  * 
  * TODO
- * @author <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public final class TrimLeadingWhitespacesOutputStream extends OutputStream implements OriginalStream {
     private final OutputStream out;

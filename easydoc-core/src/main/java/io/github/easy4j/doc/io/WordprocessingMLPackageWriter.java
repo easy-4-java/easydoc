@@ -42,6 +42,11 @@ import io.github.easy4j.doc.utils.Docx4jUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class for WordprocessingMLPackageWriter.
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ */
 public class WordprocessingMLPackageWriter  {
 	
 	protected final Logger LOG = LoggerFactory.getLogger(this.getClass());

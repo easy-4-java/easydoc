@@ -18,6 +18,11 @@ package io.github.easy4j.doc.handler;
 import org.docx4j.convert.out.html.HTMLConversionImageHandler;
 
 
+/**
+ * Class for OutputConversionImageHandler.
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ */
 public class OutputConversionImageHandler extends HTMLConversionImageHandler {
 
 	public OutputConversionImageHandler(String imageDirPath, String targetUri, boolean includeUUID) {

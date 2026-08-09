@@ -39,7 +39,7 @@ import jetbrick.template.JetEngine;
 
 /**
  * 该模板仅负责使用Jetbrick模板引擎将指定模板生成HTML并将HTML转换成XHTML后，作为模板生成WordprocessingMLPackage对象
- * @author <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WordprocessingMLJetbrickTemplate implements WordprocessingMLTemplate {
 	
