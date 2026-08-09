@@ -37,8 +37,9 @@ import org.docx4j.wml.ParaRPr;
 import org.docx4j.wml.Text;
 
 /**
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of w m l package utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class WMLPackageUtils {
 	
@@ -130,13 +131,10 @@ public class WMLPackageUtils {
     }  
 
 	/**
-	 * 在标签处插入内容
-	 * 
-	 * @param bm
-	 * @param wPackage
-	 * @param object
-	 * @throws Exception
-	 */
+ * Implementation of w m l package utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	public static void replaceText(CTBookmark bm,  Object object) throws Exception {
 		if (object == null) {
 			return;
@@ -205,13 +203,11 @@ public class WMLPackageUtils {
 		}
 	}
 	
-	/** 
-     * 将图片从文件对象转换成字节数组. 
-     * @param file  将要转换的文件 
-     * @return      包含图片字节数据的字节数组 
-     * @throws FileNotFoundException 
-     * @throws IOException 
-     */  
+	/**
+ * Implementation of w m l package utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */  
 	public static byte[] imageToByteArray(File file) throws FileNotFoundException, IOException {  
         InputStream is = new FileInputStream(file );  
         long length = file.length();  

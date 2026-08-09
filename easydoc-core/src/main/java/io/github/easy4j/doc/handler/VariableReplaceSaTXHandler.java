@@ -20,27 +20,35 @@ import ognl.Ognl;
 import ognl.OgnlContext;
 
 /**
- * Class for VariableReplaceSaTXHandler.
+ * Implementation of variable replace sa t x handler extending StAXHandlerAbstract.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class VariableReplaceSaTXHandler extends StAXHandlerAbstract {
 	
 	/**
-	 * 变量占位符开始位，默认：${
-	 */
+ * Implementation of variable replace sa t x handler extending StAXHandlerAbstract.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	protected String placeholderStart = "${";
 	/**
-	 * 变量占位符结束位，默认：}
-	 */
+ * Implementation of variable replace sa t x handler extending StAXHandlerAbstract.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	protected String placeholderEnd = "}";
 	/**
-	 * 变量集合
-	 */
+ * Implementation of variable replace sa t x handler extending StAXHandlerAbstract.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	protected Map<String, Object> variables;
 	/**
-	 * Ognl上下文对象
-	 */
+ * Implementation of variable replace sa t x handler extending StAXHandlerAbstract.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	protected OgnlContext context;
 	
 	public VariableReplaceSaTXHandler(Map<String, Object> variables) throws SAXException {

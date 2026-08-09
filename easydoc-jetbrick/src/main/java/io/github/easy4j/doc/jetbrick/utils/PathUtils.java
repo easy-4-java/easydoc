@@ -29,9 +29,9 @@ import java.util.LinkedList;
 import jetbrick.io.resource.Resource;
 
 /**
- * Class for PathUtils.
+ * Implementation of path utils functionality.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public final class PathUtils {
 
@@ -157,8 +157,10 @@ public final class PathUtils {
     }
 
     /**
-     * 组合路径.
-     */
+ * Implementation of path utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public static String concat(final String parent, final String child) {
         if (parent == null) {
             return normalize(child);
@@ -170,8 +172,10 @@ public final class PathUtils {
     }
 
     /**
-     * 计算相对路径.
-     */
+ * Implementation of path utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public static String getRelativePath(final String baseFile, final String file) {
         if (file.startsWith("/")) {
             return normalize(file);
@@ -186,8 +190,10 @@ public final class PathUtils {
     }
 
     /**
-     * 转为 Unix 样式的路径.
-     */
+ * Implementation of path utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public static String separatorsToUnix(String path) {
         if (path == null || path.indexOf('\\') == -1) {
             return path;
@@ -196,8 +202,10 @@ public final class PathUtils {
     }
 
     /**
-     * 转为 Windows 样式的路径.
-     */
+ * Implementation of path utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public static String separatorsToWindows(String path) {
         if (path == null || path.indexOf('/') == -1) {
             return path;
@@ -206,8 +214,10 @@ public final class PathUtils {
     }
 
     /**
-     * 转为系统默认样式的路径.
-     */
+ * Implementation of path utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public static String separatorsToSystem(String path) {
         if (path == null) {
             return null;

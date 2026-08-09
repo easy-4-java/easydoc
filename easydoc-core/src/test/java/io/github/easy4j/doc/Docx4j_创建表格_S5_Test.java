@@ -145,7 +145,7 @@ public class Docx4j_创建表格_S5_Test {
             tableRow = factory.createTr();  
             addTableCell(factory, tableRow, pImage, 8500, defStyle, 3, null);  
             table.getContent().add(tableRow);  
-        } catch (Exception e) {  
+        } catch (Throwable e) {  
             e.printStackTrace();  
         }  
         return table;  
@@ -463,7 +463,7 @@ public class Docx4j_创建表格_S5_Test {
             SectPr sectPr = factory.createSectPr();  
             body.setSectPr(sectPr);  
             sectPr.setPgMar(pgMar);  
-        } catch (Exception e) {  
+        } catch (Throwable e) {  
             e.printStackTrace();  
         }  
     }  

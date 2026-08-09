@@ -28,18 +28,17 @@ import io.github.easy4j.doc.fonts.FontMapperHolder;
 import io.github.easy4j.doc.utils.WMLPackageUtils;
 
 /**
- * 该模板负责对WordprocessingMLPackage进行普通变量替换和复杂变量替换并返回处理后的WordprocessingMLPackage对象
- * 备注：该工具只能解决固定模板的word生成（来自：https://blog.csdn.net/qq_35598240/article/details/84439929）
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of wordprocessing m l docx template functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class WordprocessingMLDocxTemplate implements WordprocessingMLTemplate {
 	
 	/**
-	 * @param template ：模板文件
-	 * @param variables ：变量
-	 * @return {@link WordprocessingMLPackage} 对象
-	 * @throws Exception ：异常对象
-	 */
+ * Implementation of wordprocessing m l docx template functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	@Override
 	public WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception{
 		// Document loading (required)
@@ -69,12 +68,10 @@ public class WordprocessingMLDocxTemplate implements WordprocessingMLTemplate {
 	}
 	
 	/**
-	 * 变量替换方式实现（只能解决固定模板的word生成）
-	 * @param template ：模板内容
-	 * @param variables ：变量
-	 * @return {@link WordprocessingMLPackage} 对象
-	 * @throws Exception ：异常对象
-	 */
+ * Implementation of wordprocessing m l docx template functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	@Override
 	public WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception {
 		// Document loading (required)

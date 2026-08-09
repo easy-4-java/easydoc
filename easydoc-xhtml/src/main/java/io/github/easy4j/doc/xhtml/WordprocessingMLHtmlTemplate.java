@@ -32,8 +32,9 @@ import io.github.easy4j.doc.xhtml.io.WordprocessingMLPackageBuilder;
 import org.jsoup.nodes.Document;
 
 /**
- * 该模板仅负责将原生的HTML元素转换成XHTML后，作为模板生成WordprocessingMLPackage对象
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of wordprocessing m l html template functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class WordprocessingMLHtmlTemplate implements WordprocessingMLTemplate {
 
@@ -118,12 +119,10 @@ public class WordprocessingMLHtmlTemplate implements WordprocessingMLTemplate {
 	}
 	
 	/**
-	 * 将 {@link org.jsoup.nodes.Document} 对象转为 {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage}
-	 * @param template ：模板内容
-	 * @param variables ：变量
-	 * @return {@link WordprocessingMLPackage} 对象
-	 * @throws Exception ：异常对象
-	 */
+ * Implementation of wordprocessing m l html template functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	@Override
 	public WordprocessingMLPackage process(String template, Map<String, Object> variables) throws Exception {
 		// 返回WordprocessingMLPackage对象

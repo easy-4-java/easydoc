@@ -20,9 +20,9 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of jsp output stream printer ex extending JspWriter.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class JspOutputStreamPrinterEx extends JspWriter {
     private final OutputStream os;

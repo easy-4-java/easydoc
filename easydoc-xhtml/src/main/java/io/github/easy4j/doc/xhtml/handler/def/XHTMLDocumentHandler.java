@@ -30,9 +30,9 @@ import org.jsoup.nodes.Document.OutputSettings;
 import org.jsoup.safety.Whitelist;
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of x h t m l document handler functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class XHTMLDocumentHandler implements DocumentHandler {
 
@@ -51,10 +51,10 @@ public class XHTMLDocumentHandler implements DocumentHandler {
 	}
 	
 	/**
-	 * <p>Jsoup.parse(File in, String charsetName) : 它使用文件的路径做为 baseUri。 这个方法适用于如果被解析文件位于网站的本地文件系统，且相关链接也指向该文件系统</p>
-	 * <p>Jsoup.parse(File in, String charsetName, String baseUri) : 这个方法用来加载和解析一个HTML文件。如在加载文件的时候发生错误，将抛出IOException，应作适当处理。
-	 *	baseUri 参数用于解决文件中URLs是相对路径的问题。如果不需要可以传入一个空的字符串。</p>
-	 */
+ * Implementation of x h t m l document handler functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	@Override
 	public Document handle( File htmlFile) throws IOException {
 		//获取Jsoup参数

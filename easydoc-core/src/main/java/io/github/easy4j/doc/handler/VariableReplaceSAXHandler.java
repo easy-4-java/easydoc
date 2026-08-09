@@ -17,35 +17,47 @@ import ognl.Ognl;
 import ognl.OgnlContext;
 
 /**
- * Class for VariableReplaceSAXHandler.
+ * Implementation of variable replace s a x handler extending SAXHandler.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class VariableReplaceSAXHandler extends SAXHandler implements ContentHandler {
 	
 	/**
-	 * 变量占位符开始位，默认：${
-	 */
+ * Implementation of variable replace s a x handler extending SAXHandler.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	protected String placeholderStart = "${";
 	/**
-	 * 变量占位符结束位，默认：}
-	 */
+ * Implementation of variable replace s a x handler extending SAXHandler.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	protected String placeholderEnd = "}";
 	/**
-	 * SPEL表达式占位符开始位，默认：#{
-	 */
+ * Implementation of variable replace s a x handler extending SAXHandler.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	protected String spelExpressionStart = "#{";
 	/**
-	 * SPEL表达式占位符结束位，默认：}
-	 */
+ * Implementation of variable replace s a x handler extending SAXHandler.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	protected String spelExpressionEnd = "}";
 	/**
-	 * 变量集合
-	 */
+ * Implementation of variable replace s a x handler extending SAXHandler.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	protected Map<String, Object> variables;
 	/**
-	 * Ognl上下文对象
-	 */
+ * Implementation of variable replace s a x handler extending SAXHandler.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	protected OgnlContext context;
 
 	public VariableReplaceSAXHandler(Map<String, Object> variables) throws SAXException {

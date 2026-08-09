@@ -22,8 +22,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- * 处理文件压缩
- * @author <a href="https://github.com/easy-4-java">hiwepy</a>
+ * Implementation of zip folder helper functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 class ZipFolderHelper {   
 	

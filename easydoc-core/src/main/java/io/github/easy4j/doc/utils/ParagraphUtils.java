@@ -23,8 +23,9 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 
 /**
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of paragraph utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class ParagraphUtils {
 	

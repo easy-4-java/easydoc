@@ -34,8 +34,9 @@ import webit.script.CFG;
 import webit.script.Engine;
 
 /**
- * 该模板仅负责使用Webit模板引擎将指定模板生成HTML并将HTML转换成XHTML后，作为模板生成WordprocessingMLPackage对象
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of wordprocessing m l webit template functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class WordprocessingMLWebitTemplate implements WordprocessingMLTemplate {
 	
@@ -65,12 +66,10 @@ public class WordprocessingMLWebitTemplate implements WordprocessingMLTemplate {
 	}
 
 	/**
-	 * 使用Webit模板引擎渲染模板
-	 * @param template ：模板内容
-	 * @param variables ：变量
-	 * @return {@link WordprocessingMLPackage} 对象
-	 * @throws Exception ：异常对象
-	 */
+ * Implementation of wordprocessing m l webit template functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	@Override
 	public WordprocessingMLPackage process(String template, Map<String, Object> variables) throws Exception {
 		//创建模板输出内容接收对象

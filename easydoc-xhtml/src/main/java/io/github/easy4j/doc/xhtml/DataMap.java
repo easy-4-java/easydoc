@@ -23,9 +23,9 @@ import java.util.Map;
 import org.jsoup.Connection.KeyVal;
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of data map functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class DataMap {
 

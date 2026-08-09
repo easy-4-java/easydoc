@@ -35,8 +35,9 @@ import io.github.easy4j.doc.WordprocessingMLTemplate;
 import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
 
 /**
- * 该模板仅负责使用Velocity模板引擎将指定模板生成HTML并将HTML转换成XHTML后，作为模板生成WordprocessingMLPackage对象
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of wordprocessing m l velocity template functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class WordprocessingMLVelocityTemplate implements WordprocessingMLTemplate {
 	
@@ -67,12 +68,10 @@ public class WordprocessingMLVelocityTemplate implements WordprocessingMLTemplat
 	}
 	
 	/**
-	 * 使用Velocity模板引擎渲染模板
-	 * @param template ：模板内容
-	 * @param variables ：变量
-	 * @return {@link WordprocessingMLPackage} 对象
-	 * @throws Exception ：异常对象
-	 */
+ * Implementation of wordprocessing m l velocity template functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	@Override
 	public WordprocessingMLPackage process(String template, Map<String, Object> variables) throws Exception {
 		//设置Velocity上下文对象

@@ -18,51 +18,69 @@ import org.docx4j.XmlUtils;
 public class DocxVariableClearUtils {
 
 	/**
-	 * 去任意XML标签
-	 */
+ * Implementation of docx variable clear utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	private static final Pattern XML_PATTERN = Pattern.compile("<[^>]*>");
 
 	private DocxVariableClearUtils() {
 	}
 
 	/**
-	 * start符号
-	 */
+ * Implementation of docx variable clear utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	private static final char PREFIX = '$';
 
 	/**
-	 * 中包含
-	 */
+ * Implementation of docx variable clear utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	private static final char LEFT_BRACE = '{';
 
 	/**
-	 * 结尾
-	 */
+ * Implementation of docx variable clear utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	private static final char RIGHT_BRACE = '}';
 
 	/**
-	 * 未开始
-	 */
+ * Implementation of docx variable clear utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	private static final int NONE_START = -1;
 
 	/**
-	 * 未开始
-	 */
+ * Implementation of docx variable clear utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	private static final int NONE_START_INDEX = -1;
 
 	/**
-	 * 开始
-	 */
+ * Implementation of docx variable clear utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	private static final int PREFIX_STATUS = 1;
 
 	/**
-	 * 左括号
-	 */
+ * Implementation of docx variable clear utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	private static final int LEFT_BRACE_STATUS = 2;
 
 	/**
-	 * 右括号
-	 */
+ * Implementation of docx variable clear utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	private static final int RIGHT_BRACE_STATUS = 3;
 
 	/*

@@ -21,9 +21,9 @@ import org.docx4j.openpackaging.packages.OpcPackage;
 import org.docx4j.openpackaging.parts.Part;
 
 /**
- * Class for OutputConversionHyperlinkHandler.
+ * Implementation of output conversion hyperlink handler functionality.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class OutputConversionHyperlinkHandler implements ConversionHyperlinkHandler {
 

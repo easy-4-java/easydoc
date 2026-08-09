@@ -20,8 +20,9 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of config utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class ConfigUtils {
 

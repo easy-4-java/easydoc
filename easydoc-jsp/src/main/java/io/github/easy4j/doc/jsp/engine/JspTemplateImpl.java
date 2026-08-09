@@ -35,9 +35,9 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import org.apache.commons.io.IOUtils;
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of jsp template impl functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class JspTemplateImpl implements JspTemplate {
 	
@@ -77,27 +77,37 @@ public class JspTemplateImpl implements JspTemplate {
 
     private void doInterpret(String requestURL,Map<String, Object> variables, OutputStream output) throws IOException, ServletException {
     	/**
-         * 创建ServletContext对象，用于获取RequestDispatcher对象
-         */
+ * Implementation of jsp template impl functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
         ServletContext sc = request.getSession().getServletContext();
         /**
-         * 根据传过来的相对文件路径，生成一个reqeustDispatcher的包装类
-         */
+ * Implementation of jsp template impl functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
         RequestDispatcher rd = sc.getRequestDispatcher(requestURL);
         /**
-         * 创建一个ByteArrayOutputStream的字节数组输出流,用来存放输出的信息
-         */
+ * Implementation of jsp template impl functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
          
         /**
-         * ServletOutputStream是抽象类，必须实现write的方法
-         */
+ * Implementation of jsp template impl functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
         final ServletOutputStream outputStream = new ServletOutputStream(){
             
             public void write(int b) throws IOException {
                 /**
-                 * 将指定的字节写入此字节输出流
-                 */
+ * Implementation of jsp template impl functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
                 baos.write(b);
             }
 
@@ -108,40 +118,47 @@ public class JspTemplateImpl implements JspTemplate {
 
         }; 
         /**
-         * 通过现有的 OutputStream 创建新的 PrintWriter
-         * OutputStreamWriter 是字符流通向字节流的桥梁：可使用指定的 charset 将要写入流中的字符编码成字节
-         */
+ * Implementation of jsp template impl functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
         final PrintWriter pw = new PrintWriter(new OutputStreamWriter(baos, config.getOutputEncoding() ),true);
         /**
-         * 生成HttpServletResponse的适配器，用来包装response
-         */
+ * Implementation of jsp template impl functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
         HttpServletResponse resp = new HttpServletResponseWrapper(response){
             /**
-             * 调用getOutputStream的方法(此方法是ServletResponse中已有的)返回ServletOutputStream的对象
-             * 用来在response中返回一个二进制输出对象
-             * 此方法目的是把源文件写入byteArrayOutputStream
-             */
+ * Implementation of jsp template impl functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
             public ServletOutputStream getOutputStream(){
                 return outputStream;
             }
              
             /**
-             * 再调用getWriter的方法(此方法是ServletResponse中已有)返回PrintWriter的对象
-             * 此方法用来发送字符文本到客户端
-             */
+ * Implementation of jsp template impl functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
             public PrintWriter getWriter(){
                 return pw;
             }
         }; 
         /**
-         * 在不跳转下访问目标jsp。 就是利用RequestDispatcher.include(ServletRequest request,
-         * ServletResponse response)。 该方法把RequestDispatcher指向的目标页面写到response中。
-         */
+ * Implementation of jsp template impl functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
         rd.include(request, resp);
         pw.flush();
         /**
-         * 使用ByteArrayOutputStream的writeTo方法来向文本输出流写入数据，这也是为什么要使用ByteArray的一个原因
-         */
+ * Implementation of jsp template impl functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
         baos.writeTo(output);
     }
     

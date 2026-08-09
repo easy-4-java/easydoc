@@ -113,9 +113,9 @@ import org.docx4j.wml.UnderlineEnumeration;
  */
 @SuppressWarnings("unchecked")
 /**
- * Class for WmlElementUtils.
+ * Implementation of wml element utils functionality.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public final class WmlElementUtils {
 
@@ -259,12 +259,10 @@ public final class WmlElementUtils {
     } 
 
     /**
-     * 插入图片
-     * @param wPackage
-     * @param bm
-     * @param file
-     * @throws Exception 
-     */
+ * Implementation of wml element utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	public static void addImage(WordprocessingMLPackage wPackage, CTBookmark bm, String file) throws Exception {
 		// 这儿可以对单个书签进行操作，也可以用一个map对所有的书签进行处理
 		// 获取该书签的父级段落
@@ -327,8 +325,10 @@ public final class WmlElementUtils {
 
     /*------------------------------------other--------------------------------------------------- */
     /**
-     * @Description:新增超链接
-     */
+ * Implementation of wml element utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public void createHyperlink(WordprocessingMLPackage wordMLPackage, MainDocumentPart mainPart, ObjectFactory factory,
             P paragraph, String url, String value, String cnFontName, String enFontName, String fontSize)
             throws Exception {
@@ -380,8 +380,10 @@ public final class WmlElementUtils {
     }
 
     /**
-     * @Description:得到指定类型的元素
-     */
+ * Implementation of wml element utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public static List<Object> getAllElementFromObject(Object obj, Class<?> toSearch) {
         List<Object> result = new ArrayList<Object>();
         if (obj instanceof JAXBElement)
@@ -398,22 +400,28 @@ public final class WmlElementUtils {
     }
 
     /**
-     * @Description:保存WordprocessingMLPackage
-     */
+ * Implementation of wml element utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public void saveWordPackage(WordprocessingMLPackage wordPackage, File file) throws Exception {
         wordPackage.save(file);
     }
 
     /**
-     * @Description:新建WordprocessingMLPackage
-     */
+ * Implementation of wml element utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public static WordprocessingMLPackage createWordprocessingMLPackage() throws Exception {
         return WordprocessingMLPackage.createPackage();
     }
 
     /**
-     * @Description:加载带密码WordprocessingMLPackage
-     */
+ * Implementation of wml element utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public static WordprocessingMLPackage loadWordprocessingMLPackageWithPwd(String filePath, String password)
             throws Exception {
         OpcPackage opcPackage = WordprocessingMLPackage.load(new java.io.File(filePath), password);
@@ -422,8 +430,10 @@ public final class WmlElementUtils {
     }
 
     /**
-     * @Description:加载WordprocessingMLPackage
-     */
+ * Implementation of wml element utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public static WordprocessingMLPackage loadWordprocessingMLPackage(String filePath) throws Exception {
         WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load(new java.io.File(filePath));
         return wordMLPackage;
@@ -431,8 +441,10 @@ public final class WmlElementUtils {
 
     /*------------------------------------Word 表格相关--------------------------------------------------- */
     /**
-     * @Description: 跨列合并
-     */
+ * Implementation of wml element utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public static void mergeCellsHorizontalByGridSpan(Tbl tbl, int row, int fromCell, int toCell) {
         if (row < 0 || fromCell < 0 || toCell < 0) {
             return;
@@ -460,8 +472,10 @@ public final class WmlElementUtils {
     }
 
     /**
-     * @Description: 跨列合并
-     */
+ * Implementation of wml element utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public static void mergeCellsHorizontal(Tbl tbl, int row, int fromCell, int toCell) {
         if (row < 0 || fromCell < 0 || toCell < 0) {
             return;
@@ -489,8 +503,10 @@ public final class WmlElementUtils {
     }
  
     /**
-     * @Description: 跨行合并
-     */
+ * Implementation of wml element utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public static void mergeCellsVertically(Tbl tbl, int col, int fromRow, int toRow) {
         if (col < 0 || fromRow < 0 || toRow < 0) {
             return;
@@ -515,8 +531,10 @@ public final class WmlElementUtils {
     }
 
     /**
-     * @Description:得到指定位置的单元格
-     */
+ * Implementation of wml element utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public static Tc getTc(Tbl tbl, int row, int cell) {
         if (row < 0 || cell < 0) {
             return null;

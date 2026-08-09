@@ -28,9 +28,9 @@ import io.github.easy4j.doc.jsp.engine.runtime.OriginalStream;
 
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of jsp writer functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public abstract class JspWriter implements OriginalStream, Closeable, Flushable {
 
@@ -80,16 +80,18 @@ public abstract class JspWriter implements OriginalStream, Closeable, Flushable 
     }
 
     /**
-     * 获取原始的输入流 OutputStream/Writer.
-     *
-     * @return {OutputStream/Writer}
-     */
+ * Implementation of jsp writer functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     @Override
     public abstract Object getOriginStream();
 
     /**
-     * 是 OutputStream 还是 Writer
-     */
+ * Implementation of jsp writer functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
     public abstract boolean isStreaming();
 
     public abstract Charset getCharset();
