@@ -19,9 +19,9 @@ import java.io.File;
 import java.io.FileFilter;
 
 /**
- * Class for OutputDirFilterHandler.
+ * Implementation of output dir filter handler functionality.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class OutputDirFilterHandler implements FileFilter {
 

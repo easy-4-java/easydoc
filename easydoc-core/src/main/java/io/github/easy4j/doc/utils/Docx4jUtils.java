@@ -39,8 +39,9 @@ import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.CTAltChunk;
 
 /**
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of docx4j utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class Docx4jUtils {
 

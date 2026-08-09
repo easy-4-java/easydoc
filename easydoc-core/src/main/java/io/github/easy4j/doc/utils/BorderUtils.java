@@ -22,8 +22,9 @@ import org.docx4j.wml.STBorder;
 import org.docx4j.wml.TblBorders;
 
 /**
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of border utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class BorderUtils {
 	

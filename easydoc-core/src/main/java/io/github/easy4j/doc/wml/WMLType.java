@@ -16,8 +16,9 @@
 package io.github.easy4j.doc.wml;
 
 /**
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Enumeration defining WMLType constants.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public enum WMLType {
 

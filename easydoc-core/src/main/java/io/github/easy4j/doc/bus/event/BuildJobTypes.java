@@ -18,9 +18,9 @@ package io.github.easy4j.doc.bus.event;
 import org.docx4j.events.JobIdentifier;
 
 /**
- * Enum for BuildJobTypes.
+ * Enumeration defining BuildJobTypes constants.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public enum BuildJobTypes implements JobIdentifier {
 			

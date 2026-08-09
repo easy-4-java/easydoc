@@ -52,9 +52,9 @@ import java.util.Map;
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 /**
- * Abstract class for Assert.
+ * Implementation of assert functionality.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public abstract class Assert {
 

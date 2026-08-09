@@ -22,9 +22,9 @@ import org.docx4j.events.ProcessStep;
 import org.docx4j.events.StartEvent;
 
 /**
- * Class for BuildFinishedEvent.
+ * Implementation of build finished event extending EventFinished.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class BuildFinishedEvent extends EventFinished {
 

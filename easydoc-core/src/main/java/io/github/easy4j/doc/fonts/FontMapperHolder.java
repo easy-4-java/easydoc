@@ -19,9 +19,9 @@ import org.docx4j.fonts.Mapper;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 
 /**
- * Class for FontMapperHolder.
+ * Implementation of font mapper holder functionality.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class FontMapperHolder {
 

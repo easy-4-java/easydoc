@@ -44,8 +44,9 @@ import org.docx4j.wml.Text;
 import org.docx4j.wml.Tr;
 
 /**
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of wordprocessing m l package render functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class WordprocessingMLPackageRender {
 

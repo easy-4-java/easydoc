@@ -28,8 +28,9 @@ import org.docx4j.wml.Tc;
 import org.docx4j.wml.Tr;
 
 /**
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of docx element wml render functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class DocxElementWmlRender {
 	

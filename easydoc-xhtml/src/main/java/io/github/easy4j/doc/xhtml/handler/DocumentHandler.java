@@ -24,9 +24,9 @@ import io.github.easy4j.doc.xhtml.DataMap;
 import org.jsoup.nodes.Document;
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Contract interface for DocumentHandler operations.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public interface DocumentHandler {
 	

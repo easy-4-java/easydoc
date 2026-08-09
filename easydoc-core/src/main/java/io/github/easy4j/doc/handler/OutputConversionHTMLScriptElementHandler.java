@@ -21,9 +21,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of output conversion h t m l script element handler functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class OutputConversionHTMLScriptElementHandler implements ConversionHTMLScriptElementHandler {
 

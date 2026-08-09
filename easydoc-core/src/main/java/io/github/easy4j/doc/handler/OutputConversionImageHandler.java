@@ -19,9 +19,9 @@ import org.docx4j.convert.out.html.HTMLConversionImageHandler;
 
 
 /**
- * Class for OutputConversionImageHandler.
+ * Implementation of output conversion image handler extending HTMLConversionImageHandler.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class OutputConversionImageHandler extends HTMLConversionImageHandler {
 

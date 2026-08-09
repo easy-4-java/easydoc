@@ -20,9 +20,9 @@ import ognl.Ognl;
 import ognl.OgnlContext;
 
 /**
- * Class for VariableReplaceSaTXHandler.
+ * Implementation of variable replace sa t x handler extending StAXHandlerAbstract.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class VariableReplaceSaTXHandler extends StAXHandlerAbstract {
 	

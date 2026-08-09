@@ -18,9 +18,9 @@ package io.github.easy4j.doc.fonts;
 import java.net.URL;
 
 /**
- * Enum for ChineseFont.
+ * Enumeration defining ChineseFont constants.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public enum ChineseFont {
 	

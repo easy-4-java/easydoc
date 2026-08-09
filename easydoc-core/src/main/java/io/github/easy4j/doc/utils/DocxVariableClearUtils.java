@@ -18,8 +18,10 @@ import org.docx4j.XmlUtils;
 public class DocxVariableClearUtils {
 
 	/**
-	 * 去任意XML标签
-	 */
+ * Implementation of docx variable clear utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
+ */
 	private static final Pattern XML_PATTERN = Pattern.compile("<[^>]*>");
 
 	private DocxVariableClearUtils() {

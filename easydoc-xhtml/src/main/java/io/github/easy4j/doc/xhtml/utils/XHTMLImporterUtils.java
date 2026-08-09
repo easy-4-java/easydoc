@@ -30,9 +30,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Entities;
 
 /**
- * Class for XHTMLImporterUtils.
+ * Implementation of x h t m l importer utils functionality.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class XHTMLImporterUtils {
 

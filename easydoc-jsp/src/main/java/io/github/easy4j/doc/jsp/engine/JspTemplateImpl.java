@@ -35,9 +35,9 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import org.apache.commons.io.IOUtils;
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of jsp template impl functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class JspTemplateImpl implements JspTemplate {
 	

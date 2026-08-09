@@ -25,9 +25,9 @@ import javax.servlet.http.HttpServletResponse;
 import io.github.easy4j.doc.utils.PathUtils;
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of jsp engine impl extending JspEngine.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class JspEngineImpl extends JspEngine{
 

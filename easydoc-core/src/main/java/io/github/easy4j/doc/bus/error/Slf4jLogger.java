@@ -22,8 +22,9 @@ import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 import net.engio.mbassy.bus.error.PublicationError;
 
 /**
- * Slf4j记录事件错误信息
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of slf4j logger functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class Slf4jLogger implements IPublicationErrorHandler {
 

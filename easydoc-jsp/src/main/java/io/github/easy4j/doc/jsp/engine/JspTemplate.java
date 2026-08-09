@@ -23,9 +23,9 @@ import java.util.Map;
 import javax.servlet.ServletException;
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Contract interface for JspTemplate operations.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public interface JspTemplate {
 

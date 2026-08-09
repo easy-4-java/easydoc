@@ -24,8 +24,9 @@ import org.docx4j.Docx4J;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 
 /**
- * 模板处理接口
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Contract interface for WordprocessingMLTemplate operations.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public interface WordprocessingMLTemplate {
 	

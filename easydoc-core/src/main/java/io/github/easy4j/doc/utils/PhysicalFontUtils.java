@@ -27,8 +27,9 @@ import org.docx4j.wml.RFonts;
 import org.docx4j.wml.RPr;
 
 /**
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of physical font utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class PhysicalFontUtils {
 

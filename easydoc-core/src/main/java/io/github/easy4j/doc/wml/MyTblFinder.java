@@ -22,9 +22,9 @@ import org.docx4j.TraversalUtil.CallbackImpl;
 import org.docx4j.wml.Tbl;  
   
 /**
- * Class for MyTblFinder.
+ * Implementation of my tbl finder extending CallbackImpl.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class MyTblFinder extends CallbackImpl { 
 	

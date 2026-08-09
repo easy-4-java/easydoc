@@ -25,9 +25,9 @@ import java.net.URL;
 import java.util.LinkedList;
 
 /**
- * Class for PathUtils.
+ * Implementation of path utils functionality.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public final class PathUtils {
 

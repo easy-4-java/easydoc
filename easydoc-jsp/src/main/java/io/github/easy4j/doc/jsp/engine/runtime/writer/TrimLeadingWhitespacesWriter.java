@@ -21,9 +21,9 @@ import java.io.Writer;
 import io.github.easy4j.doc.jsp.engine.runtime.OriginalStream;
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of trim leading whitespaces writer extending Writer.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class TrimLeadingWhitespacesWriter extends Writer implements OriginalStream {
     private final Writer out;

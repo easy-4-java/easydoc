@@ -38,8 +38,9 @@ import org.thymeleaf.templateresolver.FileTemplateResolver;
 import org.thymeleaf.templateresolver.UrlTemplateResolver;
 
 /**
- * 该模板仅负责使用Thymeleaf模板引擎将指定模板生成HTML并将HTML转换成XHTML后，作为模板生成WordprocessingMLPackage对象
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of wordprocessing m l thymeleaf template functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class WordprocessingMLThymeleafTemplate implements WordprocessingMLTemplate {
 	

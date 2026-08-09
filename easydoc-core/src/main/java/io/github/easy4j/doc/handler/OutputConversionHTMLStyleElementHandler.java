@@ -30,9 +30,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Class for OutputConversionHTMLStyleElementHandler.
+ * Implementation of output conversion h t m l style element handler functionality.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class OutputConversionHTMLStyleElementHandler implements ConversionHTMLStyleElementHandler {
 

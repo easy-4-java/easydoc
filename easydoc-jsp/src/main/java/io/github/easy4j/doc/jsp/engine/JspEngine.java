@@ -22,10 +22,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 
- * TODO
- * 
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of jsp engine functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public abstract class JspEngine {
 
