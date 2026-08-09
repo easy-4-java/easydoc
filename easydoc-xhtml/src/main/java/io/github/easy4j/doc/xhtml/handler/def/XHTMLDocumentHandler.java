@@ -30,9 +30,9 @@ import org.jsoup.nodes.Document.OutputSettings;
 import org.jsoup.safety.Safelist;
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of x h t m l document handler functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class XHTMLDocumentHandler implements DocumentHandler {
 

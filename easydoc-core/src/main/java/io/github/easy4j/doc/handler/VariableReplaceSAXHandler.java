@@ -17,9 +17,9 @@ import ognl.Ognl;
 import ognl.OgnlContext;
 
 /**
- * Class for VariableReplaceSAXHandler.
+ * Implementation of variable replace s a x handler extending SAXHandler.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class VariableReplaceSAXHandler extends SAXHandler implements ContentHandler {
 	

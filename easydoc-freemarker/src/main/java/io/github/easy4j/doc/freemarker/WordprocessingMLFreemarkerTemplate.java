@@ -50,8 +50,9 @@ import freemarker.template.utility.HtmlEscape;
 import freemarker.template.utility.XmlEscape;
 
 /**
- * 该模板仅负责使用Freemarker模板引擎将指定模板生成HTML并将HTML转换成XHTML后，作为模板生成WordprocessingMLPackage对象
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of wordprocessing m l freemarker template functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class WordprocessingMLFreemarkerTemplate implements WordprocessingMLTemplate {
 	

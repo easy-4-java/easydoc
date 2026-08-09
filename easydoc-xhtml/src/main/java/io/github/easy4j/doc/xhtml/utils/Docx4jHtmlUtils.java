@@ -25,8 +25,9 @@ import io.github.easy4j.doc.io.WordprocessingMLPackageWriter;
 import io.github.easy4j.doc.xhtml.io.WordprocessingMLPackageBuilder;
 
 /**
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of docx4j html utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class Docx4jHtmlUtils {
 

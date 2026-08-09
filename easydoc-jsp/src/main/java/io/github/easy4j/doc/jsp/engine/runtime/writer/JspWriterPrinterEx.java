@@ -20,9 +20,9 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of jsp writer printer ex functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public final class JspWriterPrinterEx extends JspWriter {
 	

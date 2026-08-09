@@ -20,8 +20,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of array utils extending org.apache.commons.lang3.ArrayUtils.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class ArrayUtils extends org.apache.commons.lang3.ArrayUtils {
 

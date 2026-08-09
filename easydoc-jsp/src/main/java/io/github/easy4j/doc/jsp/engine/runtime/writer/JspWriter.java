@@ -28,9 +28,9 @@ import io.github.easy4j.doc.jsp.engine.runtime.OriginalStream;
 
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of jsp writer functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public abstract class JspWriter implements OriginalStream, Closeable, Flushable {
 

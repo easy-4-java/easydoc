@@ -25,9 +25,9 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 
 /**
- * Class for WordprocessingMLPackageExtractor.
+ * Implementation of wordprocessing m l package extractor functionality.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class WordprocessingMLPackageExtractor {
 

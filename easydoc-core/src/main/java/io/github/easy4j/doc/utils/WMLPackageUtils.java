@@ -37,8 +37,9 @@ import org.docx4j.wml.ParaRPr;
 import org.docx4j.wml.Text;
 
 /**
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of w m l package utils functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class WMLPackageUtils {
 	

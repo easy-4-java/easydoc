@@ -113,9 +113,9 @@ import org.docx4j.wml.UnderlineEnumeration;
  */
 @SuppressWarnings("unchecked")
 /**
- * Class for WmlElementUtils.
+ * Implementation of wml element utils functionality.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public final class WmlElementUtils {
 

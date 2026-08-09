@@ -23,8 +23,9 @@ import java.util.Properties;
 import io.github.easy4j.doc.utils.StringUtils;
 
 /**
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of jsp config functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class JspConfig {
 

@@ -20,8 +20,9 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.ObjectFactory;
 
 /**
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of paragraph wml render functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class ParagraphWmlRender {
 

@@ -17,9 +17,9 @@ package io.github.easy4j.doc;
 
 
 /**
- * Class for Docx4jConstants.
+ * Implementation of docx4j constants functionality.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public final class Docx4jConstants {
 	

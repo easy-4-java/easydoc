@@ -43,9 +43,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for WordprocessingMLPackageWriter.
+ * Implementation of wordprocessing m l package writer functionality.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class WordprocessingMLPackageWriter  {
 	

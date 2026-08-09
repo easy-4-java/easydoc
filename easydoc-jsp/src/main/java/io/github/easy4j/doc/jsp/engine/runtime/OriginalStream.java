@@ -16,9 +16,9 @@
 package io.github.easy4j.doc.jsp.engine.runtime;
 
 /**
- * Interface for OriginalStream.
+ * Contract interface for OriginalStream operations.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public interface OriginalStream {
 

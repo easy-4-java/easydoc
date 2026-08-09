@@ -21,9 +21,9 @@ import org.docx4j.events.ProcessStep;
 import org.docx4j.events.StartEvent;
 
 /**
- * Class for BuildStartEvent.
+ * Implementation of build start event extending StartEvent.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class BuildStartEvent extends StartEvent {
 

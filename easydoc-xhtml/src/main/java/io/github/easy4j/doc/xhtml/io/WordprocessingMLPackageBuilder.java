@@ -34,9 +34,9 @@ import io.github.easy4j.doc.xhtml.utils.XHTMLImporterUtils;
 import org.jsoup.nodes.Document;
 
 /**
- * Class for WordprocessingMLPackageBuilder.
+ * Implementation of wordprocessing m l package builder functionality.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class WordprocessingMLPackageBuilder {
 

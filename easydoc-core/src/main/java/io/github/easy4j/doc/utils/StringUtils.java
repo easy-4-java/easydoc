@@ -21,8 +21,9 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of string utils extending org.apache.commons.lang3.StringUtils.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class StringUtils extends org.apache.commons.lang3.StringUtils {
 	

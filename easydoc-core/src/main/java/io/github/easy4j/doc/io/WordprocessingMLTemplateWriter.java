@@ -35,9 +35,9 @@ import io.github.easy4j.doc.Docx4jConstants;
 import io.github.easy4j.doc.utils.Assert;
 
 /**
- * Class for WordprocessingMLTemplateWriter.
+ * Implementation of wordprocessing m l template writer functionality.
  *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public class WordprocessingMLTemplateWriter {
 

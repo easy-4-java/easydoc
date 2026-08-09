@@ -21,9 +21,9 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of jsp writer printer functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public final class JspWriterPrinter extends JspWriter {
     private final Writer os;

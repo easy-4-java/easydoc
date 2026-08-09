@@ -16,9 +16,9 @@
 package io.github.easy4j.doc.jsp.engine;
 
 /**
- * 
- * TODO
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * Implementation of jsp template option functionality.
+ *
+ * [@Loong Wan](https://github.com/loong10k)
  */
 public final class JspTemplateOption {
 }
