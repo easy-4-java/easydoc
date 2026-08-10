@@ -507,43 +507,44 @@
 
     <!-- 版本属性定义：Java 版本、依赖版本与 Maven 插件版本统一管理 -->
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <antlr4.version>4.7.1</antlr4.version>
-        <beetl.version>3.1.3.RELEASE</beetl.version>
-        <commons-beanutils.version>1.11.0</commons-beanutils.version>
-        <commons-lang3.version>3.20.0</commons-lang3.version>
-        <commons-logging.version>1.2</commons-logging.version>
-        <commons-io.version>2.22.0</commons-io.version>
-        <docx4j.version>8.3.15</docx4j.version>
-        <docx4j-export-fo.version>8.3.15</docx4j-export-fo.version>
-        <docx4j-importxhtml.version>8.3.15</docx4j-importxhtml.version>
-        <docx4j-xhtmlrenderer.version>3.0.0</docx4j-xhtmlrenderer.version>
-        <docx4j-jaxb.version>${docx4j.version}</docx4j-jaxb.version>
-        <docx4j-openxml.version>${docx4j.version}</docx4j-openxml.version>
-        <freemarker.version>2.3.29</freemarker.version>
-        <httl.version>1.0.12</httl.version>
-        <jackson.version>2.17.2</jackson.version>
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <jaxb-impl.version>2.3.9</jaxb-impl.version>
+        <maven.version>3.0</maven.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Dependency versions -->
+        <antlr4.version>4.7.1</antlr4.version>
+        <assertj.version>3.27.3</assertj.version>
+        <beetl.version>3.1.3.RELEASE</beetl.version>
+        <commons-beanutils.version>1.11.0</commons-beanutils.version>
+        <commons-io.version>2.22.0</commons-io.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
+        <commons-logging.version>1.2</commons-logging.version>
+        <docx4j-export-fo.version>8.3.15</docx4j-export-fo.version>
+        <docx4j-importxhtml.version>8.3.15</docx4j-importxhtml.version>
+        <docx4j-jaxb.version>${docx4j.version}</docx4j-jaxb.version>
+        <docx4j-openxml.version>${docx4j.version}</docx4j-openxml.version>
+        <docx4j-xhtmlrenderer.version>3.0.0</docx4j-xhtmlrenderer.version>
+        <docx4j.version>8.3.15</docx4j.version>
+        <freemarker.version>2.3.29</freemarker.version>
+        <httl.version>1.0.12</httl.version>
+        <jackson.version>2.17.2</jackson.version>
         <javax-activation.version>1.1.1</javax-activation.version>
         <javax.mail-api.version>1.6.2</javax.mail-api.version>
+        <jaxb-impl.version>2.3.9</jaxb-impl.version>
         <jetbrick.version>2.1.10</jetbrick.version>
         <jsoup.version>1.13.1</jsoup.version>
-        <junit.version>4.13.2</junit.version>
         <junit-jupiter.version>5.11.4</junit-jupiter.version>
-        <assertj.version>3.27.3</assertj.version>
+        <junit.version>4.13.2</junit.version>
         <ognl.version>3.2.13</ognl.version>
         <persistence.version>2.7.6</persistence.version>
         <rythm.version>1.3.0</rythm.version>
         <servlet-api.version>3.0.1</servlet-api.version>
         <slf4j.version>2.0.18</slf4j.version>
         <thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
-        <velocity.version>2.2</velocity.version>
         <velocity-tools.version>2.0</velocity-tools.version>
+        <velocity.version>2.2</velocity.version>
         <webit-script.version>1.5.2</webit-script.version>
-        <maven.version>3.0</maven.version>
         <!-- Maven Plugin versions -->
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
         <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
@@ -556,12 +557,12 @@
         <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
         <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
         <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
-        <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
-        <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
-        <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
-        <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
         <maven-nexus-staging-plugin.version>1.7.0</maven-nexus-staging-plugin.version>
         <maven-nexus-yuicompressor-plugin.version>1.1.0</maven-nexus-yuicompressor-plugin.version>
+        <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
+        <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
+        <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+        <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
         <maven-war-plugin.version>3.2.2</maven-war-plugin.version>
     </properties>
 
