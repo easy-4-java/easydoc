@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -37,7 +37,7 @@ import org.apache.commons.io.IOUtils;
 /**
  * Implementation of jsp template impl functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class JspTemplateImpl implements JspTemplate {
 	
@@ -79,26 +79,26 @@ public class JspTemplateImpl implements JspTemplate {
     	/**
  * Implementation of jsp template impl functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
         ServletContext sc = request.getSession().getServletContext();
         /**
  * Implementation of jsp template impl functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
         RequestDispatcher rd = sc.getRequestDispatcher(requestURL);
         /**
  * Implementation of jsp template impl functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
          
         /**
  * Implementation of jsp template impl functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
         final ServletOutputStream outputStream = new ServletOutputStream(){
             
@@ -106,7 +106,7 @@ public class JspTemplateImpl implements JspTemplate {
                 /**
  * Implementation of jsp template impl functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
                 baos.write(b);
             }
@@ -120,19 +120,19 @@ public class JspTemplateImpl implements JspTemplate {
         /**
  * Implementation of jsp template impl functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
         final PrintWriter pw = new PrintWriter(new OutputStreamWriter(baos, config.getOutputEncoding() ),true);
         /**
  * Implementation of jsp template impl functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
         HttpServletResponse resp = new HttpServletResponseWrapper(response){
             /**
  * Implementation of jsp template impl functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
             public ServletOutputStream getOutputStream(){
                 return outputStream;
@@ -141,7 +141,7 @@ public class JspTemplateImpl implements JspTemplate {
             /**
  * Implementation of jsp template impl functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
             public PrintWriter getWriter(){
                 return pw;
@@ -150,14 +150,14 @@ public class JspTemplateImpl implements JspTemplate {
         /**
  * Implementation of jsp template impl functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
         rd.include(request, resp);
         pw.flush();
         /**
  * Implementation of jsp template impl functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
         baos.writeTo(output);
     }

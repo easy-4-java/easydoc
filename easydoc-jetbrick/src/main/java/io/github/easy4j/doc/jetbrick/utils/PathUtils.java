@@ -31,7 +31,7 @@ import jetbrick.io.resource.Resource;
 /**
  * Implementation of path utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public final class PathUtils {
 
@@ -159,7 +159,7 @@ public final class PathUtils {
     /**
  * Implementation of path utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
     public static String concat(final String parent, final String child) {
         if (parent == null) {
@@ -174,7 +174,7 @@ public final class PathUtils {
     /**
  * Implementation of path utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
     public static String getRelativePath(final String baseFile, final String file) {
         if (file.startsWith("/")) {
@@ -192,7 +192,7 @@ public final class PathUtils {
     /**
  * Implementation of path utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
     public static String separatorsToUnix(String path) {
         if (path == null || path.indexOf('\\') == -1) {
@@ -204,7 +204,7 @@ public final class PathUtils {
     /**
  * Implementation of path utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
     public static String separatorsToWindows(String path) {
         if (path == null || path.indexOf('/') == -1) {
@@ -216,7 +216,7 @@ public final class PathUtils {
     /**
  * Implementation of path utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
     public static String separatorsToSystem(String path) {
         if (path == null) {

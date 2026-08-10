@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of wordprocessing m l package writer functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WordprocessingMLPackageWriter  {
 	
@@ -73,7 +73,7 @@ public class WordprocessingMLPackageWriter  {
 	/**
  * Implementation of wordprocessing m l package writer functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	public File writeToDocx(WordprocessingMLPackage wmlPackage) throws  IOException, Docx4JException{
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
@@ -84,7 +84,7 @@ public class WordprocessingMLPackageWriter  {
 	/**
  * Implementation of wordprocessing m l package writer functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	public File writeToDocx(WordprocessingMLPackage wmlPackage, String outPath) throws  IOException, Docx4JException{
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
@@ -95,7 +95,7 @@ public class WordprocessingMLPackageWriter  {
 	/**
  * Implementation of wordprocessing m l package writer functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	public File writeToDocx(WordprocessingMLPackage wmlPackage, File outFile) throws IOException, Docx4JException {
 		Assert.isTrue( outFile.exists() , " outFile is not founded !");
@@ -106,7 +106,7 @@ public class WordprocessingMLPackageWriter  {
 	/**
  * Implementation of wordprocessing m l package writer functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	public void writeToDocx(WordprocessingMLPackage wmlPackage,OutputStream output) throws IOException, Docx4JException {
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
@@ -121,7 +121,7 @@ public class WordprocessingMLPackageWriter  {
 	/**
  * Implementation of wordprocessing m l package writer functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	public File writeToHtml(WordprocessingMLPackage wmlPackage) throws IOException, Docx4JException{
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
@@ -132,7 +132,7 @@ public class WordprocessingMLPackageWriter  {
 	/**
  * Implementation of wordprocessing m l package writer functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	public File writeToHtml(WordprocessingMLPackage wmlPackage, String outPath) throws  IOException, Docx4JException{
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
@@ -143,7 +143,7 @@ public class WordprocessingMLPackageWriter  {
 	/**
  * Implementation of wordprocessing m l package writer functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	public File writeToHtml(WordprocessingMLPackage wmlPackage,File outFile) throws IOException, Docx4JException {
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
@@ -187,7 +187,7 @@ public class WordprocessingMLPackageWriter  {
 	/**
  * Implementation of wordprocessing m l package writer functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	public File writeToPDF(WordprocessingMLPackage wmlPackage) throws  IOException, Docx4JException{
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
@@ -198,7 +198,7 @@ public class WordprocessingMLPackageWriter  {
 	/**
  * Implementation of wordprocessing m l package writer functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	public File writeToPDF(WordprocessingMLPackage wmlPackage,String outPath) throws  IOException, Docx4JException{
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
@@ -209,7 +209,7 @@ public class WordprocessingMLPackageWriter  {
 	/**
  * Implementation of wordprocessing m l package writer functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	public File writeToPDF(WordprocessingMLPackage wmlPackage,File outFile) throws IOException, Docx4JException {
 		Assert.isTrue( outFile.exists() , " outFile is not founded !");
@@ -220,7 +220,7 @@ public class WordprocessingMLPackageWriter  {
 	/**
  * Implementation of wordprocessing m l package writer functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	public void writeToPDF(WordprocessingMLPackage wmlPackage,OutputStream output) throws IOException, Docx4JException {
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");

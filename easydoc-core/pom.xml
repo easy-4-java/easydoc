@@ -31,7 +31,13 @@
 		</dependency>
 		
 		<!-- ###################### Docx4j ###################### -->
-		
+
+		<!-- JAXB API for JDK 9+ -->
+		<dependency>
+		    <groupId>javax.xml.bind</groupId>
+		    <artifactId>jaxb-api</artifactId>
+		</dependency>
+
 		<!-- Docx4j Core -->
 		<dependency>
 		    <groupId>org.docx4j</groupId>

@@ -19,44 +19,44 @@ import ognl.OgnlContext;
 /**
  * Implementation of variable replace s a x handler extending SAXHandler.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class VariableReplaceSAXHandler extends SAXHandler implements ContentHandler {
 	
 	/**
  * Implementation of variable replace s a x handler extending SAXHandler.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	protected String placeholderStart = "${";
 	/**
  * Implementation of variable replace s a x handler extending SAXHandler.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	protected String placeholderEnd = "}";
 	/**
  * Implementation of variable replace s a x handler extending SAXHandler.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	protected String spelExpressionStart = "#{";
 	/**
  * Implementation of variable replace s a x handler extending SAXHandler.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	protected String spelExpressionEnd = "}";
 	/**
  * Implementation of variable replace s a x handler extending SAXHandler.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	protected Map<String, Object> variables;
 	/**
  * Implementation of variable replace s a x handler extending SAXHandler.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	protected OgnlContext context;
 

@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -30,27 +30,27 @@ import io.github.easy4j.doc.utils.WMLPackageUtils;
 /**
  * Implementation of wordprocessing m l docx sax template functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WordprocessingMLDocxSaxTemplate implements WordprocessingMLTemplate {
 	
 	/**
  * Implementation of wordprocessing m l docx sax template functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	protected String placeholderStart = "${";
 	/**
  * Implementation of wordprocessing m l docx sax template functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	protected String placeholderEnd = "}";
 	
 	/**
  * Implementation of wordprocessing m l docx sax template functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	@Override
 	public WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception{
@@ -81,7 +81,7 @@ public class WordprocessingMLDocxSaxTemplate implements WordprocessingMLTemplate
 	/**
  * Implementation of wordprocessing m l docx sax template functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	@Override
 	public WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception {

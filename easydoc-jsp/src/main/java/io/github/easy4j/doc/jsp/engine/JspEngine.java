@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -24,17 +24,17 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Implementation of jsp engine functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public abstract class JspEngine {
 
-	/*
+	/**
 	 * 获取全局配置信息.
 	 * @return 配置信息
 	 */
 	public abstract JspConfig getConfig();
 
-	/*
+	/**
 	 * 使用用户指定的配置信息，创建 #{link JetEngine} 对象.
 	 * @param config 配置信息
 	 * @return 模板引擎对象
@@ -43,7 +43,7 @@ public abstract class JspEngine {
 		return new JspEngineImpl(new JspConfig(config));
 	}
 
-	/*
+	/**
 	 * 获取模板对象.
 	 * @param name 模板名称
 	 * @return 模板对象

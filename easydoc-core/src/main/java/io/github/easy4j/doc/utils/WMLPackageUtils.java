@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -39,14 +39,14 @@ import org.docx4j.wml.Text;
 /**
  * Implementation of w m l package utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WMLPackageUtils {
 	
 	protected static ObjectFactory factory = Context.getWmlObjectFactory();
 	protected static String CONTENT_TYPE = "";
 	
-    /*
+    /**
      * cleanDocumentPart
      * @param documentPart
      */
@@ -133,7 +133,7 @@ public class WMLPackageUtils {
 	/**
  * Implementation of w m l package utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	public static void replaceText(CTBookmark bm,  Object object) throws Exception {
 		if (object == null) {
@@ -206,7 +206,7 @@ public class WMLPackageUtils {
 	/**
  * Implementation of w m l package utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */  
 	public static byte[] imageToByteArray(File file) throws FileNotFoundException, IOException {  
         InputStream is = new FileInputStream(file );  

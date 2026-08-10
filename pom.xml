@@ -507,7 +507,7 @@
 
     <!-- 版本属性定义：Java 版本、依赖版本与 Maven 插件版本统一管理 -->
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>8</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -743,6 +743,12 @@
                 <groupId>com.googlecode.jaxb-namespaceprefixmapper-interfaces</groupId>
                 <artifactId>JAXBNamespacePrefixMapper</artifactId>
                 <version>${jaxb-namespaceprefixmapper.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>2.3.1</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
             <dependency>

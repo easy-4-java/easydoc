@@ -22,32 +22,32 @@ import ognl.OgnlContext;
 /**
  * Implementation of variable replace sa t x handler extending StAXHandlerAbstract.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class VariableReplaceSaTXHandler extends StAXHandlerAbstract {
 	
 	/**
  * Implementation of variable replace sa t x handler extending StAXHandlerAbstract.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	protected String placeholderStart = "${";
 	/**
  * Implementation of variable replace sa t x handler extending StAXHandlerAbstract.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	protected String placeholderEnd = "}";
 	/**
  * Implementation of variable replace sa t x handler extending StAXHandlerAbstract.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	protected Map<String, Object> variables;
 	/**
  * Implementation of variable replace sa t x handler extending StAXHandlerAbstract.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	protected OgnlContext context;
 	

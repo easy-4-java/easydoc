@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -26,14 +26,14 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 /**
  * Contract interface for WordprocessingMLTemplate operations.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public interface WordprocessingMLTemplate {
 	
 	/**
  * Contract interface for WordprocessingMLTemplate operations.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	default WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception{
 		// Document loading (required)
@@ -53,7 +53,7 @@ public interface WordprocessingMLTemplate {
 	/**
  * Contract interface for WordprocessingMLTemplate operations.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	default WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception{
 		// Document loading (required)
@@ -73,7 +73,7 @@ public interface WordprocessingMLTemplate {
 	/**
  * Contract interface for WordprocessingMLTemplate operations.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	default WordprocessingMLPackage process(String template, Map<String, Object> variables) throws Exception{
 		return this.process(new FileInputStream(template), variables);

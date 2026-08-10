@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -115,7 +115,7 @@ import org.docx4j.wml.UnderlineEnumeration;
 /**
  * Implementation of wml element utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public final class WmlElementUtils {
 
@@ -219,7 +219,7 @@ public final class WmlElementUtils {
   
     
     
-	/*
+	/**
      *  First we create a footer, a paragraph, a run and a text. We add the given
      *  given content to the text and add that to the run. The run is then added to
      *  the paragraph, which is in turn added to the footer. Finally we return the
@@ -239,7 +239,7 @@ public final class WmlElementUtils {
         return footer;
     }
 
-    /*
+    /**
      *  创建一个对象工厂并用它创建一个段落和一个可运行块R. 
      *  然后将可运行块添加到段落中. 接下来创建一个图画并将其添加到可运行块R中. 最后我们将内联 
      *  对象添加到图画中并返回段落对象. 
@@ -261,7 +261,7 @@ public final class WmlElementUtils {
     /**
  * Implementation of wml element utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	public static void addImage(WordprocessingMLPackage wPackage, CTBookmark bm, String file) throws Exception {
 		// 这儿可以对单个书签进行操作，也可以用一个map对所有的书签进行处理
@@ -327,7 +327,7 @@ public final class WmlElementUtils {
     /**
  * Implementation of wml element utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
     public void createHyperlink(WordprocessingMLPackage wordMLPackage, MainDocumentPart mainPart, ObjectFactory factory,
             P paragraph, String url, String value, String cnFontName, String enFontName, String fontSize)
@@ -382,7 +382,7 @@ public final class WmlElementUtils {
     /**
  * Implementation of wml element utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
     public static List<Object> getAllElementFromObject(Object obj, Class<?> toSearch) {
         List<Object> result = new ArrayList<Object>();
@@ -402,7 +402,7 @@ public final class WmlElementUtils {
     /**
  * Implementation of wml element utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
     public void saveWordPackage(WordprocessingMLPackage wordPackage, File file) throws Exception {
         wordPackage.save(file);
@@ -411,7 +411,7 @@ public final class WmlElementUtils {
     /**
  * Implementation of wml element utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
     public static WordprocessingMLPackage createWordprocessingMLPackage() throws Exception {
         return WordprocessingMLPackage.createPackage();
@@ -420,7 +420,7 @@ public final class WmlElementUtils {
     /**
  * Implementation of wml element utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
     public static WordprocessingMLPackage loadWordprocessingMLPackageWithPwd(String filePath, String password)
             throws Exception {
@@ -432,7 +432,7 @@ public final class WmlElementUtils {
     /**
  * Implementation of wml element utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
     public static WordprocessingMLPackage loadWordprocessingMLPackage(String filePath) throws Exception {
         WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load(new java.io.File(filePath));
@@ -443,7 +443,7 @@ public final class WmlElementUtils {
     /**
  * Implementation of wml element utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
     public static void mergeCellsHorizontalByGridSpan(Tbl tbl, int row, int fromCell, int toCell) {
         if (row < 0 || fromCell < 0 || toCell < 0) {
@@ -474,7 +474,7 @@ public final class WmlElementUtils {
     /**
  * Implementation of wml element utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
     public static void mergeCellsHorizontal(Tbl tbl, int row, int fromCell, int toCell) {
         if (row < 0 || fromCell < 0 || toCell < 0) {
@@ -505,7 +505,7 @@ public final class WmlElementUtils {
     /**
  * Implementation of wml element utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
     public static void mergeCellsVertically(Tbl tbl, int col, int fromRow, int toRow) {
         if (col < 0 || fromRow < 0 || toRow < 0) {
@@ -533,7 +533,7 @@ public final class WmlElementUtils {
     /**
  * Implementation of wml element utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
     public static Tc getTc(Tbl tbl, int row, int cell) {
         if (row < 0 || cell < 0) {
