@@ -32,7 +32,7 @@ import org.docx4j.wml.R;
  * 
  * @className	： AddingAnInlineImage
  * @description	： 添加图片
- * @author 		： <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @date		： 2017年5月24日 下午10:33:21
  * @version 	V1.0
  */

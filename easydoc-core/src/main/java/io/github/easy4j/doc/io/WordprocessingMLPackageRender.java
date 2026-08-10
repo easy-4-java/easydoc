@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -46,7 +46,7 @@ import org.docx4j.wml.Tr;
 /**
  * Implementation of wordprocessing m l package render functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WordprocessingMLPackageRender {
 
@@ -251,7 +251,7 @@ public class WordprocessingMLPackageRender {
     }
     
     
-    /*
+    /**
      *  Docx4j拥有一个由字节数组创建图片部件的工具方法, 随后将其添加到给定的包中. 为了能将图片添加 
      *  到一个段落中, 我们需要将图片转换成内联对象. 这也有一个方法, 方法需要文件名提示, 替换文本,  
      *  两个id标识符和一个是嵌入还是链接到的指示作为参数. 

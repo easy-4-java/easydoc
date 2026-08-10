@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -109,13 +109,13 @@ import org.docx4j.wml.UnderlineEnumeration;
 
 /**
  * TODO
- * @author <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 @SuppressWarnings("unchecked")
 /**
  * Implementation of wml element utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public final class WmlElementUtils {
 
@@ -219,7 +219,7 @@ public final class WmlElementUtils {
   
     
     
-	/*
+	/**
      *  First we create a footer, a paragraph, a run and a text. We add the given
      *  given content to the text and add that to the run. The run is then added to
      *  the paragraph, which is in turn added to the footer. Finally we return the
@@ -239,7 +239,7 @@ public final class WmlElementUtils {
         return footer;
     }
 
-    /*
+    /**
      *  创建一个对象工厂并用它创建一个段落和一个可运行块R. 
      *  然后将可运行块添加到段落中. 接下来创建一个图画并将其添加到可运行块R中. 最后我们将内联 
      *  对象添加到图画中并返回段落对象. 

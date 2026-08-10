@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -25,13 +25,13 @@ import org.docx4j.wml.R;
 /**
  * Implementation of paragraph utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class ParagraphUtils {
 	
 	protected static ObjectFactory factory = Context.getWmlObjectFactory();
     
-	/*
+	/**
      *  向新的段落中添加内联图片并返回这个段落.
      *  这个方法与前面例子中的方法没有区别.
      * @param inline

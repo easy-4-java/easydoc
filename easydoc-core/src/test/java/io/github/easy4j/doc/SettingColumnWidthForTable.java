@@ -35,7 +35,7 @@ import org.docx4j.wml.Tr;
  * 
  * @className	： SettingColumnWidthForTable
  * @description	： 为表格设置列宽
- * @author 		： <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @date		： 2017年5月24日 下午10:40:04
  * @version 	V1.0
  */

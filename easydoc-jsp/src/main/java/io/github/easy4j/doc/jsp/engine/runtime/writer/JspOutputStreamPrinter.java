@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -22,7 +22,7 @@ import java.nio.charset.Charset;
 /**
  * Implementation of jsp output stream printer extending JspWriter.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class JspOutputStreamPrinter extends JspWriter {
     private final OutputStream os;
