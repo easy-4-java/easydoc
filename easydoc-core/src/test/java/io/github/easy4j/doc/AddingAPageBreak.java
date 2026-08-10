@@ -29,7 +29,7 @@ import org.docx4j.wml.STBrType;
  * @className	： AddingAPageBreak
  * @description	： 添加换页符
 	添加换页符相当地简单。Docx4j拥有一个叫作Br的break对象，这个对象有一个type属性，这种情况下我们需要将其设置为page，type其它可选的值为column和textWrapping。这个break可以很简单地添加到段落中。
- * @author 		： <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @date		： 2017年5月24日 下午10:34:01
  * @version 	V1.0
  */

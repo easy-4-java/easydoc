@@ -33,7 +33,7 @@ import org.docx4j.wml.UnderlineEnumeration;
  * @className	： ChangingTheStyleSheet
  * @description	： 更改默认样式
 	几乎所有的客户都想要他们自己的风格。Word提供了一些默认的样式但它们不够好（注意一下我没有更改两个图像之间的文本，因此图像中的文本并不反映实际的风格）：
- * @author 		： <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @date		： 2017年5月24日 下午10:35:52
  * @version 	V1.0
  */

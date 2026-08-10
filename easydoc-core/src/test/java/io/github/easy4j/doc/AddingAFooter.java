@@ -36,7 +36,7 @@ import org.docx4j.wml.SectPr;
  * @className	： AddingAFooter
  * @description	： 添加页脚或页眉
  *	添加页脚或页眉（或二者兼具）是一个很多客户都想要的特性。幸运的是，做这个并不是很难。这个例子是docx4j示例的一部分，但是我删掉了添加图像的部分只展示最基本的添加页脚部分。添加页眉，你需要做的仅仅是用header来替换footer（或者hdr替换ftr）。
- * @author 		： <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @date		： 2017年5月24日 下午10:32:22
  * @version 	V1.0
  */

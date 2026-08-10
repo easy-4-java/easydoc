@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -23,7 +23,7 @@ import org.w3c.dom.Element;
 /**
  * Implementation of output conversion h t m l script element handler functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class OutputConversionHTMLScriptElementHandler implements ConversionHTMLScriptElementHandler {
 

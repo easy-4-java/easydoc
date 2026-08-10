@@ -535,6 +535,7 @@
         <jackson.version>2.17.2</jackson.version>
         <javax-activation.version>1.1.1</javax-activation.version>
         <javax.mail-api.version>1.6.2</javax.mail-api.version>
+        <jaxb-api.version>2.3.1</jaxb-api.version>
         <jaxb-impl.version>2.3.9</jaxb-impl.version>
         <jetbrick.version>2.1.10</jetbrick.version>
         <jsoup.version>1.13.1</jsoup.version>
@@ -742,7 +743,13 @@
                 <artifactId>JAXBNamespacePrefixMapper</artifactId>
                 <version>${jaxb-namespaceprefixmapper.version}</version>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
+            <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${jaxb-api.version}</version>
+            </dependency>
+                        <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-impl</artifactId>

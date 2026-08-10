@@ -27,7 +27,7 @@ import java.util.LinkedList;
 /**
  * Implementation of path utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public final class PathUtils {
 
@@ -43,7 +43,7 @@ public final class PathUtils {
         }
     }
 
-    /*
+    /**
      * Returns normalized <code>path</code> (or simply the <code>path</code> if
      * it is already in normalized form). Normalized path does not contain any
      * empty or "." segments or ".." segments preceded by other segment than

@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -37,7 +37,7 @@ import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
 /**
  * Implementation of wordprocessing m l velocity template functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WordprocessingMLVelocityTemplate implements WordprocessingMLTemplate {
 	

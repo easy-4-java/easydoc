@@ -42,7 +42,7 @@ import org.docx4j.wml.Text;
  * @className	： AddingPageNrToFooter
  * @description	： 在页脚添加页码
 	我在本博客要讨论的最后一个特性是怎样在我们刚创建的页脚处添加页码。你可能已经知道，在Word中页码是一个域，因此本例或多或少是前面的两个例子的结合：目录表和页脚。
- * @author 		： <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @date		： 2017年5月24日 下午10:35:04
  * @version 	V1.0
  */

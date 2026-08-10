@@ -7,7 +7,7 @@ import javax.xml.bind.JAXBException;
 
 import org.docx4j.XmlUtils;
 
-/*
+/**
 * 清扫 docx4j 模板变量字符,通常以${variable}形式
 * <p>
 * XXX: 主要在上传模板时处理一下, 后续
@@ -20,7 +20,7 @@ public class DocxVariableClearUtils {
 	/**
  * Implementation of docx variable clear utils functionality.
  *
- * [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 	private static final Pattern XML_PATTERN = Pattern.compile("<[^>]*>");
 
@@ -67,7 +67,7 @@ public class DocxVariableClearUtils {
 	 */
 	private static final int RIGHT_BRACE_STATUS = 3;
 
-	/*
+	/**
 	 * doCleanDocumentPart
 	 *
 	 * @param wmlTemplate
