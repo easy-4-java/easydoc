@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.easy4j</groupId>
     <artifactId>easydoc</artifactId>
@@ -9,7 +10,7 @@
     <description>Building doc documents based on xhtml templates using docx4j</description>
     <packaging>pom</packaging>
 
-    
+
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -17,7 +18,7 @@
         </license>
     </licenses>
 
-    
+
     <scm>
         <connection>scm:git:https://github.com/easy-4-java/easydoc.git</connection>
         <developerConnection>scm:git:https://github.com/easy-4-java/easydoc.git</developerConnection>
@@ -25,7 +26,7 @@
         <tag>${project.artifactId}</tag>
     </scm>
 
-    
+
     <developers>
         <developer>
             <name>Loong Wan</name>
@@ -39,8 +40,6 @@
     </developers>
 
 
-
-    
     <!-- 版本属性定义：Java 版本、依赖版本与 Maven 插件版本统一管理 -->
     <properties>
         <!-- ═══ 第一段: 基础属性（自然排序）═══ -->
@@ -107,7 +106,7 @@
         <lombok.version>1.18.46</lombok.version>
     </properties>
 
-    
+
     <distributionManagement>
         <repository>
             <id>2624322-release-6F6h6R</id>
@@ -119,7 +118,7 @@
         </snapshotRepository>
     </distributionManagement>
 
-    
+
     <modules>
         <module>easydoc-beetl</module>
         <module>easydoc-bom</module>
@@ -135,47 +134,46 @@
         <module>easydoc-xhtml</module>
     </modules>
 
-    
+
     <build>
         <pluginManagement>
             <plugins>
 
-                
+
                 <plugin>
-                    
+
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>${maven-clean-plugin.version}</version>
                 </plugin>
 
-                
+
                 <plugin>
-                    
+
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
                     <configuration>
                         <release>${java.version}</release>
-                        
-                        
-                        
+
+
                         <encoding>${project.build.sourceEncoding}</encoding>
-                        
+
                         <maxmem>512M</maxmem>
                     </configuration>
                 </plugin>
 
-                
+
                 <plugin>
-                    
+
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>${maven-deploy-plugin.version}</version>
                 </plugin>
 
-                
+
                 <plugin>
-                    
+
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <version>${maven-enforcer-plugin.version}</version>
@@ -189,13 +187,15 @@
                             <configuration>
                                 <rules>
                                     <requireMavenVersion>
-                                        <message><![CDATA[You are running an older version of Maven. This application requires at least Maven 4.]]></message>
+                                        <message>
+                                            <![CDATA[You are running an older version of Maven. This application requires at least Maven 4.]]></message>
                                         <version>[4.0.0,)</version>
                                     </requireMavenVersion>
                                     <requireJavaVersion>
                                         <message>
-	                                        You are running an older version of Java. This application requires at least JDK ${java.version}.
-										</message>
+                                            You are running an older version of Java. This application requires at least
+                                            JDK ${java.version}.
+                                        </message>
                                         <version>[${java.version}.0,)</version>
                                     </requireJavaVersion>
                                 </rules>
@@ -204,9 +204,9 @@
                     </executions>
                 </plugin>
 
-                
+
                 <plugin>
-                    
+
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
                     <version>${maven-gpg-plugin.version}</version>
@@ -221,17 +221,17 @@
                     </executions>
                 </plugin>
 
-                
+
                 <plugin>
-                    
+
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
                     <version>${maven-install-plugin.version}</version>
                 </plugin>
 
-                
+
                 <plugin>
-                    
+
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>${maven-resources-plugin.version}</version>
@@ -240,9 +240,9 @@
                     </configuration>
                 </plugin>
 
-                
+
                 <plugin>
-                    
+
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
                     <version>${maven-release-plugin.version}</version>
@@ -255,9 +255,9 @@
                     </configuration>
                 </plugin>
 
-                
+
                 <plugin>
-                    
+
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>${maven-source-plugin.version}</version>
@@ -274,17 +274,16 @@
                     </executions>
                 </plugin>
 
-                
+
                 <plugin>
-                    
+
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
                         <skip>false</skip>
                         <skipTests>false</skipTests>
-                        <forkMode>once</forkMode>
-                        <argLine>-Xmx1024m   -Dfile.encoding=UTF-8</argLine>
+                        <argLine>-Xmx1024m -Dfile.encoding=UTF-8</argLine>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/target/test-classes</additionalClasspathElement>
                         </additionalClasspathElements>
@@ -297,9 +296,9 @@
                     </configuration>
                 </plugin>
 
-                
+
                 <plugin>
-                    
+
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${maven-jar-plugin.version}</version>
@@ -314,9 +313,9 @@
                     </configuration>
                 </plugin>
 
-                
+
                 <plugin>
-                    
+
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven-javadoc-plugin.version}</version>
@@ -336,7 +335,7 @@
                     </executions>
                 </plugin>
 
-                
+
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -355,9 +354,9 @@
         </pluginManagement>
         <plugins>
 
-            
+
             <plugin>
-                
+
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${maven-jacoco-plugin.version}</version>
@@ -400,15 +399,15 @@
                 </executions>
             </plugin>
 
-            
+
             <plugin>
-                
+
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <release>${java.version}</release>
-                        
+
                     <parameters>true</parameters>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <maxmem>512M</maxmem>
@@ -424,7 +423,7 @@
         </plugins>
     </build>
 
-    
+
     <profiles>
         <profile>
             <id>disable-javadoc-doclint</id>
@@ -434,93 +433,94 @@
             <properties>
                 <lombok.version>1.18.46</lombok.version>
                 <additionalparam>-Xdoclint:none -Xlint:unchecked</additionalparam>
-                <jaxb-namespaceprefixmapper.version>6.1.0</jaxb-namespaceprefixmapper.version></properties>
+                <jaxb-namespaceprefixmapper.version>6.1.0</jaxb-namespaceprefixmapper.version>
+            </properties>
         </profile>
-        
+
 
         <profile>
             <id>release</id>
             <build>
                 <plugins>
 
-                    
+
                     <plugin>
-                        
+
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-enforcer-plugin</artifactId>
                     </plugin>
 
-                    
+
                     <plugin>
-                        
+
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
                     </plugin>
 
-                    
+
                     <plugin>
-                        
+
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
                     </plugin>
 
-                    
+
                     <plugin>
-                        
+
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                     </plugin>
 
-                    
+
                     <plugin>
-                        
+
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
                     </plugin>
 
-                    
+
                     <plugin>
-                        
+
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
                     </plugin>
 
-                    
+
                     <plugin>
-                        
+
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
                     </plugin>
 
-                    
+
                     <plugin>
-                        
+
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-install-plugin</artifactId>
                     </plugin>
 
-                    
+
                     <plugin>
-                        
+
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                     </plugin>
 
-                    
+
                     <plugin>
-                        
+
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
                     </plugin>
 
-                    
+
                     <plugin>
-                        
+
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-release-plugin</artifactId>
                     </plugin>
 
-                    
+
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -528,16 +528,16 @@
                 </plugins>
             </build>
         </profile>
-        
+
 
         <profile>
             <id>central</id>
             <build>
                 <plugins>
 
-                    
+
                     <plugin>
-                        
+
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>${maven-gpg-plugin.version}</version>
@@ -552,9 +552,9 @@
                         </executions>
                     </plugin>
 
-                    
+
                     <plugin>
-                        
+
                         <groupId>org.sonatype.central</groupId>
                         <artifactId>central-publishing-maven-plugin</artifactId>
                         <version>${maven-central-publishing-plugin.version}</version>
@@ -570,10 +570,10 @@
         </profile>
     </profiles>
 
-    
+
     <dependencyManagement>
         <dependencies>
-            
+
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -614,37 +614,37 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
                 <version>${commons-beanutils.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
                 <version>${jsoup.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-core</artifactId>
@@ -664,25 +664,25 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-export-fo</artifactId>
                 <version>${docx4j-export-fo.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-docx-anon</artifactId>
                 <version>${docx4j.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-diffx</artifactId>
                 <version>${docx4j.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-ImportXHTML-core</artifactId>
@@ -725,103 +725,103 @@
                 <artifactId>org.eclipse.persistence.moxy</artifactId>
                 <version>${persistence.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
                 <version>${docx4j-jaxb.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>com.googlecode.jaxb-namespaceprefixmapper-interfaces</groupId>
                 <artifactId>JAXBNamespacePrefixMapper</artifactId>
                 <version>${jaxb-namespaceprefixmapper.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
                 <version>4.0.6</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>jakarta.xml.bind</groupId>
                 <artifactId>jakarta.xml.bind-api</artifactId>
                 <version>4.0.4</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>jakarta.activation</groupId>
                 <artifactId>jakarta.activation-api</artifactId>
                 <version>${jakarta-activation.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-generated-objects</artifactId>
                 <version>${docx4j-openxml.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>ognl</groupId>
                 <artifactId>ognl</artifactId>
                 <version>${ognl.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>com.ibeetl</groupId>
                 <artifactId>beetl</artifactId>
                 <version>${beetl.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
                 <version>${freemarker.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.perfcake</groupId>
                 <artifactId>httl</artifactId>
                 <version>${httl.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>com.github.subchen</groupId>
                 <artifactId>jetbrick-template</artifactId>
                 <version>${jetbrick.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-runtime</artifactId>
                 <version>${antlr4.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.rythmengine</groupId>
                 <artifactId>rythm-engine</artifactId>
                 <version>${rythm.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.thymeleaf</groupId>
                 <artifactId>thymeleaf</artifactId>
                 <version>${thymeleaf.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity-engine-core</artifactId>
                 <version>${velocity.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity-engine-scripting</artifactId>
                 <version>${velocity.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity-tools</artifactId>
@@ -841,13 +841,13 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            
+
             <dependency>
                 <groupId>com.github.zqq90.webit-script</groupId>
                 <artifactId>webit-script</artifactId>
                 <version>${webit-script.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
@@ -857,14 +857,14 @@
         </dependencies>
     </dependencyManagement>
 
-    
+
     <dependencies>
-        
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
