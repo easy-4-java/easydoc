@@ -22,6 +22,19 @@
 		<dependency>
 			<groupId>com.github.subchen</groupId>
 			<artifactId>jetbrick-template</artifactId>
+			<exclusions>
+				<!-- jetbrick 2.1.10 编译自 antlr4 4.7.1；根 pom 为 beetl 强制 4.9.3，
+				     这里排除并用模块内版本覆盖，避免 antlr runtime 版本冲突 -->
+				<exclusion>
+					<groupId>org.antlr</groupId>
+					<artifactId>antlr4-runtime</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr4-runtime</artifactId>
+			<version>4.7.1</version>
 		</dependency>
 	</dependencies>
 	

@@ -44,33 +44,26 @@
 	        <artifactId>docx4j-JAXB-Internal</artifactId>
 	    </dependency> -->
 	        
-	    <!-- Docx4j JAXB MOXy -->
+	    <!-- Docx4j JAXB ReferenceImpl (replaces MOXy).
 
-	    <!-- TODO(easydoc#MOXY): migrate to docx4j-JAXB-ReferenceImpl + jakarta.xml.bind-api 4.x to drop MOXy + asm + core + moxy transitive deps. Tracked as future major-version work. -->
+	     docx4j-JAXB-MOXy 11.5.14 cannot be used on JDK 21 + jakarta.xml.bind-api 4.x:
+	     MOXy 2.7.6 is compiled against javax.xml.bind (JAXB 2.x) so its static
+	     initializers throw NoClassDefFoundError on the jakarta namespace, and its
+	     META-INF/services/jakarta.xml.bind.JAXBContext file is the legacy JAXB 2.x
+	     SPI name that jakarta.xml.bind-api 4.x does not consult (it looks for
+	     jakarta.xml.bind.JAXBContextFactory). docx4j's static initializer therefore
+	     silently selects the Glassfish Reference Implementation instead, but then
+	     the namespace-prefix-mapper bridge fails because
+	     org/docx4j/jaxb/ri/NamespacePrefixMapper is not on the classpath. Net
+	     effect: WordprocessingMLPackage.load(File) and any process(...) path that
+	     reaches it NPEs at runtime. docx4j-JAXB-ReferenceImpl 11.5.14 works
+	     correctly with jakarta.xml.bind-api 4.0 and the org.glassfish.jaxb:jaxb-runtime
+	     4.0.x already declared in the root pom dependencyManagement. -->
 
-	    <!-- jaxb.properties files specifying that docx4j should use the EclipseLink MOXy (JAXB) runtime -->
-	    <dependency>
-	      	<groupId>org.docx4j</groupId>
-	      	<artifactId>docx4j-JAXB-MOXy</artifactId>
-	    </dependency>
-	    <dependency>
-	      	<groupId>org.eclipse.persistence</groupId>
-	      	<artifactId>org.eclipse.persistence.asm</artifactId>
-	    </dependency>
-	    <dependency>
-	     	<groupId>org.eclipse.persistence</groupId>
-	      	<artifactId>org.eclipse.persistence.core</artifactId>
-	    </dependency>
-	    <dependency>
-	      	<groupId>org.eclipse.persistence</groupId>
-	      	<artifactId>org.eclipse.persistence.moxy</artifactId>
-	    </dependency>
-	     
-	    <!-- Docx4j JAXB ReferenceImpl
 	    <dependency>
 	        <groupId>org.docx4j</groupId>
 	        <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
-	    </dependency> -->
+	    </dependency>
 	    
 	    <!-- https://mvnrepository.com/artifact/ognl/ognl -->
 		<dependency>

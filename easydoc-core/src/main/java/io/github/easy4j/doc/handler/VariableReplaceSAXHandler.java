@@ -49,6 +49,7 @@ public class VariableReplaceSAXHandler extends SAXHandler implements ContentHand
 
 	public VariableReplaceSAXHandler(Map<String, Object> variables) throws SAXException {
 		super();
+		this.variables = variables;
 		this.initContext();
 	}
 	

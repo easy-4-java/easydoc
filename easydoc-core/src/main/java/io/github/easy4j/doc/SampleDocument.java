@@ -67,7 +67,9 @@ public class SampleDocument {
 			    }
 			    
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			// 捕获 Throwable（含 AssertionError）：macOS 上 FOP 字体解析
+			// 会对特定系统字体抛 AssertionError，不能让其中断文档生成
 			LOG.warn("Failed to evaluate expression", e);
 		}    		    
 		
