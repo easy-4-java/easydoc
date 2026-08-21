@@ -50,7 +50,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Dependency versions -->
         <antlr4.version>4.13.2</antlr4.version>
-        <assertj.version>3.27.3</assertj.version>
+        <assertj.version>3.27.7</assertj.version>
         <beetl.version>3.21.2.RELEASE</beetl.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
         <commons-io.version>2.22.0</commons-io.version>
