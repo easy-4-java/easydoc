@@ -26,7 +26,6 @@ import org.docx4j.fonts.Mapper;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.Fonts;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class FontMapperHolderTest {
@@ -34,10 +33,7 @@ class FontMapperHolderTest {
 	/**
 	 * A do-nothing {@link Mapper} subclass that does not trigger
 	 * {@code PhysicalFonts.discoverPhysicalFonts()} the way
-	 * {@code IdentityPlusMapper}'s static initializer does. We avoid the
-	 * bundled concrete {@code Mapper}s because their {@code <clinit>}
-	 * reaches into docx4j's font discovery, which fails on docx4j 11.5.14
-	 * until the MOXy migration lands.
+	 * {@code IdentityPlusMapper}'s static initializer does.
 	 */
 	private static final class NoopMapper extends Mapper {
 		@Override
@@ -71,22 +67,12 @@ class FontMapperHolderTest {
 	void useFontMapperNoOpIdentityWhenMapperIsNull() {
 		FontMapperHolder.setFontMapper(null);
 		// Contract check: when no mapper is configured, useFontMapper() must
-		// return its argument unchanged. We can't construct a real
-		// WordprocessingMLPackage without hitting the MOXy bridge (see
-		// disabled test below), so we verify the static state directly.
+		// return its argument unchanged.
 		assertNull(FontMapperHolder.getFontMapper());
 		assertNotNull(Collections.emptySet(), "sanity: test fixture loaded");
 	}
 
-	/**
-	 * Disabled: constructing {@link WordprocessingMLPackage} triggers
-	 * {@code WordprocessingMLPackage.load(File)} through the docx4j JAXB/MOXy
-	 * bridge, which fails on docx4j 11.5.14 until the easydoc-core pom is
-	 * migrated. The null-mapper branch is already covered above by reading
-	 * the static state.
-	 */
 	@Test
-	@Disabled("requires MOXy migration — WordprocessingMLPackage creation calls load(File)")
 	void useFontMapperAttachesMapperToPackage() throws Exception {
 		Mapper mapper = new NoopMapper();
 		FontMapperHolder.setFontMapper(mapper);

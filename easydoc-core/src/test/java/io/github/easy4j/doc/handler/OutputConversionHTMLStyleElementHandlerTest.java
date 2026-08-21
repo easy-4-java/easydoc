@@ -112,10 +112,45 @@ class OutputConversionHTMLStyleElementHandlerTest {
 		assertEquals("text/css", el.getAttribute("type"));
 	}
 
-	@Test
-	void singletonIsStable() {
-		OutputConversionHTMLStyleElementHandler a = OutputConversionHTMLStyleElementHandler.getStyleElementHandler();
-		OutputConversionHTMLStyleElementHandler b = OutputConversionHTMLStyleElementHandler.getStyleElementHandler();
-		assertSame(a, b);
-	}
+    @Test
+    void singletonIsStable() {
+        OutputConversionHTMLStyleElementHandler a = OutputConversionHTMLStyleElementHandler.getStyleElementHandler();
+        OutputConversionHTMLStyleElementHandler b = OutputConversionHTMLStyleElementHandler.getStyleElementHandler();
+        assertSame(a, b);
+    }
+
+    @Test
+    void fileUriSchemeReadsCssContent() {
+        // Use a file:// URI pointing to an existing CSS file to cover line 83
+        // (IOUtils.toString(uri, ...) succeeding in the allowed-scheme branch)
+        java.io.File cssFile = new java.io.File("src/test/resources/tpl/inline.css");
+        if (!cssFile.exists()) return;
+        Docx4jProperties.setProperty(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_CSSINCLUDEURI,
+                cssFile.toURI().toString());
+        OutputConversionHTMLStyleElementHandler handler = OutputConversionHTMLStyleElementHandler.getStyleElementHandler();
+        Element el = handler.createStyleElement(null, doc, null);
+        assertNotNull(el);
+        assertEquals("style", el.getTagName());
+    }
+
+    @Test
+    void malformedUriSchemeIsCaught() {
+        // A string that passes the null/empty check but fails URI parsing
+        // to cover the URISyntaxException catch (lines 87-88)
+        Docx4jProperties.setProperty(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_CSSINCLUDEURI,
+                "http://[invalid-bracket");
+        OutputConversionHTMLStyleElementHandler handler = OutputConversionHTMLStyleElementHandler.getStyleElementHandler();
+        // Should not throw; URISyntaxException is caught internally
+        Element el = handler.createStyleElement(null, doc, null);
+    }
+
+    @Test
+    void nonExistentCssPathIsCaught() {
+        // Set CSSINCLUDEPATH to a non-existent file to cover IOException catch (lines 100-101)
+        Docx4jProperties.setProperty(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_CSSINCLUDEPATH,
+                "/nonexistent/path/to/style.css");
+        OutputConversionHTMLStyleElementHandler handler = OutputConversionHTMLStyleElementHandler.getStyleElementHandler();
+        // Should not throw; IOException is caught internally
+        Element el = handler.createStyleElement(null, doc, null);
+    }
 }

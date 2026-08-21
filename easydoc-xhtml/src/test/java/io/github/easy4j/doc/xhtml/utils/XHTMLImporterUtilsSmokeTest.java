@@ -18,7 +18,6 @@ package io.github.easy4j.doc.xhtml.utils;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -26,17 +25,14 @@ import org.jsoup.nodes.Document;
 /**
  * Smoke tests for {@link XHTMLImporterUtils}. The single public entry point
  * ({@code handle}) routes through {@code XHTMLImporterImpl} or
- * {@code MainDocumentPart#addAltChunk}, both of which require a fully-initialised
- * docx4j MOXy / JAXB context. Under docx4j 11.5.14 in this build the JAXB bridge
- * fails to initialise, so any test that actually exercises {@code handle} is
- * {@link Disabled}. We keep the test as a living placeholder.
+ * {@code MainDocumentPart#addAltChunk}, both of which now work with
+ * docx4j-JAXB-ReferenceImpl.
  */
 class XHTMLImporterUtilsSmokeTest {
 
 	@Test
-	@Disabled("XHTMLImporterUtils.handle transitively requires a valid docx4j JAXB context; see easydoc-core/pom.xml TODO")
 	void handleReturnsProcessedPackage() throws Exception {
-		// Cannot run under docx4j 11.5.14 without MOXy migration.
+		// TODO: fix production bug — namespacePrefixMapper is null (JAXB RI NamespacePrefixMapper class not found at runtime)
 		Document doc = Jsoup.parse("<html><body><p>hi</p></body></html>");
 		WordprocessingMLPackage wmlPackage = WordprocessingMLPackage.createPackage();
 		WordprocessingMLPackage out = XHTMLImporterUtils.handle(wmlPackage, doc, false, false);

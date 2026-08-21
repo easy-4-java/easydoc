@@ -20,36 +20,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.lang.reflect.Field;
 
 import org.docx4j.wml.ObjectFactory;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-/**
- * {@link DocxElementWmlRender} touches the docx4j JAXB/MOXy bridge in two
- * places:
- *
- * <ul>
- *   <li>The constructor calls {@code Context.getWmlObjectFactory()}, which
- *       initialises {@code Context.jc} via the MOXy SPI lookup that fails on
- *       docx4j 11.5.14.</li>
- *   <li>Render methods (e.g. {@code newTable}, {@code newRow}) operate on a
- *       live {@code WordprocessingMLPackage}, which itself triggers the same
- *       bridge at construction time.</li>
- * </ul>
- *
- * <p>Both surfaces are therefore {@link Disabled} until the easydoc-core pom
- * is migrated. Tests are kept here as guards for the moment the fix lands.</p>
- */
 class DocxElementWmlRenderTest {
 
-	/**
-	 * Disabled: the constructor calls
-	 * {@code Context.getWmlObjectFactory()}, which initialises
-	 * {@code Context.jc} via the MOXy bridge.
-	 */
 	@Test
-	@Disabled("requires MOXY migration — DocxElementWmlRender constructor calls Context.getWmlObjectFactory()")
 	void constructorStoresFields() throws Exception {
-		org.docx4j.openpackaging.packages.WordprocessingMLPackage pkg = null;
+		org.docx4j.openpackaging.packages.WordprocessingMLPackage pkg =
+				org.docx4j.openpackaging.packages.WordprocessingMLPackage.createPackage();
 		DocxElementWmlRender render = new DocxElementWmlRender(pkg);
 		assertNotNull(render);
 
@@ -63,16 +41,11 @@ class DocxElementWmlRenderTest {
 		assertNotNull(factory);
 	}
 
-	/**
-	 * Disabled: {@code newTable(int, int)} ultimately reaches into a live
-	 * {@code WordprocessingMLPackage.getMainDocumentPart()}, which triggers the
-	 * JAXB bridge. The factory call itself ({@code createTbl}) is fine, but
-	 * the test cannot exercise it without a real package.
-	 */
 	@Test
-	@Disabled("requires MOXY migration — newTable(int,int) uses WordprocessingMLPackage.getMainDocumentPart()")
-	void newTableCreatesGridOfCorrectDimensions() {
-		DocxElementWmlRender render = new DocxElementWmlRender(null);
+	void newTableCreatesGridOfCorrectDimensions() throws Exception {
+		org.docx4j.openpackaging.packages.WordprocessingMLPackage pkg =
+				org.docx4j.openpackaging.packages.WordprocessingMLPackage.createPackage();
+		DocxElementWmlRender render = new DocxElementWmlRender(pkg);
 		org.docx4j.wml.Tbl table = render.newTable(2, 3);
 		assertNotNull(table);
 		assertNotNull(table.getContent());

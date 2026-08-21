@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.zip.ZipInputStream;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import io.github.easy4j.doc.utils.Docx4jUtils;
@@ -46,25 +45,7 @@ class Docx4jUtilsTest {
 		assertNull(utils.mergeDocx(Collections.emptyList()));
 	}
 
-	/**
-	 * The single-stream path is the C-4 regression guard: it must hand back a
-	 * non-null {@code InputStream} and that stream must round-trip back to a
-	 * reopenable docx.
-	 *
-	 * <p>Disabled because the project's {@code docx4j-JAXB-MOXy 2.7.6} +
-	 * {@code jakarta.xml.bind-api 4.0.4} combination cannot initialise
-	 * {@code org.docx4j.jaxb.Context.jcContentTypes} at static-init time: the
-	 * new SPI lookup expects a JAXB 4.x provider ({@code org.glassfish.jaxb.runtime.v2.ContextFactory})
-	 * that is not on the test classpath. The pre-existing
-	 * {@code WordprocessingMLTemplateWriterTest} hits the same
-	 * {@code NullPointerException} at {@code Context.jcContentTypes.createUnmarshaller()}.
-	 * Until the pom is fixed to add a JAXB 4.x runtime on the classpath, this test
-	 * cannot be run. The byte-level check below passes whenever the production code
-	 * manages to return a stream (i.e. on a fixed classpath); kept here as a guard
-	 * for the moment that fix lands.
-	 */
 	@Test
-	@Disabled("requires jakarta.xml.bind-api 4.x runtime on classpath; see Javadoc above")
 	void mergeDocxSingleStreamRoundTrips_C4Regression() throws Exception {
 		byte[] bytes = Files.readAllBytes(Paths.get("src/test/resources/tpl/template.docx"));
 		InputStream in = new ByteArrayInputStream(bytes);

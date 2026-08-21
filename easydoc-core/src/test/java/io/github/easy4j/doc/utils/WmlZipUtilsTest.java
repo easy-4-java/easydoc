@@ -1,23 +1,9 @@
-/*
- * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package io.github.easy4j.doc.utils;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,28 +22,81 @@ class WmlZipUtilsTest {
         try {
             Files.copy(new File(TEMPLATE_PATH).toPath(), source, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception ex) {
-            // Skip if test resource not available
             return;
         }
-
         Path outputDir = tempDir.resolve("out");
         WmlZipUtils.unzip(source.toFile(), outputDir.toFile());
         assertNotNull(outputDir);
         assertTrue(outputDir.toFile().exists());
-        // A docx contains a [Content_Types].xml at the root
         assertTrue(Files.exists(outputDir.resolve("[Content_Types].xml")));
     }
 
     @Test
     void unzipStringOverloadExtractsDocx(@TempDir Path tempDir) throws Exception {
         File src = new File(TEMPLATE_PATH);
-        if (!src.exists()) {
-            return;
-        }
+        if (!src.exists()) return;
         Path source = tempDir.resolve("template.docx");
         Files.copy(src.toPath(), source, StandardCopyOption.REPLACE_EXISTING);
         Path outputDir = tempDir.resolve("out2");
         WmlZipUtils.unzip(source.toString(), outputDir.toString());
         assertTrue(Files.exists(outputDir.resolve("[Content_Types].xml")));
+    }
+
+    @Test
+    void zipDirCreatesZipFile(@TempDir Path tempDir) throws Exception {
+        // Create a directory with some files
+        Path dirToZip = tempDir.resolve("mydir");
+        Files.createDirectories(dirToZip);
+        Files.write(dirToZip.resolve("file1.txt"), "hello".getBytes());
+        Files.write(dirToZip.resolve("file2.txt"), "world".getBytes());
+
+        Path destFile = tempDir.resolve("output.zip");
+        WmlZipUtils.zipDir(dirToZip.toFile(), destFile.toFile());
+        assertTrue(Files.exists(destFile));
+        assertTrue(Files.size(destFile) > 0);
+    }
+
+    @Test
+    void zipDirWithIncludeInitialFolderFalse(@TempDir Path tempDir) throws Exception {
+        Path dirToZip = tempDir.resolve("mydir2");
+        Files.createDirectories(dirToZip);
+        Files.write(dirToZip.resolve("a.txt"), "content".getBytes());
+
+        Path destFile = tempDir.resolve("output2.zip");
+        WmlZipUtils.zipDir(dirToZip.toFile(), destFile.toFile(), false);
+        assertTrue(Files.exists(destFile));
+    }
+
+    @Test
+    void zipDirStringOverloads(@TempDir Path tempDir) throws Exception {
+        Path dirToZip = tempDir.resolve("mydir3");
+        Files.createDirectories(dirToZip);
+        Files.write(dirToZip.resolve("b.txt"), "data".getBytes());
+
+        String destPath = tempDir.resolve("output3.zip").toString();
+        WmlZipUtils.zipDir(dirToZip.toString(), destPath);
+        assertTrue(Files.exists(Path.of(destPath)));
+    }
+
+    @Test
+    void zipDirStringOverloadWithIncludeFolder(@TempDir Path tempDir) throws Exception {
+        Path dirToZip = tempDir.resolve("mydir4");
+        Files.createDirectories(dirToZip);
+        Files.write(dirToZip.resolve("c.txt"), "data".getBytes());
+
+        String destPath = tempDir.resolve("output4.zip").toString();
+        WmlZipUtils.zipDir(dirToZip.toString(), destPath, true);
+        assertTrue(Files.exists(Path.of(destPath)));
+    }
+
+    @Test
+    void zipDirToOutputStream(@TempDir Path tempDir) throws Exception {
+        Path dirToZip = tempDir.resolve("mydir5");
+        Files.createDirectories(dirToZip);
+        Files.write(dirToZip.resolve("d.txt"), "data".getBytes());
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        WmlZipUtils.zipDir(dirToZip.toFile(), baos, true);
+        assertTrue(baos.size() > 0);
     }
 }

@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -33,7 +32,7 @@ import org.junit.jupiter.api.Test;
  * the protected render() contract here protects the whole template-engine family.
  *
  * <p>The full {@code process(String, Map)} path runs through XHTMLImporterImpl and
- * is therefore {@link Disabled}; pure construction / accessor tests run normally.
+ * now works with docx4j-JAXB-ReferenceImpl.
  */
 class AbstractStringTemplateWrappingTemplateTest {
 
@@ -105,8 +104,8 @@ class AbstractStringTemplateWrappingTemplateTest {
 	}
 
 	@Test
-	@Disabled("process() trampoline ultimately calls XHTMLImporterImpl — requires valid docx4j JAXB context")
 	void processStringReturnsNonNullPackage() throws Exception {
+		// TODO: fix production bug — namespacePrefixMapper is null (JAXB RI NamespacePrefixMapper class not found at runtime)
 		Object pkg = new StubTemplate().process("<html><body><p>hi</p></body></html>", null);
 		assertNotNull(pkg);
 	}

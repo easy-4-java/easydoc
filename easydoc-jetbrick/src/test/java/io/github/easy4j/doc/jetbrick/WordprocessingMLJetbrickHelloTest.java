@@ -18,7 +18,6 @@ package io.github.easy4j.doc.jetbrick;
 import java.util.Map;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WordprocessingMLJetbrickHelloTest {
 
 	@Test
-	@Disabled("requires MOXy migration — see easydoc-core/pom.xml TODO")
+	// TODO: fix production bug — jetbrick requires antlr 4.7.1 but 4.13.2 is on classpath
 	void rendersHelloTemplate() throws Exception {
 		WordprocessingMLJetbrickTemplate t = new WordprocessingMLJetbrickTemplate();
 		Map<String, Object> vars = Map.of("name", "world");

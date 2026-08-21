@@ -18,7 +18,6 @@ package io.github.easy4j.doc.httl;
 import java.util.Map;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,11 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WordprocessingMLHttlHelloTest {
 
 	@Test
-	@Disabled("requires MOXy migration — see easydoc-core/pom.xml TODO")
 	void rendersHelloTemplate() throws Exception {
 		WordprocessingMLHttlTemplate t = new WordprocessingMLHttlTemplate();
 		Map<String, Object> vars = Map.of("name", "world");
-		WordprocessingMLPackage pkg = t.process("hello.htt", vars);
+		WordprocessingMLPackage pkg = t.process("/tpl/hello.htt", vars);
 		assertNotNull(pkg);
 		assertTrue(pkg.getMainDocumentPart().getXML().contains("Hello world"),
 				"rendered docx must contain 'Hello world'");

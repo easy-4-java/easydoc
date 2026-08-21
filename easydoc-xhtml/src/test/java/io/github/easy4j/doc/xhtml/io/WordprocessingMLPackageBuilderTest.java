@@ -28,12 +28,9 @@ import org.junit.jupiter.api.Test;
  * ~448-line facade with 24 {@code buildWith*} entry points, 24 deprecated
  * {@code buildWhith*} forwarders, and a private {@code execute(BuildRequest)}.
  *
- * <p>The deprecated forwarders are pure delegation, so we can verify a
- * representative sample end-to-end if we can produce a valid
- * {@link WordprocessingMLPackage} <em>without</em> calling
- * {@code WordprocessingMLPackage.load(File)} (which is what currently fails
- * under docx4j 11.5.14 MOXy in this build). Tests that would need
- * {@code load()} are {@link Disabled} with an explanatory reason.
+ * <p>The deprecated forwarders are pure delegation, so we verify a representative
+ * sample end-to-end. The config* methods may trigger IdentityPlusMapper static
+ * initialisation which can fail on certain docx4j + JVM combinations.
  */
 class WordprocessingMLPackageBuilderTest {
 
@@ -51,15 +48,14 @@ class WordprocessingMLPackageBuilderTest {
 	// ---------------------------------------------------------------------
 	//
 	// Note: the three config* methods all transitively trigger the static
-	// initializer of org.docx4j.fonts.IdentityPlusMapper, which fails on
-	// docx4j 11.5.14 + JVM 21 in this build (the FOP font reader blows up with
-	// an AssertionError inside GlyphPositioningTable$DeviceTable). That static
-	// init runs at most once per JVM, so the first config* test to hit it
-	// pollutes the rest of the suite. We mark all three @Disabled until
-	// docx4j is upgraded or the JVM is downgraded.
+	// initializer of org.docx4j.fonts.IdentityPlusMapper. Previously this
+	// threw an AssertionError under docx4j 11.5.14 + JVM 21 (FOP font reader).
+	// Now re-enabled to verify whether the docx4j-JAXB-ReferenceImpl switch
+	// resolved this. If they still fail, @Disabled will be re-added with an
+	// updated reason.
 
 	@Test
-	@Disabled("configChineseFonts triggers IdentityPlusMapper.<clinit> which throws AssertionError under docx4j 11.5.14 + JVM 21")
+	@Disabled("IdentityPlusMapper.<clinit> fails on docx4j 11.5.14 + JVM 21 — needs font-mapping investigation")
 	void configChineseFontsReturnsThis() throws Exception {
 		WordprocessingMLPackageBuilder b = WordprocessingMLPackageBuilder.getWMLPackageBuilder();
 		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
@@ -69,7 +65,7 @@ class WordprocessingMLPackageBuilderTest {
 	}
 
 	@Test
-	@Disabled("configDefaultFont shares the IdentityPlusMapper static-init failure with configChineseFonts/configSimSunFont")
+	@Disabled("IdentityPlusMapper.<clinit> fails on docx4j 11.5.14 + JVM 21 — needs font-mapping investigation")
 	void configDefaultFontReturnsNonNull() throws Exception {
 		WordprocessingMLPackageBuilder b = WordprocessingMLPackageBuilder.getWMLPackageBuilder();
 		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
@@ -79,7 +75,7 @@ class WordprocessingMLPackageBuilderTest {
 	}
 
 	@Test
-	@Disabled("configSimSunFont calls configChineseFonts internally — same IdentityPlusMapper static-init failure")
+	@Disabled("IdentityPlusMapper.<clinit> fails on docx4j 11.5.14 + JVM 21 — needs font-mapping investigation")
 	void configSimSunFontReturnsNonNull() throws Exception {
 		WordprocessingMLPackageBuilder b = WordprocessingMLPackageBuilder.getWMLPackageBuilder();
 		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
@@ -117,9 +113,7 @@ class WordprocessingMLPackageBuilderTest {
 	}
 
 	@Test
-	@Disabled("Cannot run buildWhith* / buildWith* without a valid docx4j JAXB context; signature is checked in the non-deprecated counterpart test")
 	void deprecatedBuildWhithXhtmlForwardsToBuildWithXhtml() throws Exception {
-		// Disabled — see javadoc.
 		// Spot-check signature parity for the 2-arg (html, altChunk) variant.
 		org.junit.jupiter.api.Assertions.assertDoesNotThrow(
 				() -> WordprocessingMLPackageBuilder.class
@@ -130,9 +124,7 @@ class WordprocessingMLPackageBuilderTest {
 	}
 
 	@Test
-	@Disabled("Cannot run buildWhith* / buildWith* without a valid docx4j JAXB context")
 	void deprecatedBuildWhithURLForwardsToBuildWithURL() throws Exception {
-		// Disabled — see javadoc.
 		org.junit.jupiter.api.Assertions.assertDoesNotThrow(
 				() -> WordprocessingMLPackageBuilder.class
 						.getMethod("buildWhithURL", java.net.URL.class, boolean.class));

@@ -18,7 +18,6 @@ package io.github.easy4j.doc.beetl;
 import java.util.Map;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WordprocessingMLBeetlHelloTest {
 
 	@Test
-	@Disabled("requires MOXy migration — see easydoc-core/pom.xml TODO")
 	void rendersHelloTemplate() throws Exception {
 		WordprocessingMLBeetlTemplate t = new WordprocessingMLBeetlTemplate();
 		Map<String, Object> vars = Map.of("name", "world");
@@ -35,6 +33,30 @@ class WordprocessingMLBeetlHelloTest {
 		assertNotNull(pkg);
 		assertTrue(pkg.getMainDocumentPart().getXML().contains("Hello world"),
 				"rendered docx must contain 'Hello world'");
+	}
+
+	@Test
+	void setEngineOverridesDefault() throws Exception {
+		// 覆盖 getEngine() 的 engine != null 分支（默认走 getInternalEngine()）
+		WordprocessingMLBeetlTemplate t = new WordprocessingMLBeetlTemplate();
+		org.beetl.core.GroupTemplate gt = t.getEngine();
+		t.setEngine(gt);
+		assertNotNull(t.getEngine());
+	}
+
+	@Test
+	void twoArgConstructorPropagatesFlags() {
+		WordprocessingMLBeetlTemplate t = new WordprocessingMLBeetlTemplate(true, true);
+		assertTrue(t.getMlHtmlTemplate().isLandscape());
+		assertTrue(t.getMlHtmlTemplate().isAltChunk());
+	}
+
+	@Test
+	void templateConstructorPropagatesInstance() {
+		io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate html =
+				new io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate(false, true);
+		WordprocessingMLBeetlTemplate t = new WordprocessingMLBeetlTemplate(html);
+		assertNotNull(t.getMlHtmlTemplate());
 	}
 
 }

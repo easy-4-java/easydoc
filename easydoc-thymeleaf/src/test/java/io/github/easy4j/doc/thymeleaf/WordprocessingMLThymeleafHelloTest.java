@@ -18,7 +18,6 @@ package io.github.easy4j.doc.thymeleaf;
 import java.util.Map;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,14 +26,33 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WordprocessingMLThymeleafHelloTest {
 
 	@Test
-	@Disabled("requires MOXy migration — see easydoc-core/pom.xml TODO")
 	void rendersHelloTemplate() throws Exception {
-		WordprocessingMLThymeleafTemplate t = new WordprocessingMLThymeleafTemplate();
-		Map<String, Object> vars = Map.of("name", "world");
-		WordprocessingMLPackage pkg = t.process("/tpl/hello.html", vars);
-		assertNotNull(pkg);
-		assertTrue(pkg.getMainDocumentPart().getXML().contains("Hello world"),
-				"rendered docx must contain 'Hello world'");
+		// 测试资源 docx4j.properties 配置 UrlTemplateResolver + 文件系统 prefix，
+		// 对 classpath 模板不适用；此处切换为 ClassLoaderTemplateResolver 并清空 prefix，
+		// 使 /tpl/hello.html 从 test-classes 解析
+		java.util.Properties props = org.docx4j.Docx4jProperties.getProperties();
+		String prevResolver = props.getProperty("docx4j.thymeleaf.templateResolver");
+		String prevPrefix = props.getProperty("docx4j.thymeleaf.prefix");
+		props.setProperty("docx4j.thymeleaf.templateResolver",
+				"org.thymeleaf.templateresolver.ClassLoaderTemplateResolver");
+		props.setProperty("docx4j.thymeleaf.prefix", "");
+		try {
+			WordprocessingMLThymeleafTemplate t = new WordprocessingMLThymeleafTemplate();
+			Map<String, Object> vars = Map.of("name", "world");
+			WordprocessingMLPackage pkg = t.process("/tpl/hello.html", vars);
+			assertNotNull(pkg);
+			assertTrue(pkg.getMainDocumentPart().getXML().contains("Hello world"),
+					"rendered docx must contain 'Hello world'");
+		} finally {
+			props.remove("docx4j.thymeleaf.templateResolver");
+			props.remove("docx4j.thymeleaf.prefix");
+			if (prevResolver != null) {
+				props.setProperty("docx4j.thymeleaf.templateResolver", prevResolver);
+			}
+			if (prevPrefix != null) {
+				props.setProperty("docx4j.thymeleaf.prefix", prevPrefix);
+			}
+		}
 	}
 
 }

@@ -1,54 +1,121 @@
 package io.github.easy4j.doc.io;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.*;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.StringBuilderWriter;
-import org.docx4j.Docx4jProperties;
-import org.docx4j.XmlUtils;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
-import io.github.easy4j.doc.Docx4jConstants;
-import io.github.easy4j.doc.utils.Assert;
-import java.util.Properties;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Unit tests for {@link WordprocessingMLTemplateWriter}.
- *
- * [@Loong Wan](https://github.com/loong10k)
- */
-@DisplayName("WordprocessingMLTemplateWriter Tests")
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.StringWriter;
+
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
 class WordprocessingMLTemplateWriterTest {
 
     @Test
-    @DisplayName("static method getWMLTemplateWriter should be callable")
-    void staticGetWMLTemplateWriterShouldBeCallable() {
-        try { WordprocessingMLTemplateWriter.getWMLTemplateWriter(); } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLTemplateWriter.class).isNotNull();
+    void getWMLTemplateWriterReturnsInstance() {
+        WordprocessingMLTemplateWriter writer = WordprocessingMLTemplateWriter.getWMLTemplateWriter();
+        assertNotNull(writer);
     }
 
     @Test
-    @DisplayName("static method writeToFile should be callable")
-    void staticWriteToFileShouldBeCallable() {
-        try { WordprocessingMLTemplateWriter.writeToFile((WordprocessingMLPackage) null, (File) null); } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLTemplateWriter.class).isNotNull();
+    void getWMLTemplateWriterReturnsSameInstance() {
+        WordprocessingMLTemplateWriter a = WordprocessingMLTemplateWriter.getWMLTemplateWriter();
+        WordprocessingMLTemplateWriter b = WordprocessingMLTemplateWriter.getWMLTemplateWriter();
+        assertSame(a, b);
     }
 
     @Test
-    @DisplayName("static method writeToStream should be callable")
-    void staticWriteToStreamShouldBeCallable() {
-        try { WordprocessingMLTemplateWriter.writeToStream((WordprocessingMLPackage) null, (OutputStream) null); } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLTemplateWriter.class).isNotNull();
+    void writeToStringFromPackageReturnsXml() throws Exception {
+        WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+        WordprocessingMLTemplateWriter writer = WordprocessingMLTemplateWriter.getWMLTemplateWriter();
+        String xml = writer.writeToString(pkg);
+        assertNotNull(xml);
+        assertTrue(xml.contains("w:document") || xml.contains("w:body"));
     }
 
+    @Test
+    void writeToStringFromFileReturnsContent() throws Exception {
+        java.net.URL res = getClass().getClassLoader().getResource("tpl/template.docx");
+        if (res == null) return;
+        File tpl = new File(res.toURI());
+        if (!tpl.exists()) return;
+        WordprocessingMLTemplateWriter writer = WordprocessingMLTemplateWriter.getWMLTemplateWriter();
+        String content = writer.writeToString(tpl);
+        assertNotNull(content);
+        assertTrue(content.length() > 0);
+    }
+
+    @Test
+    void writeToStringFromStringPathReturnsContent() throws Exception {
+        java.net.URL res = getClass().getClassLoader().getResource("tpl/template.docx");
+        if (res == null) return;
+        File tpl = new File(res.toURI());
+        if (!tpl.exists()) return;
+        WordprocessingMLTemplateWriter writer = WordprocessingMLTemplateWriter.getWMLTemplateWriter();
+        String content = writer.writeToString(tpl.getAbsolutePath());
+        assertNotNull(content);
+        assertTrue(content.length() > 0);
+    }
+
+    @Test
+    void writeToWriterWritesContent() throws Exception {
+        WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+        WordprocessingMLTemplateWriter writer = WordprocessingMLTemplateWriter.getWMLTemplateWriter();
+        StringWriter sw = new StringWriter();
+        writer.writeToWriter(pkg, sw);
+        String content = sw.toString();
+        assertNotNull(content);
+        assertTrue(content.length() > 0);
+    }
+
+    @Test
+    void writeToStreamWritesBytes() throws Exception {
+        WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        WordprocessingMLTemplateWriter.writeToStream(pkg, baos);
+        assertTrue(baos.size() > 0);
+    }
+
+    @Test
+    void writeToFileWritesToDisk(@TempDir java.nio.file.Path tempDir) throws Exception {
+        WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+        File outFile = tempDir.resolve("output.docx").toFile();
+        WordprocessingMLTemplateWriter.writeToFile(pkg, outFile);
+        assertTrue(outFile.exists());
+        assertTrue(outFile.length() > 0);
+    }
+
+    @Test
+    void writeToStreamRejectsNullPackage() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            WordprocessingMLTemplateWriter.writeToStream(null, new ByteArrayOutputStream());
+        });
+    }
+
+    @Test
+    void writeToStreamRejectsNullOutputStream() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            WordprocessingMLTemplateWriter.writeToStream(WordprocessingMLPackage.createPackage(), null);
+        });
+    }
+
+    @Test
+    void writeToWriterRejectsNullPackage() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            WordprocessingMLTemplateWriter.getWMLTemplateWriter()
+                .writeToWriter(null, new StringWriter());
+        });
+    }
+
+    @Test
+    void writeToWriterRejectsNullWriter() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            WordprocessingMLTemplateWriter.getWMLTemplateWriter()
+                .writeToWriter(WordprocessingMLPackage.createPackage(), null);
+        });
+    }
 }

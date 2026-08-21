@@ -16,10 +16,10 @@
 package io.github.easy4j.doc.freemarker;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import freemarker.cache.FileTemplateLoader;
@@ -30,12 +30,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WordprocessingMLFreemarkerHelloTest {
 
 	@Test
-	@Disabled("requires MOXy migration — see easydoc-core/pom.xml TODO")
 	void rendersHelloTemplate() throws Exception {
 		WordprocessingMLFreemarkerTemplate t = new WordprocessingMLFreemarkerTemplate();
 		File dirFile = new File(WordprocessingMLFreemarkerHelloTest.class.getResource("/tpl/").getPath());
 		t.setPreTemplateLoaders(new FileTemplateLoader(dirFile));
-		Map<String, Object> vars = Map.of("name", "world");
+		// FreemarkerTemplate.render() puts internal keys into the variables map,
+		// so we must use a mutable HashMap instead of Map.of().
+		Map<String, Object> vars = new HashMap<>(Map.of("name", "world"));
 		WordprocessingMLPackage pkg = t.process("hello.ftl", vars);
 		assertNotNull(pkg);
 		assertTrue(pkg.getMainDocumentPart().getXML().contains("Hello world"),

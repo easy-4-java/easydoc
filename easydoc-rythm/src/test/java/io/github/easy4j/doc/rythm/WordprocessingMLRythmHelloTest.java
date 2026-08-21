@@ -18,7 +18,6 @@ package io.github.easy4j.doc.rythm;
 import java.util.Map;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WordprocessingMLRythmHelloTest {
 
 	@Test
-	@Disabled("requires MOXy migration — see easydoc-core/pom.xml TODO")
 	void rendersHelloTemplate() throws Exception {
 		WordprocessingMLRythmTemplate t = new WordprocessingMLRythmTemplate();
 		Map<String, Object> vars = Map.of("name", "world");

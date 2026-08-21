@@ -21,7 +21,6 @@ import java.io.IOException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import freemarker.cache.FileTemplateLoader;
@@ -51,7 +50,6 @@ public class WordprocessingMLFreemarkerTemplateTest extends WordprocessingMLTemp
 	}
 
 	@Test
-	@Ignore("requires MOXy migration — see easydoc-core/pom.xml TODO")
 	public void test() throws Exception {
 
 

@@ -1,69 +1,98 @@
 package io.github.easy4j.doc.utils;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
-import org.docx4j.XmlUtils;
-import org.docx4j.jaxb.Context;
+
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.wml.CTBookmark;
-import org.docx4j.wml.CTMarkupRange;
-import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.Document;
-import org.docx4j.wml.ObjectFactory;
 import org.docx4j.wml.P;
-import org.docx4j.wml.PPr;
-import org.docx4j.wml.ParaRPr;
 import org.docx4j.wml.Text;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-/**
- * Unit tests for {@link WMLPackageUtils}.
- *
- * [@Loong Wan](https://github.com/loong10k)
- */
-@DisplayName("WMLPackageUtils Tests")
 class WMLPackageUtilsTest {
 
     @Test
-    @DisplayName("static method cleanDocumentPart should be callable")
-    void staticCleanDocumentPartShouldBeCallable() {
-        try { WMLPackageUtils.cleanDocumentPart((MainDocumentPart) null); } catch (Throwable e) { /* expected */ }
-        assertThat(WMLPackageUtils.class).isNotNull();
+    void cleanDocumentPartWithNullReturnsFalse() throws Exception {
+        assertFalse(WMLPackageUtils.cleanDocumentPart(null));
     }
 
     @Test
-    @DisplayName("static method replacePlaceholder should be callable")
-    void staticReplacePlaceholderShouldBeCallable() {
-        try { WMLPackageUtils.replacePlaceholder((MainDocumentPart) null, "test", "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(WMLPackageUtils.class).isNotNull();
+    void cleanDocumentPartWithValidPartReturnsTrue() throws Exception {
+        WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+        MainDocumentPart mdp = pkg.getMainDocumentPart();
+        assertTrue(WMLPackageUtils.cleanDocumentPart(mdp));
     }
 
     @Test
-    @DisplayName("static method replaceParagraph should be callable")
-    void staticReplaceParagraphShouldBeCallable() {
-        try { WMLPackageUtils.replaceParagraph((MainDocumentPart) null, "test", "test", (ContentAccessor) null); } catch (Throwable e) { /* expected */ }
-        assertThat(WMLPackageUtils.class).isNotNull();
+    void replacePlaceholderReplacesText() throws Exception {
+        WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+        MainDocumentPart mdp = pkg.getMainDocumentPart();
+        // Add a paragraph with a placeholder
+        P p = new P();
+        Text t = new Text();
+        t.setValue("${name}");
+        org.docx4j.wml.R r = new org.docx4j.wml.R();
+        r.getContent().add(t);
+        p.getContent().add(r);
+        mdp.getContent().add(p);
+
+        WMLPackageUtils.replacePlaceholder(mdp, "${name}", "Alice");
+
+        // Verify replacement
+        List<Text> texts = WmlElementTraversal.getTargetElements(mdp, Text.class);
+        boolean found = false;
+        for (Text txt : texts) {
+            if ("Alice".equals(txt.getValue())) {
+                found = true;
+                break;
+            }
+        }
+        assertTrue(found);
     }
 
     @Test
-    @DisplayName("static method replaceText should be callable")
-    void staticReplaceTextShouldBeCallable() {
-        try { WMLPackageUtils.replaceText((CTBookmark) null, (Object) null); } catch (Throwable e) { /* expected */ }
-        assertThat(WMLPackageUtils.class).isNotNull();
+    void replaceTextWithNullObjectDoesNothing() throws Exception {
+        CTBookmark bm = new CTBookmark();
+        bm.setName("test");
+        WMLPackageUtils.replaceText(bm, null);
+        // null object => early return, no exception
     }
 
     @Test
-    @DisplayName("static method imageToByteArray should be callable")
-    void staticImageToByteArrayShouldBeCallable() {
-        try { WMLPackageUtils.imageToByteArray((File) null); } catch (Throwable e) { /* expected */ }
-        assertThat(WMLPackageUtils.class).isNotNull();
+    void replaceTextWithNullNameDoesNothing() throws Exception {
+        CTBookmark bm = new CTBookmark();
+        bm.setName(null);
+        WMLPackageUtils.replaceText(bm, "value");
+        // null name => early return
     }
 
+    @Test
+    void imageToByteArrayReadsFile(@TempDir Path tempDir) throws Exception {
+        byte[] expected = "hello world".getBytes();
+        File f = tempDir.resolve("test.txt").toFile();
+        Files.write(f.toPath(), expected);
+        byte[] result = WMLPackageUtils.imageToByteArray(f);
+        assertNotNull(result);
+        assertEquals(expected.length, result.length);
+    }
+
+    @Test
+    void imageToByteArrayReadsEmptyFile(@TempDir Path tempDir) throws Exception {
+        File f = tempDir.resolve("empty.txt").toFile();
+        f.createNewFile();
+        byte[] result = WMLPackageUtils.imageToByteArray(f);
+        assertNotNull(result);
+        assertEquals(0, result.length);
+    }
 }

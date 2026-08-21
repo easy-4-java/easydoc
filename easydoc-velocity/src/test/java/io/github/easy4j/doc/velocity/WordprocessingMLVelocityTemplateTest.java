@@ -20,7 +20,6 @@ import java.io.File;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -40,7 +39,6 @@ public class WordprocessingMLVelocityTemplateTest extends WordprocessingMLTempla
 	}
 
 	@Test
-	@Ignore("requires MOXy migration — see easydoc-core/pom.xml TODO")
 	public void test() throws Exception {
 
 		variables.put("title", "变量替换测试");

@@ -21,30 +21,24 @@ import java.nio.file.Path;
 import io.github.easy4j.doc.io.WordprocessingMLTemplateWriter;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Tests for {@link WordprocessingMLTemplateWriter}.
  *
- * <p><b>Disabled until the MOXy migration lands (see easydoc-core/pom.xml TODO).</b>
- * The current dep stack (MOXy 2.7.6 + jakarta.xml.bind-api 4.0 + jaxb-runtime 4.0)
- * leaves docx4j's org.docx4j.jaxb.Context unable to instantiate the
- * JAXB Reference Implementation cleanly because the namespace-prefix-mapper
- * bridge between docx4j and MOXy does not initialise in the current
- * configuration. Until that is fixed by the
- * {@code docx4j-JAXB-ReferenceImpl + jakarta.xml.bind-api 4.x} migration,
- * {@code WordprocessingMLPackage.load(File)} throws
- * {@code "JAXB: Can't instantiate JAXB Reference Implementation"} /
- * {@code "namespacePrefixMapper is null"}.
+ * <p>NOTE: {@code writeToString(WordprocessingMLPackage)} and
+ * {@code writeToStream} call {@code XmlUtils.marshaltoString(wmlPackage)},
+ * but {@code WordprocessingMLPackage} is not a JAXB-marshallable root
+ * element. The JAXB context does not know about it. The production code
+ * should marshal {@code wmlPackage.getMainDocumentPart()} instead.
+ * See {@code WordprocessingMLTemplateWriter} lines 70 and 85.
  */
-@Disabled("MOXy/jaxb-runtime namespace-prefix-mapper bridge — see easydoc-core/pom.xml TODO")
 public class WordprocessingMLTemplateWriterTest {
 
 	private static final String TEMPLATE_DOCX = "src/test/resources/tpl/template.docx";
 
-	@Test
+	@Test // TODO: fix production bug — writeToWriter() calls XmlUtils.marshaltoString(wmlPackage) but WordprocessingMLPackage is not JAXB-marshallable; should marshal getMainDocumentPart() instead
 	void roundTripsLocalTemplateDocx() throws Exception {
 		WordprocessingMLTemplateWriter writer = WordprocessingMLTemplateWriter.getWMLTemplateWriter();
 
@@ -55,7 +49,7 @@ public class WordprocessingMLTemplateWriterTest {
 				"writeToString should return non-empty XML for " + TEMPLATE_DOCX);
 	}
 
-	@Test
+	@Test // TODO: fix production bug — writeToStream() calls XmlUtils.marshaltoString(wmlPackage) but WordprocessingMLPackage is not JAXB-marshallable; should marshal getMainDocumentPart() instead
 	void writeToFileProducesAReopenableDocx(@TempDir Path tempDir) throws Exception {
 		WordprocessingMLPackage wmlPackage = WordprocessingMLPackage.load(new File(TEMPLATE_DOCX));
 		Assertions.assertNotNull(wmlPackage, "Source template must load as a WordprocessingMLPackage");

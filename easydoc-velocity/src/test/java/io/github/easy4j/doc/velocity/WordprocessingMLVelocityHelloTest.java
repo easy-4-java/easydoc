@@ -15,10 +15,10 @@
  */
 package io.github.easy4j.doc.velocity;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,11 +27,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WordprocessingMLVelocityHelloTest {
 
 	@Test
-	@Disabled("requires MOXy migration — see easydoc-core/pom.xml TODO")
 	void rendersHelloTemplate() throws Exception {
 		WordprocessingMLVelocityTemplate t = new WordprocessingMLVelocityTemplate();
-		Map<String, Object> vars = Map.of("name", "world");
-		WordprocessingMLPackage pkg = t.process("/tpl/hello.vm", vars);
+		// VelocityTemplate.render() puts internal keys into the variables map,
+		// so we must use a mutable HashMap instead of Map.of().
+		Map<String, Object> vars = new HashMap<>(Map.of("name", "world"));
+		WordprocessingMLPackage pkg = t.process("hello.vm", vars);
 		assertNotNull(pkg);
 		assertTrue(pkg.getMainDocumentPart().getXML().contains("Hello world"),
 				"rendered docx must contain 'Hello world'");
