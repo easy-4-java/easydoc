@@ -84,6 +84,14 @@
 		    <artifactId>jaxb-runtime</artifactId>
 		</dependency>
 
+		<!-- docx4j FOP 导出（PDF/HTML 渲染）；test scope 供 WordprocessingMLPackageWriter
+		     writeToPDF/writeToHtml 路径的测试使用 -->
+		<dependency>
+		    <groupId>org.docx4j</groupId>
+		    <artifactId>docx4j-export-fo</artifactId>
+		    <scope>test</scope>
+		</dependency>
+
 	</dependencies>
 	
 </project>

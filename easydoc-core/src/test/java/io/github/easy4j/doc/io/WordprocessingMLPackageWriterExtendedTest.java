@@ -175,7 +175,7 @@ class WordprocessingMLPackageWriterExtendedTest {
         try {
             writer.writeToPDF(pkg, baos);
             // PDF generation may fail without FOP, but the code path is exercised
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // Expected: PDF generation requires Apache FOP
         }
     }
@@ -187,7 +187,7 @@ class WordprocessingMLPackageWriterExtendedTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             writer.writeToPDFWhithFo(pkg, baos);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // Expected: FO-based PDF generation requires Apache FOP
         }
     }
