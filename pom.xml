@@ -68,7 +68,7 @@
         <javax.mail-api.version>1.6.2</javax.mail-api.version>
         <jaxb-impl.version>4.0.5</jaxb-impl.version>
         <jetbrick.version>2.1.10</jetbrick.version>
-        <jsoup.version>1.22.2</jsoup.version>
+        <jsoup.version>1.23.1</jsoup.version>
         <junit-jupiter.version>6.1.0</junit-jupiter.version>
         <junit.version>4.13.2</junit.version>
         <ognl.version>3.2.13</ognl.version>
