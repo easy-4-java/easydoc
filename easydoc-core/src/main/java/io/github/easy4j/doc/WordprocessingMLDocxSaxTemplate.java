@@ -65,6 +65,7 @@ public class WordprocessingMLDocxSaxTemplate implements WordprocessingMLTemplate
 			wordMLPackage = Docx4J.load(template);
 		}
 		if (null != variables && !variables.isEmpty()) {
+			assertJdkCompatible();
         	// 替换变量并输出Word文档 
         	MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();
         	// 将${}里的内容结构层次替换为一层
@@ -98,6 +99,7 @@ public class WordprocessingMLDocxSaxTemplate implements WordprocessingMLTemplate
 			wordMLPackage = Docx4J.load(template);
 		}
         if (null != variables && !variables.isEmpty()) {
+        	assertJdkCompatible();
         	// 替换变量并输出Word文档 
         	MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();
         	// 将${}里的内容结构层次替换为一层
@@ -108,6 +110,31 @@ public class WordprocessingMLDocxSaxTemplate implements WordprocessingMLTemplate
          }
         // 返回WordprocessingMLPackage对象
 		return FontMapperHolder.useFontMapper(wordMLPackage);
+	}
+
+	/**
+	 * docx4j 11.5.14 的 {@code SAXHandler} 在 JDK 21+ 下无法工作：
+	 * Transformer（无论 JDK 内置 XSLTC 还是 docx4j 的 Xalan interpretive）
+	 * 都不会通过 SAXSource 的 XMLReader 触发 setContentHandler 回调，
+	 * 抛出 "Transformer didn't set ContentHandler"。与其让用户在最深处
+	 * 看到 cryptic 错误，不如在此 fail-fast 给出可操作的提示。
+	 */
+	private void assertJdkCompatible() {
+		String version = System.getProperty("java.specification.version");
+		if (version != null) {
+			try {
+				int major = Integer.parseInt(version.contains(".") ? version.substring(0, version.indexOf('.')) : version);
+				if (major >= 21) {
+					throw new UnsupportedOperationException(
+							"WordprocessingMLDocxSaxTemplate is incompatible with JDK " + major
+							+ " (docx4j 11.5.14 SAXHandler limitation). "
+							+ "Use DocxTemplates.create(DocxMode.DEFAULT) or DocxTemplates.create(DocxMode.STAX) instead, "
+							+ "or run on JDK 17.");
+				}
+			} catch (NumberFormatException e) {
+				// 无法解析版本号时不拦截，保持原有行为
+			}
+		}
 	}
 	
 	public String getPlaceholderStart() {

@@ -77,7 +77,14 @@ public class WmlZipUtils {
 				InputStream eis = zipFile.getInputStream(entry);
 				byte[] buffer = new byte[BUFFER];
 				int bytesRead = 0;
-				f = new File(outputDir.getAbsolutePath() + File.separator + entry.getName());
+				f = new File(outputDir, entry.getName());
+				// Zip Slip 防护：规范化后必须仍在目标目录内，拒绝路径穿越条目
+				String canonicalBase = outputDir.getCanonicalPath();
+				String canonicalTarget = f.getCanonicalPath();
+				if (!canonicalTarget.startsWith(canonicalBase + File.separator)
+						&& !canonicalTarget.equals(canonicalBase)) {
+					throw new IOException("Zip entry escapes target directory: " + entry.getName());
+				}
 				if (entry.isDirectory()) {
 					f.mkdirs();
 					continue;

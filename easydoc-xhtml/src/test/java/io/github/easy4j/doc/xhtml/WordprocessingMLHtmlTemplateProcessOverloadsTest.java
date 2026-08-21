@@ -219,4 +219,23 @@ class WordprocessingMLHtmlTemplateProcessOverloadsTest {
 		assertNotNull(tpl.getDocHandler());
 		assertNotNull(tpl.getWordMLPackageBuilder());
 	}
+
+	@Test
+	void processDocumentWithPageSizePaper() throws Exception {
+		Document doc = Jsoup.parse(SIMPLE_HTML);
+		Object pkg = new WordprocessingMLHtmlTemplate()
+				.process(doc, PageSizePaper.A4);
+		assertNotNull(pkg);
+	}
+
+	@Test
+	void getWordMLPackageBuilderReturnsNonNull() {
+		assertNotNull(new WordprocessingMLHtmlTemplate().getWordMLPackageBuilder());
+	}
+
+	@Test
+	void processFileSingleArgReturnsNonNull() throws Exception {
+		Object pkg = new WordprocessingMLHtmlTemplate().process(reportHtml());
+		assertNotNull(pkg);
+	}
 }

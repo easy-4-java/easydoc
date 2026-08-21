@@ -59,8 +59,10 @@ public class VariableReplaceSaTXHandler extends StAXHandlerAbstract {
 
 	protected void initContext() {
 		// 构建一个OgnlContext对象
+		// 安全：仅允许访问 public 成员（allowPrivate/Protected/PackageProtected 全 false），
+		// 防止模板内容可控时通过 OGNL 反射访问私有成员造成 RCE
 		context = (OgnlContext) Ognl.createDefaultContext(this, 
-		        new DefaultMemberAccess(true), 
+		        new DefaultMemberAccess(false, false, false), 
 		        new DefaultClassResolver(),
 		        new DefaultTypeConverter());
 		// 设置根节点，以及初始化一些实例对象

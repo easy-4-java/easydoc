@@ -22,6 +22,8 @@ import org.docx4j.events.EventFinished;
 import org.docx4j.events.StartEvent;
 import org.docx4j.model.structure.PageSizePaper;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import io.github.easy4j.doc.bus.event.BuildJobTypes;
 import io.github.easy4j.doc.fonts.ChineseFont;
 import io.github.easy4j.doc.fonts.FontMapperHolder;
@@ -33,6 +35,8 @@ import io.github.easy4j.doc.xhtml.utils.XHTMLImporterUtils;
 import org.jsoup.nodes.Document;
 
 public class WordprocessingMLPackageBuilder {
+
+	private static final Logger LOG = LoggerFactory.getLogger(WordprocessingMLPackageBuilder.class);
 
 	protected DocumentHandler docHandler = XHTMLDocumentHandler.getDocumentHandler();
 
@@ -68,8 +72,7 @@ public class WordprocessingMLPackageBuilder {
 		try {
 			PhysicalFontUtils.setDefaultFont(wmlPackage, fontName);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.warn("Failed to set default font '{}'", fontName, e);
 		}
         //返回WordprocessingMLPackage对象
       	return this;

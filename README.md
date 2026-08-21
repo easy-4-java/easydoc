@@ -210,9 +210,19 @@ WordprocessingMLPackage doc = html.process(new File("page.html"));
 ./mvnw clean install       # install all modules into the local repository
 ```
 
-- Tests exist in `easydoc-core` (docx4j demo-style tests), `easydoc-velocity` and `easydoc-xhtml` (HTML conversion demos).
-- Coverage is measured with the JaCoCo Maven plugin (target: 90% line coverage, `haltOnFailure=false`).
+- Tests exist across all modules (1000+ tests, JUnit 5).
+- Coverage is measured with the JaCoCo Maven plugin: **90% line coverage per module, `haltOnFailure=true`** — the gate fails the build below 90%.
 - The `release` profile assembles GPG signing + sources + Javadoc + deployment (`./mvnw -Prelease clean deploy`).
+
+## Known limitations (3.0.x)
+
+| Limitation | Details | Workaround |
+|:---|:---|:---|
+| SAX template on JDK 21 | `WordprocessingMLDocxSaxTemplate` is incompatible with JDK 21 (docx4j 11.5.14 `SAXHandler` limitation); `process()` fails fast with `UnsupportedOperationException`. | Use `DocxTemplates.create(DocxMode.DEFAULT)` or `DocxMode.STAX`, or run on JDK 17. |
+| JSP module requires a servlet container | `easydoc-jsp` now delegates to `RequestDispatcher.include` (Tomcat 9.x, javax). | Run inside a servlet container; see `MIGRATION.md` §2.3. |
+| `IdentityPlusMapper` on JVM 21 | Font-mapping config helpers (`configChineseFonts` etc.) fail during docx4j font discovery on JVM 21. | Avoid these helpers on JVM 21; see `MIGRATION.md` §4. |
+
+See [MIGRATION.md](./MIGRATION.md) for 2.x → 3.x breaking changes and [CONFIGURATION.md](./CONFIGURATION.md) for the full engine configuration reference.
 
 ## 10. Versioning & Branches
 

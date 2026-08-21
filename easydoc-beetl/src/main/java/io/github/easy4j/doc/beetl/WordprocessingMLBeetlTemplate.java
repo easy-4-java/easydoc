@@ -60,9 +60,9 @@ public class WordprocessingMLBeetlTemplate extends AbstractStringTemplateWrappin
 		Configuration cfg = Configuration.defaultConfiguration();
 		cfg.setCharset(Docx4jProperties.getProperty("docx4j.beetl.charset", Docx4jConstants.DEFAULT_CHARSETNAME));
 		cfg.setPlaceholderStart(Docx4jProperties.getProperty("docx4j.beetl.placeholderStart", "${"));
-		cfg.setPlaceholderEnd(Docx4jProperties.getProperty("docx4j.beetl.placeholderEnd", "<%"));
-		cfg.setStatementStart(Docx4jProperties.getProperty("docx4j.beetl.statementStart", "%>"));
-		cfg.setStatementEnd(Docx4jProperties.getProperty("docx4j.beetl.statementEnd", "}"));
+		cfg.setPlaceholderEnd(Docx4jProperties.getProperty("docx4j.beetl.placeholderEnd", "}"));
+		cfg.setStatementStart(Docx4jProperties.getProperty("docx4j.beetl.statementStart", "<%"));
+		cfg.setStatementEnd(Docx4jProperties.getProperty("docx4j.beetl.statementEnd", "%>"));
 		cfg.setHtmlTagSupport(Docx4jProperties.getProperty("docx4j.beetl.htmlTagSupport", false));
 		cfg.setHtmlTagFlag(Docx4jProperties.getProperty("docx4j.beetl.htmlTagFlag", "#"));
 		cfg.setHtmlTagBindingAttribute(Docx4jProperties.getProperty("docx4j.beetl.htmlTagBindingAttribute", "var"));

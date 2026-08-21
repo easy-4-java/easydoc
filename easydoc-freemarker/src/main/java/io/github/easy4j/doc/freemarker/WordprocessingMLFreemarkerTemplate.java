@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -237,12 +238,11 @@ public class WordprocessingMLFreemarkerTemplate extends AbstractStringTemplateWr
 
 	@Override
 	protected String render(String template, Map<String, Object> variables) throws Exception {
-		// TODO: original code mutated the caller's variables map by adding "String" key;
-		// preserving that behaviour to keep semantics identical, but it should be fixed
-		// by binding "String" as a per-render shared variable on the Configuration instead.
-		variables.put("String", this.templateModel);
+		// 防御性拷贝：不再向调用方的 Map 写入 "String" 键（原实现污染调用方数据）
+		Map<String, Object> renderVars = new HashMap<String, Object>(variables);
+		renderVars.put("String", this.templateModel);
 		StringWriter output = new StringWriter();
-		getEngine().getTemplate(template).process(variables, output);
+		getEngine().getTemplate(template).process(renderVars, output);
 		return output.toString();
 	}
 }

@@ -34,11 +34,4 @@ class XHTMLDocumentHandlerTest {
         assertThat(XHTMLDocumentHandler.class).isNotNull();
     }
 
-    @Test
-    @DisplayName("static method main should be callable")
-    void staticMainShouldBeCallable() {
-        try { XHTMLDocumentHandler.main((String[]) null); } catch (Throwable e) { /* expected */ }
-        assertThat(XHTMLDocumentHandler.class).isNotNull();
-    }
-
 }

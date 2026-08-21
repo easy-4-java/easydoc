@@ -36,9 +36,12 @@ class ZipFolderHelper {
     }   
     
     public void process(File folderToZip, OutputStream output) throws Exception {   
-    	ZipOutputStream zip = new ZipOutputStream(output);   
-		addFolderToZip("", folderToZip.getPath(), zip);   
-		zip.flush();
+    	// try-with-resources 确保 close() 被调用（写入 zip END 记录），
+    	// 否则产出的压缩包不完整（M-1）
+    	try (ZipOutputStream zip = new ZipOutputStream(output)) {   
+			addFolderToZip("", folderToZip.getPath(), zip);   
+			zip.flush();
+    	}
     }
     
     private void addFileToZip(String path, String srcFile, ZipOutputStream zip)  throws Exception {   

@@ -159,28 +159,40 @@ public final class WmlTableUtils {
         mainPart.getRelationshipsPart().addRelationship(rel);
         StringBuffer sb = new StringBuffer();
         // addRelationship sets the rel's @Id
+        // 安全：所有用户可控值先做 XML 转义，防止属性/文本注入（H-2）
         sb.append("<w:hyperlink r:id=\"");
-        sb.append(rel.getId());
+        sb.append(escapeXml(rel.getId()));
         sb.append("\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" ");
         sb.append("xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" >");
         sb.append("<w:r><w:rPr><w:rStyle w:val=\"Hyperlink\" />");
         sb.append("<w:rFonts w:ascii=\"");
-        sb.append(enFontName);
+        sb.append(escapeXml(enFontName));
         sb.append("\" w:hAnsi=\"");
-        sb.append(enFontName);
+        sb.append(escapeXml(enFontName));
         sb.append("\" w:eastAsia=\"");
-        sb.append(cnFontName);
+        sb.append(escapeXml(cnFontName));
         sb.append("\" w:hint=\"eastAsia\"/>");
         sb.append("<w:sz w:val=\"");
-        sb.append(fontSize);
+        sb.append(escapeXml(fontSize));
         sb.append("\"/><w:szCs w:val=\"");
-        sb.append(fontSize);
+        sb.append(escapeXml(fontSize));
         sb.append("\"/></w:rPr><w:t>");
-        sb.append(value);
+        sb.append(escapeXml(value));
         sb.append("</w:t></w:r></w:hyperlink>");
 
         P.Hyperlink link = (P.Hyperlink) XmlUtils.unmarshalString(sb.toString());
         paragraph.getContent().add(link);
+    }
+
+    private static String escapeXml(String s) {
+        if (s == null) {
+            return "";
+        }
+        return s.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&apos;");
     }
 
     /*

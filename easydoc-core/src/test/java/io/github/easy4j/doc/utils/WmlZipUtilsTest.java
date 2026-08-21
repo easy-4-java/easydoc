@@ -99,4 +99,34 @@ class WmlZipUtilsTest {
         WmlZipUtils.zipDir(dirToZip.toFile(), baos, true);
         assertTrue(baos.size() > 0);
     }
+
+    @Test
+    void unzipRejectsPathTraversalEntry(@TempDir Path tempDir) throws Exception {
+        // 构造含 ../ 条目的恶意 zip
+        Path zipPath = tempDir.resolve("evil.zip");
+        try (java.util.zip.ZipOutputStream zos = new java.util.zip.ZipOutputStream(
+                Files.newOutputStream(zipPath))) {
+            zos.putNextEntry(new java.util.zip.ZipEntry("../../evil.txt"));
+            zos.write("pwned".getBytes());
+            zos.closeEntry();
+        }
+        Path outputDir = tempDir.resolve("out");
+        org.junit.jupiter.api.Assertions.assertThrows(java.io.IOException.class,
+                () -> WmlZipUtils.unzip(zipPath.toFile(), outputDir.toFile()));
+        org.junit.jupiter.api.Assertions.assertFalse(Files.exists(tempDir.resolve("evil.txt")));
+    }
+
+    @Test
+    void zipOutputIsAValidZipArchive(@TempDir Path tempDir) throws Exception {
+        // M-1 回归：ZipFolderHelper 之前不 close ZipOutputStream，产出缺少 END 记录的损坏 zip
+        Path dirToZip = tempDir.resolve("zdir");
+        Files.createDirectories(dirToZip);
+        Files.write(dirToZip.resolve("f.txt"), "hello".getBytes());
+        Path destFile = tempDir.resolve("valid.zip");
+        WmlZipUtils.zipDir(dirToZip.toFile(), destFile.toFile());
+        try (java.util.zip.ZipFile zf = new java.util.zip.ZipFile(destFile.toFile())) {
+            org.junit.jupiter.api.Assertions.assertNotNull(zf.getEntry("zdir/f.txt"),
+                    "zip must contain the entry and be parseable (END record present)");
+        }
+    }
 }
