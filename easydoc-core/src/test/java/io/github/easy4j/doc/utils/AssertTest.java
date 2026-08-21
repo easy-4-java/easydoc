@@ -1,205 +1,181 @@
+/*
+ * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package io.github.easy4j.doc.utils;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.*;
-import java.util.Collection;
-import java.util.Map;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * Unit tests for {@link Assert}.
- *
- * [@Loong Wan](https://github.com/loong10k)
- */
-@DisplayName("Assert Tests")
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
 class AssertTest {
 
     @Test
-    @DisplayName("should be abstract")
-    void shouldBeAbstract() {
-        assertThat(Assert.class).isAbstract();
+    void isTrueAcceptsTrue() {
+        assertDoesNotThrow(() -> Assert.isTrue(true));
+        assertDoesNotThrow(() -> Assert.isTrue(true, "msg"));
     }
 
     @Test
-    @DisplayName("static method isTrue should be callable")
-    void staticIsTrueShouldBeCallable() {
-        try { Assert.isTrue(true, "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void isTrueRejectsFalse() {
+        assertThrows(IllegalArgumentException.class, () -> Assert.isTrue(false));
+        assertThrows(IllegalArgumentException.class, () -> Assert.isTrue(false, "boom"));
     }
 
     @Test
-    @DisplayName("static method isTrue should be callable")
-    void staticIsTrueWith1ParamsShouldBeCallable() {
-        try { Assert.isTrue(true); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void isNullAcceptsNull() {
+        assertDoesNotThrow(() -> Assert.isNull(null));
+        assertDoesNotThrow(() -> Assert.isNull(null, "ok"));
     }
 
     @Test
-    @DisplayName("static method isNull should be callable")
-    void staticIsNullShouldBeCallable() {
-        try { Assert.isNull((Object) null, "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void isNullRejectsNonNull() {
+        assertThrows(IllegalArgumentException.class, () -> Assert.isNull("x"));
+        assertThrows(IllegalArgumentException.class, () -> Assert.isNull("x", "boom"));
     }
 
     @Test
-    @DisplayName("static method isNull should be callable")
-    void staticIsNullWith3ParamsShouldBeCallable() {
-        try { Assert.isNull((Object) null); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void notNullAcceptsNonNull() {
+        assertDoesNotThrow(() -> Assert.notNull("x"));
+        assertDoesNotThrow(() -> Assert.notNull("x", "ok"));
     }
 
     @Test
-    @DisplayName("static method notNull should be callable")
-    void staticNotNullShouldBeCallable() {
-        try { Assert.notNull((Object) null, "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void notNullRejectsNull() {
+        assertThrows(IllegalArgumentException.class, () -> Assert.notNull(null));
+        assertThrows(IllegalArgumentException.class, () -> Assert.notNull(null, "boom"));
     }
 
     @Test
-    @DisplayName("static method notNull should be callable")
-    void staticNotNullWith5ParamsShouldBeCallable() {
-        try { Assert.notNull((Object) null); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void hasLengthAcceptsNonEmpty() {
+        assertDoesNotThrow(() -> Assert.hasLength("x"));
+        assertDoesNotThrow(() -> Assert.hasLength("x", "ok"));
     }
 
     @Test
-    @DisplayName("static method hasLength should be callable")
-    void staticHasLengthShouldBeCallable() {
-        try { Assert.hasLength("test", "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void hasLengthRejectsNullAndEmpty() {
+        assertThrows(IllegalArgumentException.class, () -> Assert.hasLength(null));
+        assertThrows(IllegalArgumentException.class, () -> Assert.hasLength(""));
+        assertThrows(IllegalArgumentException.class, () -> Assert.hasLength("  "));
     }
 
     @Test
-    @DisplayName("static method hasLength should be callable")
-    void staticHasLengthWith7ParamsShouldBeCallable() {
-        try { Assert.hasLength("test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void hasTextRejectsBlank() {
+        assertThrows(IllegalArgumentException.class, () -> Assert.hasText(" "));
+        assertThrows(IllegalArgumentException.class, () -> Assert.hasText(""));
     }
 
     @Test
-    @DisplayName("static method hasText should be callable")
-    void staticHasTextShouldBeCallable() {
-        try { Assert.hasText("test", "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void hasTextAcceptsNonBlank() {
+        assertDoesNotThrow(() -> Assert.hasText("x"));
     }
 
     @Test
-    @DisplayName("static method hasText should be callable")
-    void staticHasTextWith9ParamsShouldBeCallable() {
-        try { Assert.hasText("test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void isInstanceOfAcceptsInstance() {
+        assertDoesNotThrow(() -> Assert.isInstanceOf(String.class, "abc"));
     }
 
     @Test
-    @DisplayName("static method doesNotContain should be callable")
-    void staticDoesNotContainShouldBeCallable() {
-        try { Assert.doesNotContain("test", "test", "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void isInstanceOfRejectsMismatch() {
+        assertThrows(IllegalArgumentException.class, () -> Assert.isInstanceOf(Integer.class, "abc"));
     }
 
     @Test
-    @DisplayName("static method doesNotContain should be callable")
-    void staticDoesNotContainWith11ParamsShouldBeCallable() {
-        try { Assert.doesNotContain("test", "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void isAssignableAcceptsSubclass() {
+        assertDoesNotThrow(() -> Assert.isAssignable(Number.class, Integer.class));
     }
 
     @Test
-    @DisplayName("static method notEmpty should be callable")
-    void staticNotEmptyShouldBeCallable() {
-        try { Assert.notEmpty((Object[]) null, "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void isAssignableRejectsNonAssignable() {
+        assertThrows(IllegalArgumentException.class, () -> Assert.isAssignable(Integer.class, String.class));
     }
 
     @Test
-    @DisplayName("static method notEmpty should be callable")
-    void staticNotEmptyWith13ParamsShouldBeCallable() {
-        try { Assert.notEmpty((Object[]) null); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void isAssignableRejectsNullSubType() {
+        assertThrows(IllegalArgumentException.class, () -> Assert.isAssignable(Integer.class, null));
     }
 
     @Test
-    @DisplayName("static method noNullElements should be callable")
-    void staticNoNullElementsShouldBeCallable() {
-        try { Assert.noNullElements((Object[]) null, "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void isAssignableRejectsNullSuperType() {
+        assertThrows(IllegalArgumentException.class, () -> Assert.isAssignable(null, Integer.class));
     }
 
     @Test
-    @DisplayName("static method noNullElements should be callable")
-    void staticNoNullElementsWith15ParamsShouldBeCallable() {
-        try { Assert.noNullElements((Object[]) null); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void doesNotContainAcceptsCleanText() {
+        assertDoesNotThrow(() -> Assert.doesNotContain("hello", "world"));
     }
 
     @Test
-    @DisplayName("static method notEmpty should be callable")
-    void staticNotEmptyWith16ParamsShouldBeCallable() {
-        try { Assert.notEmpty((Collection) null, "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void doesNotContainRejectsSubstring() {
+        assertThrows(IllegalArgumentException.class, () -> Assert.doesNotContain("hello world", "world"));
     }
 
     @Test
-    @DisplayName("static method notEmpty should be callable")
-    void staticNotEmptyWith17ParamsShouldBeCallable() {
-        try { Assert.notEmpty((Collection) null); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void stateAcceptsTrue() {
+        assertDoesNotThrow(() -> Assert.state(true));
     }
 
     @Test
-    @DisplayName("static method notEmpty should be callable")
-    void staticNotEmptyWith18ParamsShouldBeCallable() {
-        try { Assert.notEmpty((Map) null, "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void stateRejectsFalse() {
+        assertThrows(IllegalStateException.class, () -> Assert.state(false));
     }
 
     @Test
-    @DisplayName("static method notEmpty should be callable")
-    void staticNotEmptyWith19ParamsShouldBeCallable() {
-        try { Assert.notEmpty((Map) null); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void noNullElementsAcceptsCleanArray() {
+        assertDoesNotThrow(() -> Assert.noNullElements(new Object[]{"a", "b"}));
     }
 
     @Test
-    @DisplayName("static method isInstanceOf should be callable")
-    void staticIsInstanceOfShouldBeCallable() {
-        try { Assert.isInstanceOf((Class) null, (Object) null); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void noNullElementsRejectsNullElement() {
+        assertThrows(IllegalArgumentException.class, () -> Assert.noNullElements(new Object[]{"a", null}));
     }
 
     @Test
-    @DisplayName("static method isInstanceOf should be callable")
-    void staticIsInstanceOfWith21ParamsShouldBeCallable() {
-        try { Assert.isInstanceOf((Class) null, (Object) null, "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void notEmptyCollectionRejectsNull() {
+        assertThrows(IllegalArgumentException.class, () -> Assert.notEmpty((List<?>) null));
     }
 
     @Test
-    @DisplayName("static method isAssignable should be callable")
-    void staticIsAssignableShouldBeCallable() {
-        try { Assert.isAssignable((Class) null, (Class) null); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void notEmptyCollectionRejectsEmpty() {
+        assertThrows(IllegalArgumentException.class, () -> Assert.notEmpty(new ArrayList<>()));
     }
 
     @Test
-    @DisplayName("static method isAssignable should be callable")
-    void staticIsAssignableWith23ParamsShouldBeCallable() {
-        try { Assert.isAssignable((Class) null, (Class) null, "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void notEmptyCollectionAcceptsPopulated() {
+        assertDoesNotThrow(() -> Assert.notEmpty(Collections.singletonList("a")));
     }
 
     @Test
-    @DisplayName("static method state should be callable")
-    void staticStateShouldBeCallable() {
-        try { Assert.state(true, "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void notEmptyMapRejectsNull() {
+        assertThrows(IllegalArgumentException.class, () -> Assert.notEmpty((java.util.Map<?, ?>) null));
     }
 
     @Test
-    @DisplayName("static method state should be callable")
-    void staticStateWith25ParamsShouldBeCallable() {
-        try { Assert.state(true); } catch (Throwable e) { /* expected */ }
-        assertThat(Assert.class).isNotNull();
+    void notEmptyMapRejectsEmpty() {
+        assertThrows(IllegalArgumentException.class, () -> Assert.notEmpty(new HashMap<>()));
     }
 
+    @Test
+    void notEmptyMapAcceptsPopulated() {
+        java.util.Map<String, String> m = new HashMap<>();
+        m.put("a", "b");
+        assertDoesNotThrow(() -> Assert.notEmpty(m));
+    }
 }

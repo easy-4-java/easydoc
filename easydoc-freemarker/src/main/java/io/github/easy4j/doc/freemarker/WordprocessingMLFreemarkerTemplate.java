@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -15,11 +15,8 @@
  */
 package io.github.easy4j.doc.freemarker;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -27,12 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.docx4j.Docx4jProperties;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import io.github.easy4j.doc.WordprocessingMLTemplate;
 import io.github.easy4j.doc.utils.ConfigUtils;
+import io.github.easy4j.doc.xhtml.AbstractStringTemplateWrappingTemplate;
 import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,12 +44,11 @@ import freemarker.template.utility.HtmlEscape;
 import freemarker.template.utility.XmlEscape;
 
 /**
- * Implementation of wordprocessing m l freemarker template functionality.
- *
+ * 该模板仅负责使用Freemarker模板引擎将指定模板生成HTML并将HTML转换成XHTML后，作为模板生成WordprocessingMLPackage对象
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
-public class WordprocessingMLFreemarkerTemplate implements WordprocessingMLTemplate {
-	
+public class WordprocessingMLFreemarkerTemplate extends AbstractStringTemplateWrappingTemplate {
+
 	protected final Logger LOG = LoggerFactory.getLogger(WordprocessingMLFreemarkerTemplate.class);
 	protected Configuration engine;
 	protected Properties freemarkerSettings;
@@ -65,50 +58,19 @@ public class WordprocessingMLFreemarkerTemplate implements WordprocessingMLTempl
 	protected List<TemplateLoader> preTemplateLoaders;
 	protected List<TemplateLoader> postTemplateLoaders;
 	protected TemplateModel templateModel;
-	protected WordprocessingMLHtmlTemplate mlHtmlTemplate;
 
 	public WordprocessingMLFreemarkerTemplate() {
-		this(false, false);
+		super();
 	}
-	
+
 	public WordprocessingMLFreemarkerTemplate(boolean landscape, boolean altChunk) {
-		this.mlHtmlTemplate = new WordprocessingMLHtmlTemplate(landscape, altChunk) ;
+		super(landscape, altChunk);
 	}
-	
+
 	public WordprocessingMLFreemarkerTemplate(WordprocessingMLHtmlTemplate template) {
-		this.mlHtmlTemplate = template;
+		super(template);
 	}
 
-	@Override
-	public WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception {
-		return this.process(FileUtils.readFileToString(template, StandardCharsets.UTF_8), variables);
-	}
-	
-	@Override
-	public WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception {
-		return this.process(IOUtils.toString(template, StandardCharsets.UTF_8), variables);
-	}
-
-	/**
-	 * 使用Freemarker模板引擎渲染模板
-	 * @param template ：模板内容
-	 * @param variables ：变量
-	 * @return {@link WordprocessingMLPackage} 对象
-	 * @throws Exception ：异常对象
-	 */
-	@Override
-	public WordprocessingMLPackage process(String template,Map<String, Object> variables)  throws Exception{
-		variables.put("String", this.templateModel);
-		// 创建模板输出内容接收对象
-		StringWriter output = new StringWriter();
-		// 使用Freemarker模板引擎渲染模板
-		getEngine().getTemplate(template).process(variables, output);
-		//获取模板渲染后的结果
-		String html = output.toString();
-		//使用HtmlTemplate进行渲染
-		return mlHtmlTemplate.process(html, variables);
-	}
-	
 	public Configuration getEngine() throws IOException, TemplateException {
 		return engine == null ? getInternalEngine() : engine;
 	}
@@ -116,9 +78,9 @@ public class WordprocessingMLFreemarkerTemplate implements WordprocessingMLTempl
 	public void setEngine(Configuration engine) {
 		this.engine = engine;
 	}
-	
-	protected Configuration getInternalEngine() throws IOException, TemplateException{
-		
+
+	protected synchronized Configuration getInternalEngine() throws IOException, TemplateException {
+
 		try {
 			BeansWrapper beansWrapper = new BeansWrapper(Configuration.VERSION_2_3_23);
 			this.templateModel = beansWrapper.getStaticModels().get(String.class.getName());
@@ -128,7 +90,7 @@ public class WordprocessingMLFreemarkerTemplate implements WordprocessingMLTempl
 
 		// 创建 Configuration 实例
 		Configuration config = new Configuration(Configuration.VERSION_2_3_23);
-		
+
 		Properties props = ConfigUtils.filterWithPrefix("docx4j.freemarker.", "docx4j.freemarker.", Docx4jProperties.getProperties(), false);
 
 		// FreeMarker will only accept known keys in its setSettings and
@@ -146,33 +108,26 @@ public class WordprocessingMLFreemarkerTemplate implements WordprocessingMLTempl
 		}
 
 		List<TemplateLoader> templateLoaders = new LinkedList<TemplateLoader>(this.templateLoaders);
-		
+
 		// Register template loaders that are supposed to kick in early.
 		if (this.preTemplateLoaders != null) {
 			templateLoaders.addAll(this.preTemplateLoaders);
 		}
-		
+
 		postProcessTemplateLoaders(templateLoaders);
-		
+
 		// Register template loaders that are supposed to kick in late.
 		if (this.postTemplateLoaders != null) {
 			templateLoaders.addAll(this.postTemplateLoaders);
 		}
-		
+
 		TemplateLoader loader = getAggregateTemplateLoader(templateLoaders);
 		if (loader != null) {
 			config.setTemplateLoader(loader);
 		}
-		//config.setClassLoaderForTemplateLoading(classLoader, basePackagePath);
-		//config.setCustomAttribute(name, value);
-		//config.setDirectoryForTemplateLoading(dir);
-		//config.setServletContextForTemplateLoading(servletContext, path);
-		//config.setSharedVariable(name, value);
-		//config.setSharedVariable(name, tm);
 		config.setSharedVariable("fmXmlEscape", new XmlEscape());
 		config.setSharedVariable("fmHtmlEscape", new HtmlEscape());
-		//config.setSharedVaribles(map);
-		
+
 		// 设置模板引擎，减少重复初始化消耗
         this.setEngine(config);
         return config;
@@ -198,7 +153,6 @@ public class WordprocessingMLFreemarkerTemplate implements WordprocessingMLTempl
 				return new MultiTemplateLoader(loaders);
 		}
 	}
-	
 
 	/**
 	 * Set properties that contain well-known FreeMarker keys which will be
@@ -263,7 +217,7 @@ public class WordprocessingMLFreemarkerTemplate implements WordprocessingMLTempl
 	public void setPostTemplateLoaders(TemplateLoader... postTemplateLoaders) {
 		this.postTemplateLoaders = Arrays.asList(postTemplateLoaders);
 	}
-	
+
 	/**
 	 * To be overridden by subclasses that want to register custom
 	 * TemplateLoader instances after this factory created its default
@@ -280,6 +234,15 @@ public class WordprocessingMLFreemarkerTemplate implements WordprocessingMLTempl
 		templateLoaders.add(new ClassTemplateLoader(WordprocessingMLFreemarkerTemplate.class, ""));
 		LOG.info("ClassTemplateLoader for WordprocessingMLFreemarkerTemplate added to FreeMarker configuration");
 	}
-	
 
+	@Override
+	protected String render(String template, Map<String, Object> variables) throws Exception {
+		// TODO: original code mutated the caller's variables map by adding "String" key;
+		// preserving that behaviour to keep semantics identical, but it should be fixed
+		// by binding "String" as a per-render shared variable on the Configuration instead.
+		variables.put("String", this.templateModel);
+		StringWriter output = new StringWriter();
+		getEngine().getTemplate(template).process(variables, output);
+		return output.toString();
+	}
 }

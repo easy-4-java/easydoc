@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -28,8 +28,7 @@ import java.util.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 
 /**
- * Implementation of wml zip utils functionality.
- *
+ * To change this template, choose Tools | Templates and open the template in the editor.
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WmlZipUtils {

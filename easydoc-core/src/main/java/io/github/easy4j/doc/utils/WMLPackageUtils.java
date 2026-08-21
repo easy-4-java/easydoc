@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -16,9 +16,13 @@
 package io.github.easy4j.doc.utils;
 
 import java.io.File;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.util.List;
 
@@ -26,6 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.docx4j.XmlUtils;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.docx4j.wml.CTBookmark;
 import org.docx4j.wml.CTMarkupRange;
 import org.docx4j.wml.ContentAccessor;
@@ -37,16 +43,17 @@ import org.docx4j.wml.ParaRPr;
 import org.docx4j.wml.Text;
 
 /**
- * Implementation of w m l package utils functionality.
- *
+ * TODO
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WMLPackageUtils {
+
+	private static final Logger LOG = LoggerFactory.getLogger(WMLPackageUtils.class);
 	
 	protected static ObjectFactory factory = Context.getWmlObjectFactory();
 	protected static String CONTENT_TYPE = "";
 	
-    /**
+    /*
      * cleanDocumentPart
      * @param documentPart
      */
@@ -218,7 +225,7 @@ public class WMLPackageUtils {
         long length = file.length();  
         // 不能使用long类型创建数组, 需要用int类型.  
         if (length > Integer.MAX_VALUE) {  
-            System.out.println("File too large!!");  
+            LOG.debug("File too large!!");  
         }  
         byte[] bytes = new byte[(int)length];  
         int offset = 0;  
@@ -228,7 +235,7 @@ public class WMLPackageUtils {
         }  
         // 确认所有的字节都没读取  
         if (offset < bytes.length) {  
-            System.out.println("Could not completely read file " +file.getName());  
+            LOG.debug("Could not completely read file " +file.getName());  
         }  
         is.close();  
         return bytes;  

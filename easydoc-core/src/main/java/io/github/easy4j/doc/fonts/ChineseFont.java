@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -17,11 +17,6 @@ package io.github.easy4j.doc.fonts;
 
 import java.net.URL;
 
-/**
- * Enumeration defining ChineseFont constants.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
 public enum ChineseFont {
 	
 	//仿宋体

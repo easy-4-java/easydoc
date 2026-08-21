@@ -18,13 +18,12 @@ import ognl.DefaultClassResolver;
 import ognl.DefaultTypeConverter;
 import ognl.Ognl;
 import ognl.OgnlContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Implementation of variable replace sa t x handler extending StAXHandlerAbstract.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
 public class VariableReplaceSaTXHandler extends StAXHandlerAbstract {
+
+	private static final Logger LOG = LoggerFactory.getLogger(VariableReplaceSaTXHandler.class);
 	
 	/**
 	 * 变量占位符开始位，默认：${
@@ -77,7 +76,7 @@ public class VariableReplaceSaTXHandler extends StAXHandlerAbstract {
 		sb.append(xmlr.getTextCharacters(), xmlr.getTextStart(), xmlr.getTextLength());
 
 		String wmlString = replace(sb.toString(), 0, new StringBuilder(), variables).toString();
-//		System.out.println(wmlString);
+//		LOG.debug(wmlString);
 
 		char[] charOut = wmlString.toCharArray();
 		writer.writeCharacters(charOut, 0, charOut.length);
@@ -107,11 +106,11 @@ public class VariableReplaceSaTXHandler extends StAXHandlerAbstract {
 						if(value != null) {
 							strB.append(value.toString());
 						} else {
-							System.out.println("Invalid key '" + key + "' or key not mapped to a value");
+							LOG.warn("Invalid key '{}' or key not mapped to a value", key);
 							strB.append(key);
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						LOG.warn("Failed to evaluate expression", e);
 						strB.append(key);
 					}
 				} else {
@@ -119,7 +118,7 @@ public class VariableReplaceSaTXHandler extends StAXHandlerAbstract {
 				}
 				return replace(wmlTemplateString, keyEnd + 1, strB, mappings);
 			} else {
-				System.out.println("Invalid key: could not find '}' ");
+				LOG.warn("Invalid key: could not find '}}' ");
 				strB.append("$");
 				return replace(wmlTemplateString, offset + 1, strB, mappings);
 			}

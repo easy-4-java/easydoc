@@ -1,49 +1,85 @@
+/*
+ * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package io.github.easy4j.doc.io;
 
-import org.junit.jupiter.api.DisplayName;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import org.apache.commons.io.IOUtils;
-import org.docx4j.Docx4J;
-import org.docx4j.Docx4jProperties;
-import org.docx4j.convert.out.ConversionHTMLScriptElementHandler;
-import org.docx4j.convert.out.ConversionHTMLStyleElementHandler;
-import org.docx4j.convert.out.ConversionHyperlinkHandler;
-import org.docx4j.convert.out.FOSettings;
-import org.docx4j.convert.out.HTMLSettings;
-import org.docx4j.fonts.PhysicalFonts;
-import org.docx4j.model.fields.FieldUpdater;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import io.github.easy4j.doc.Docx4jConstants;
-import io.github.easy4j.doc.handler.OutputConversionHTMLScriptElementHandler;
-import io.github.easy4j.doc.handler.OutputConversionHTMLStyleElementHandler;
-import io.github.easy4j.doc.handler.OutputConversionHyperlinkHandler;
-import io.github.easy4j.doc.handler.OutputDirFilterHandler;
-import io.github.easy4j.doc.utils.Assert;
-import io.github.easy4j.doc.utils.Docx4jUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.util.Properties;
-import java.util.Set;
 
 /**
- * Unit tests for {@link WordprocessingMLPackageWriter}.
- *
- * [@Loong Wan](https://github.com/loong10k)
+ * WordprocessingMLPackageWriter has no static entry point that does not
+ * require a non-null {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage}
+ * or a file path that triggers {@code WordprocessingMLPackage.load(File)}.
+ * The simple singletons we can still verify are below.
  */
-@DisplayName("WordprocessingMLPackageWriter Tests")
 class WordprocessingMLPackageWriterTest {
 
     @Test
-    @DisplayName("static method getWMLPackageWriter should be callable")
-    void staticGetWMLPackageWriterShouldBeCallable() {
-        try { WordprocessingMLPackageWriter.getWMLPackageWriter(); } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLPackageWriter.class).isNotNull();
+    void getWMLPackageWriterReturnsInstance() {
+        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+        assertNotNull(writer);
     }
 
+    @Test
+    void getHyperlinkHandlerReturnsHandler() {
+        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+        assertNotNull(writer.getHyperlinkHandler());
+    }
+
+    @Test
+    void getStyleElementHandlerReturnsHandler() {
+        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+        assertNotNull(writer.getStyleElementHandler());
+    }
+
+    @Test
+    void getScriptElementHandlerReturnsHandler() {
+        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+        assertNotNull(writer.getScriptElementHandler());
+    }
+
+    @Test
+    void setHyperlinkHandlerStoresValue() {
+        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+        org.docx4j.convert.out.ConversionHyperlinkHandler original = writer.getHyperlinkHandler();
+        writer.setHyperlinkHandler(original);
+        assertNotNull(writer.getHyperlinkHandler());
+    }
+
+    @Test
+    void setStyleElementHandlerStoresValue() {
+        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+        org.docx4j.convert.out.ConversionHTMLStyleElementHandler original = writer.getStyleElementHandler();
+        writer.setStyleElementHandler(original);
+        assertNotNull(writer.getStyleElementHandler());
+    }
+
+    @Test
+    void setScriptElementHandlerStoresValue() {
+        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+        org.docx4j.convert.out.ConversionHTMLScriptElementHandler original = writer.getScriptElementHandler();
+        writer.setScriptElementHandler(original);
+        assertNotNull(writer.getScriptElementHandler());
+    }
+
+    @Test
+    void writeToDocxRejectsNullPackage() {
+        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            writer.writeToDocx(null, new java.io.File("dummy.docx"));
+        });
+    }
 }

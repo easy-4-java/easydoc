@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -18,11 +18,6 @@ package io.github.easy4j.doc.handler;
 import java.io.File;
 import java.io.FileFilter;
 
-/**
- * Implementation of output dir filter handler functionality.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
 public class OutputDirFilterHandler implements FileFilter {
 
 	protected String outdir;

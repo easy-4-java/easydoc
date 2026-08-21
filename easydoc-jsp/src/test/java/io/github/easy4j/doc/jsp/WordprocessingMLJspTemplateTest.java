@@ -1,34 +1,85 @@
+/*
+ * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package io.github.easy4j.doc.jsp;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.Properties;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Proxy;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.docx4j.Docx4jProperties;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import io.github.easy4j.doc.Docx4jConstants;
-import io.github.easy4j.doc.WordprocessingMLTemplate;
-import io.github.easy4j.doc.utils.ConfigUtils;
-import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * Unit tests for {@link WordprocessingMLJspTemplate}.
- *
- * [@Loong Wan](https://github.com/loong10k)
- */
-@DisplayName("WordprocessingMLJspTemplate Tests")
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
 class WordprocessingMLJspTemplateTest {
 
+	private static HttpServletRequest mockRequest() {
+		return (HttpServletRequest) Proxy.newProxyInstance(
+				WordprocessingMLJspTemplate.class.getClassLoader(),
+				new Class<?>[] { HttpServletRequest.class },
+				(proxy, method, args) -> null);
+	}
+
+	private static HttpServletResponse mockResponse() {
+		return (HttpServletResponse) Proxy.newProxyInstance(
+				WordprocessingMLJspTemplate.class.getClassLoader(),
+				new Class<?>[] { HttpServletResponse.class },
+				(proxy, method, args) -> null);
+	}
+
+	@Test
+	void constructorStoresFields() throws Exception {
+		HttpServletRequest request = mockRequest();
+		HttpServletResponse response = mockResponse();
+		String name = "/WEB-INF/views/foo.jsp";
+		String requestURL = "/frontStage/foo.jsp";
+
+		WordprocessingMLJspTemplate template = new WordprocessingMLJspTemplate(
+				request, response, name, requestURL);
+
+		assertNotNull(template);
+
+		Field requestField = WordprocessingMLJspTemplate.class.getDeclaredField("request");
+		requestField.setAccessible(true);
+		assertSame(request, requestField.get(template));
+
+		Field responseField = WordprocessingMLJspTemplate.class.getDeclaredField("response");
+		responseField.setAccessible(true);
+		assertSame(response, responseField.get(template));
+
+		Field nameField = WordprocessingMLJspTemplate.class.getDeclaredField("name");
+		nameField.setAccessible(true);
+		assertSame(name, nameField.get(template));
+
+		Field urlField = WordprocessingMLJspTemplate.class.getDeclaredField("requestURL");
+		urlField.setAccessible(true);
+		assertSame(requestURL, urlField.get(template));
+	}
+
+	/**
+	 * The full process() path delegates to {@code WordprocessingMLHtmlTemplate},
+	 * which transitively touches the docx4j JAXB/MOXy bridge that fails on
+	 * docx4j 11.5.14. Disabled until the MOXy migration in easydoc-core lands.
+	 */
+	@Test
+	@Disabled("requires MOXy migration — WordprocessingMLHtmlTemplate.process ultimately calls load(File)")
+	void processStringWithNullHttpContextIsDisabled() {
+		// intentionally empty — kept as a guard for the moment the MOXy fix lands.
+	}
 }

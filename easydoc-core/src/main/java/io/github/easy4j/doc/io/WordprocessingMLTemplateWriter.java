@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -34,11 +34,6 @@ import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import io.github.easy4j.doc.Docx4jConstants;
 import io.github.easy4j.doc.utils.Assert;
 
-/**
- * Implementation of wordprocessing m l template writer functionality.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
 public class WordprocessingMLTemplateWriter {
 
 	private static final WordprocessingMLTemplateWriter WML_TEMPLATE_WRITER = new WordprocessingMLTemplateWriter();

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -20,8 +20,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Implementation of config utils functionality.
- *
+ * TODO
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class ConfigUtils {

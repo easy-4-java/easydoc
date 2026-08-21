@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -15,20 +15,14 @@
  */
 package io.github.easy4j.doc.jetbrick;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.docx4j.Docx4jProperties;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import io.github.easy4j.doc.WordprocessingMLTemplate;
 import io.github.easy4j.doc.utils.ConfigUtils;
+import io.github.easy4j.doc.xhtml.AbstractStringTemplateWrappingTemplate;
 import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,57 +32,26 @@ import jetbrick.template.JetConfig;
 import jetbrick.template.JetEngine;
 
 /**
- * Implementation of wordprocessing m l jetbrick template functionality.
- *
+ * 该模板仅负责使用Jetbrick模板引擎将指定模板生成HTML并将HTML转换成XHTML后，作为模板生成WordprocessingMLPackage对象
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
-public class WordprocessingMLJetbrickTemplate implements WordprocessingMLTemplate {
-	
+public class WordprocessingMLJetbrickTemplate extends AbstractStringTemplateWrappingTemplate {
+
 	protected final Logger LOG = LoggerFactory.getLogger(WordprocessingMLJetbrickTemplate.class);
 	protected JetEngine engine;
-	protected WordprocessingMLHtmlTemplate mlHtmlTemplate;
 
 	public WordprocessingMLJetbrickTemplate() {
-		this(false, false);
-	}
-	
-	public WordprocessingMLJetbrickTemplate(boolean landscape, boolean altChunk) {
-		this.mlHtmlTemplate = new WordprocessingMLHtmlTemplate(landscape, altChunk) ;
-	}
-	
-	public WordprocessingMLJetbrickTemplate(WordprocessingMLHtmlTemplate template) {
-		this.mlHtmlTemplate = template;
+		super();
 	}
 
-	@Override
-	public WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception {
-		return this.process(FileUtils.readFileToString(template, StandardCharsets.UTF_8), variables);
+	public WordprocessingMLJetbrickTemplate(boolean landscape, boolean altChunk) {
+		super(landscape, altChunk);
 	}
-	
-	@Override
-	public WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception {
-		return this.process(IOUtils.toString(template, StandardCharsets.UTF_8), variables);
+
+	public WordprocessingMLJetbrickTemplate(WordprocessingMLHtmlTemplate template) {
+		super(template);
 	}
-	
-	/**
-	 * 使用Jetbrick模板引擎渲染模板
-	 * @param template ：模板内容
-	 * @param variables ：变量
-	 * @return {@link WordprocessingMLPackage} 对象
-	 * @throws Exception ：异常对象
-	 */
-	@Override
-	public WordprocessingMLPackage process(String template, Map<String, Object> variables) throws Exception {
-		// 创建模板输出内容接收对象
-		StringWriter output = new StringWriter();
-		// 使用Jetbrick模板引擎渲染模板
-		getEngine().getTemplate(template).render(variables, output);
-		//获取模板渲染后的结果
-		String html = output.toString();
-		//使用HtmlTemplate进行渲染
-		return mlHtmlTemplate.process(html, variables);
-	}
-	
+
 	public JetEngine getEngine() throws IOException {
 		return engine == null ? getInternalEngine() : engine;
 	}
@@ -96,7 +59,7 @@ public class WordprocessingMLJetbrickTemplate implements WordprocessingMLTemplat
 	public void setEngine(JetEngine engine) {
 		this.engine = engine;
 	}
-	
+
 	protected synchronized JetEngine getInternalEngine() throws IOException{
 		Properties ps = new Properties();
 		ConfigLoader loader = new ConfigLoader();
@@ -115,4 +78,10 @@ public class WordprocessingMLJetbrickTemplate implements WordprocessingMLTemplat
         return engine;
 	}
 
+	@Override
+	protected String render(String template, Map<String, Object> variables) throws Exception {
+		StringWriter output = new StringWriter();
+		getEngine().getTemplate(template).render(variables, output);
+		return output.toString();
+	}
 }

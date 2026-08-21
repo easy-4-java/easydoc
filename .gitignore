@@ -1,70 +1,12 @@
-# Compiled class file
-*.class
-
-# Log file
-*.log
-logs/
-log.*/
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-!/libs/*.jar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
-.DS_Store
-**/.DS_Store
-Thumbs.db
-
-### Maven ###
-/target/
-target/
-**/target/
-!**/src/main/**/target/
-!**/src/test/**/target/
-dependency-reduced-pom.xml
-**/dependency-reduced-pom.xml
-pom.xml.versionsBackup
-.flattened-pom.xml
-!.mvn/wrapper/maven-wrapper.jar
-
-### Gradle ###
-.gradle
-!gradle/wrapper/gradle-wrapper.jar
-
-### Build ###
-/build/
-build/
-**/build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-bin/
-codes/
-gen_code
-
 ### IDE ###
-.idea/
 *.iml
 *.ipr
 *.iws
+.idea/
 .classpath
 .factorypath
 .project
 .settings
-.settings/
 .springBeans
 .apt_generated
 .sts4-cache
@@ -73,22 +15,53 @@ gen_code
 rebel.xml
 .vscode/
 
+### Gradle ###
+.gradle
+!gradle/wrapper/gradle-wrapper.jar
+
+### Maven ###
+target/
+dependency-reduced-pom.xml
+pom.xml.versionsBackup
+.flattened-pom.xml
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
 ### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
 nbproject/private/
 nbbuild/
-dist/
 nbdist/
 .nb-gradle/
+dist/
+
+### Build ###
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+build.log
+bin/
+lib/
+codes/
+/code
+gen_code
+
+### Logs ###
+logs/
+*.log
+log.*/
+transaction-logs
+
+### Archives ###
+*.jar
+*.war
+*.ear
+*.tar
+*.gz
+!/libs/*.jar
 
 ### Temporary files ###
 *#
-*.swp
-*.swo
 *.sw?
 *~
 .#*
@@ -100,9 +73,11 @@ nbdist/
 *.java~
 *.properties~
 *.xml~
-*.gz
-*.http
-*.tar
+
+### System files ###
+.DS_Store
+Thumbs.db
+Servers
 
 ### Application specific ###
 MANIFEST.MF
@@ -117,20 +92,20 @@ upload
 
 ### Node / Frontend ###
 node_modules/
-**/node_modules/
-**/dist/
 **/.output/
 **/.vite/
 **/.cache/
 **/.parcel-cache/
 **/*.tsbuildinfo
+**/.env.local
+**/.env.*.local
 **/coverage/
 **/storybook-static/
+**/boba-tea-shop/supervisor-agent/**/static/
 
 ### Python ###
 __pycache__/
 *.py[cod]
-*.pyc
 *$py.class
 *.egg-info/
 .venv/
@@ -147,43 +122,18 @@ Cargo.lock
 
 ### AI / vibe coding ###
 .claude
-.claude/
 openspec
 AGENTS.md
 CLAUDE.md
 .agentscope/
-.mimocode/
-.codegraph/
-
-### Local databases ###
 **/*.db
-/agentdb.rvf
-/agentdb.rvf.lock
-/ruvector.db
 
 ### Development tools ###
 .fastRequest
+*.http
 *.json
-!cloud-agents-server/agents/maternal-recovery.json
 qodana.yaml
 
-### Environment and local secrets ###
-.env
-.env.local
-**/.env.local
-**/.env.*.local
-
-### Design and media build artifacts ###
-.video-tmp-*/
-/**/.video-tmp-*/
-/**/_narration/
-**/_narration_*/
-demos/_frames_*.png
-demos/_verify.js
-demos/_verify.mjs
-_style-research/
-**/design-demos/
-demos/**/*.mp4
-
-# 本地 dreamina CLI 采集输出
-.cli-audit/
+# CodeGraph local index
+.codegraph/
+.codegraph/

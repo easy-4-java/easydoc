@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -16,62 +16,67 @@
 package io.github.easy4j.doc.jsp;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.Properties;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.docx4j.Docx4jProperties;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import io.github.easy4j.doc.Docx4jConstants;
 import io.github.easy4j.doc.WordprocessingMLTemplate;
-import io.github.easy4j.doc.jsp.engine.JspConfig;
-import io.github.easy4j.doc.jsp.engine.JspEngine;
-import io.github.easy4j.doc.utils.ConfigUtils;
 import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of wordprocessing m l jsp template functionality.
+ * 该模板仅负责使用JSP模板引擎将指定模板生成HTML并将HTML转换成XHTML后，作为模板生成WordprocessingMLPackage对象。
+ *
+ * <p>This implementation delegates rendering to the container's JSP engine via
+ * {@link RequestDispatcher#include(HttpServletRequest, HttpServletResponse)} on a
+ * servlet-path such as {@code /WEB-INF/views/foo.jsp}. The original hand-rolled
+ * JSP engine (~15 files) was replaced by Apache Tomcat's Jasper; the runtime
+ * is responsible for compiling and executing the JSP (Tomcat 9.x is required
+ * because this module still uses {@code javax.servlet}, not Jakarta EE).
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WordprocessingMLJspTemplate implements WordprocessingMLTemplate {
-	
-    protected final Logger LOG = LoggerFactory.getLogger(WordprocessingMLJspTemplate.class);
+
+	protected final Logger LOG = LoggerFactory.getLogger(WordprocessingMLJspTemplate.class);
 	protected final HttpServletRequest request;
 	protected final HttpServletResponse response;
 	//要生成html的jsp文件路径（如：/frontStage/articleMenuContent.jsp）,这是实际存在的jsp文件
-    protected final String name;
-    protected final String requestURL;
-    protected JspEngine engine;
-    protected WordprocessingMLHtmlTemplate mlHtmlTemplate;
-    
-    public WordprocessingMLJspTemplate(HttpServletRequest request,HttpServletResponse response,String name, String requestURL) {
+	protected final String name;
+	protected final String requestURL;
+	protected final WordprocessingMLHtmlTemplate mlHtmlTemplate;
+
+	public WordprocessingMLJspTemplate(HttpServletRequest request, HttpServletResponse response,
+									   String name, String requestURL) {
 		this(request, response, name, requestURL, false, false);
 	}
-    
-	public WordprocessingMLJspTemplate(HttpServletRequest request,HttpServletResponse response,String name, String requestURL, boolean landscape, boolean altChunk) {
+
+	public WordprocessingMLJspTemplate(HttpServletRequest request, HttpServletResponse response,
+									   String name, String requestURL, boolean landscape, boolean altChunk) {
 		this.request = request;
-        this.response = response;
-        this.name = name;
-        this.requestURL = requestURL;
-        this.mlHtmlTemplate = new WordprocessingMLHtmlTemplate(landscape, altChunk) ;
+		this.response = response;
+		this.name = name;
+		this.requestURL = requestURL;
+		this.mlHtmlTemplate = new WordprocessingMLHtmlTemplate(landscape, altChunk);
 	}
-	
-	public WordprocessingMLJspTemplate(HttpServletRequest request,HttpServletResponse response,String name, String requestURL, WordprocessingMLHtmlTemplate template) {
+
+	public WordprocessingMLJspTemplate(HttpServletRequest request, HttpServletResponse response,
+									   String name, String requestURL, WordprocessingMLHtmlTemplate template) {
 		this.request = request;
-        this.response = response;
-        this.name = name;
-        this.requestURL = requestURL;
+		this.response = response;
+		this.name = name;
+		this.requestURL = requestURL;
 		this.mlHtmlTemplate = template;
 	}
 
@@ -79,49 +84,39 @@ public class WordprocessingMLJspTemplate implements WordprocessingMLTemplate {
 	public WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception {
 		return this.process(FileUtils.readFileToString(template, StandardCharsets.UTF_8), variables);
 	}
-	
+
 	@Override
 	public WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception {
 		return this.process(IOUtils.toString(template, StandardCharsets.UTF_8), variables);
 	}
-	
+
 	/**
-	 * 使用Jsp模板引擎渲染模板
-	 * @param template ：模板内容
-	 * @param variables ：变量
-	 * @return {@link WordprocessingMLPackage} 对象
-	 * @throws Exception ：异常对象
+	 * Render the JSP referenced by {@link #requestURL} (set at construction time) into a
+	 * string via {@link RequestDispatcher#include} against an {@link HttpServletResponseWrapper}
+	 * that captures the output into a {@link StringWriter}, then run the captured HTML
+	 * through the underlying {@link WordprocessingMLHtmlTemplate} to produce a docx.
 	 */
 	@Override
 	public WordprocessingMLPackage process(String template, Map<String, Object> variables) throws Exception {
-		// 创建模板输出内容接收对象
-		StringWriter output = new StringWriter();
-		// 使用Jsp模板引擎渲染模板
-		getEngine().getTemplate(request, response, name ).render(requestURL, variables, output);
-		//获取模板渲染后的结果
-		String html = output.toString();
-		//使用HtmlTemplate进行渲染
+		String html = render(variables);
 		return mlHtmlTemplate.process(html, variables);
 	}
-	
-	public JspEngine getEngine() throws IOException {
-		return engine == null ? getInternalEngine() : engine;
-	}
 
-	public void setEngine(JspEngine engine) {
-		this.engine = engine;
+	protected String render(Map<String, Object> variables) throws Exception {
+		StringWriter output = new StringWriter();
+		HttpServletResponseWrapper wrappedResponse = new HttpServletResponseWrapper(response) {
+			@Override
+			public PrintWriter getWriter() {
+				return new PrintWriter(output);
+			}
+		};
+		RequestDispatcher dispatcher = request.getRequestDispatcher(requestURL);
+		if (dispatcher == null) {
+			throw new IllegalStateException("No RequestDispatcher for JSP path: " + requestURL);
+		}
+		LOG.debug("Including JSP via RequestDispatcher: {}", requestURL);
+		dispatcher.include(request, wrappedResponse);
+		wrappedResponse.getWriter().flush();
+		return output.toString();
 	}
-	
-	protected synchronized JspEngine getInternalEngine() throws IOException{
-		Properties ps =  ConfigUtils.filterWithPrefix("docx4j.jsp.", "docx4j.jsp.", Docx4jProperties.getProperties(), false);
-		//设置默认的参数
-		ps.setProperty(JspConfig.TEMPLATE_SUFFIX, Docx4jProperties.getProperty("docx4j.jsp.template.suffix",".httl"));
-		ps.setProperty(JspConfig.INPUT_ENCODING, Docx4jProperties.getProperty("docx4j.jsp.input.encoding", Docx4jConstants.DEFAULT_CHARSETNAME));
-		ps.setProperty(JspConfig.OUTPUT_ENCODING, Docx4jProperties.getProperty("docx4j.jsp.output.encoding", Docx4jConstants.DEFAULT_CHARSETNAME));
-		JspEngine engine = JspEngine.create(ps);
-        // 设置模板引擎，减少重复初始化消耗
-        this.setEngine(engine);
-        return engine;
-	}
-
 }

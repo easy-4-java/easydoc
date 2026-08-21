@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -30,8 +30,8 @@ import org.jsoup.nodes.Document.OutputSettings;
 import org.jsoup.safety.Safelist;
 
 /**
- * Implementation of x h t m l document handler functionality.
- *
+ * 
+ * TODO
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class XHTMLDocumentHandler implements DocumentHandler {
@@ -138,7 +138,7 @@ public class XHTMLDocumentHandler implements DocumentHandler {
 		
 		outputSettings.prettyPrint(false);
 		
-		/**
+		/*
 		outputSettings.syntax(syntax)
 		outputSettings.charset(charset)
 		outputSettings*/

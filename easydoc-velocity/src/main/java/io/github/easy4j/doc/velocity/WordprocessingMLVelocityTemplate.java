@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -15,80 +15,40 @@
  */
 package io.github.easy4j.doc.velocity;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.tools.generic.DateTool;
 import org.docx4j.Docx4jProperties;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import io.github.easy4j.doc.Docx4jConstants;
-import io.github.easy4j.doc.WordprocessingMLTemplate;
+import io.github.easy4j.doc.xhtml.AbstractStringTemplateWrappingTemplate;
 import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
 
 /**
- * Implementation of wordprocessing m l velocity template functionality.
- *
+ * 该模板仅负责使用Velocity模板引擎将指定模板生成HTML并将HTML转换成XHTML后，作为模板生成WordprocessingMLPackage对象
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
-public class WordprocessingMLVelocityTemplate implements WordprocessingMLTemplate {
-	
+public class WordprocessingMLVelocityTemplate extends AbstractStringTemplateWrappingTemplate {
+
 	protected VelocityEngine engine;
 	protected DateTool dateTool = new DateTool();
-	protected WordprocessingMLHtmlTemplate mlHtmlTemplate;
-	
+
 	public WordprocessingMLVelocityTemplate() {
-		this(false, false);
-	}
-	
-	public WordprocessingMLVelocityTemplate(boolean landscape, boolean altChunk) {
-		this.mlHtmlTemplate = new WordprocessingMLHtmlTemplate(landscape, altChunk) ;
-	}
-	
-	public WordprocessingMLVelocityTemplate(WordprocessingMLHtmlTemplate template) {
-		this.mlHtmlTemplate = template;
+		super();
 	}
 
-	@Override
-	public WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception {
-		return this.process(FileUtils.readFileToString(template, StandardCharsets.UTF_8), variables);
+	public WordprocessingMLVelocityTemplate(boolean landscape, boolean altChunk) {
+		super(landscape, altChunk);
 	}
-	
-	@Override
-	public WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception {
-		return this.process(IOUtils.toString(template, StandardCharsets.UTF_8), variables);
+
+	public WordprocessingMLVelocityTemplate(WordprocessingMLHtmlTemplate template) {
+		super(template);
 	}
-	
-	/**
-	 * 使用Velocity模板引擎渲染模板
-	 * @param template ：模板内容
-	 * @param variables ：变量
-	 * @return {@link WordprocessingMLPackage} 对象
-	 * @throws Exception ：异常对象
-	 */
-	@Override
-	public WordprocessingMLPackage process(String template, Map<String, Object> variables) throws Exception {
-		//设置Velocity上下文对象
-		VelocityContext ctx = new VelocityContext(variables);
-		ctx.put("dateTool", dateTool);
-		// 创建模板输出内容接收对象
-		StringWriter output = new StringWriter();
-		// 使用Velocity模板引擎渲染模板
-		getEngine().getTemplate(template).merge(ctx, output);
-		//获取模板渲染后的结果
-		String html = output.toString();
-		//使用HtmlTemplate进行渲染
-		return mlHtmlTemplate.process(html, variables);
-	}
-	
+
 	public VelocityEngine getEngine() throws IOException {
 		return engine == null ? getInternalEngine() : engine;
 	}
@@ -98,9 +58,9 @@ public class WordprocessingMLVelocityTemplate implements WordprocessingMLTemplat
 	}
 
 	protected synchronized VelocityEngine getInternalEngine() throws IOException{
-		
+
 		VelocityEngine engine = new VelocityEngine();
-        
+
 		Properties ps = new Properties();
         ps.setProperty(";runtime.log", Docx4jProperties.getProperty("docx4j.velocity.runtime.log", "velocity.log"));
         ps.setProperty(";runtime.log.logsystem.class", Docx4jProperties.getProperty("docx4j.velocity.runtime.log.logsystem.class", "org.apache.velocity.runtime.log.NullLogSystem"));
@@ -125,4 +85,12 @@ public class WordprocessingMLVelocityTemplate implements WordprocessingMLTemplat
         return engine;
 	}
 
+	@Override
+	protected String render(String template, Map<String, Object> variables) throws Exception {
+		VelocityContext ctx = new VelocityContext(variables);
+		ctx.put("dateTool", dateTool);
+		StringWriter output = new StringWriter();
+		getEngine().getTemplate(template).merge(ctx, output);
+		return output.toString();
+	}
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -15,76 +15,39 @@
  */
 package io.github.easy4j.doc.rythm;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.docx4j.Docx4jProperties;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import io.github.easy4j.doc.WordprocessingMLTemplate;
 import io.github.easy4j.doc.utils.ConfigUtils;
+import io.github.easy4j.doc.xhtml.AbstractStringTemplateWrappingTemplate;
 import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
 import org.rythmengine.Rythm;
 import org.rythmengine.RythmEngine;
 
 /**
- * Implementation of wordprocessing m l rythm template functionality.
- *
+ * 该模板仅负责使用Rythm模板引擎将指定模板生成HTML并将HTML转换成XHTML后，作为模板生成WordprocessingMLPackage对象
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
-public class WordprocessingMLRythmTemplate implements WordprocessingMLTemplate {
-	
+public class WordprocessingMLRythmTemplate extends AbstractStringTemplateWrappingTemplate {
+
 	protected RythmEngine engine;
-	protected WordprocessingMLHtmlTemplate mlHtmlTemplate;
 
 	public WordprocessingMLRythmTemplate() {
-		this(false, false);
+		super();
 	}
-	
+
 	public WordprocessingMLRythmTemplate(boolean landscape, boolean altChunk) {
-		this.mlHtmlTemplate = new WordprocessingMLHtmlTemplate(landscape, altChunk) ;
+		super(landscape, altChunk);
 	}
-	
+
 	public WordprocessingMLRythmTemplate(WordprocessingMLHtmlTemplate template) {
-		this.mlHtmlTemplate = template;
+		super(template);
 	}
 
-	@Override
-	public WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception {
-		return this.process(FileUtils.readFileToString(template, StandardCharsets.UTF_8), variables);
-	}
-	
-	@Override
-	public WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception {
-		return this.process(IOUtils.toString(template, StandardCharsets.UTF_8), variables);
-	}
-
-	/**
-	 * 使用Rythm模板引擎渲染模板
-	 * @param template ：模板内容
-	 * @param variables ：变量
-	 * @return {@link WordprocessingMLPackage} 对象
-	 * @throws Exception ：异常对象
-	 */
-	@Override
-	public WordprocessingMLPackage process(String template, Map<String, Object> variables) throws Exception {
-		// 创建模板输出内容接收对象
-		StringWriter output = new StringWriter();
-		// 使用Rythm模板引擎渲染模板
-		getEngine().getTemplate(template , variables).render(output);
-		//获取模板渲染后的结果
-		String html = output.toString();
-		//使用HtmlTemplate进行渲染
-		return mlHtmlTemplate.process(html, variables);
-	}
-	
 	public RythmEngine getEngine() throws IOException {
 		return engine == null ? getInternalEngine() : engine;
 	}
@@ -92,10 +55,10 @@ public class WordprocessingMLRythmTemplate implements WordprocessingMLTemplate {
 	public void setEngine(RythmEngine engine) {
 		this.engine = engine;
 	}
-	
+
 	protected synchronized RythmEngine getInternalEngine() throws IOException{
 		Properties props =  ConfigUtils.filterWithPrefix("docx4j.rythm.", "docx4j.rythm.", Docx4jProperties.getProperties(), false);
-		
+
 		props.put("engine.mode", Rythm.Mode.valueOf(props.getProperty("engine.mode", "dev")));
 		props.put("log.enabled", false);
 		props.put("feature.smart_escape.enabled", false);
@@ -117,4 +80,10 @@ public class WordprocessingMLRythmTemplate implements WordprocessingMLTemplate {
         return engine;
 	}
 
+	@Override
+	protected String render(String template, Map<String, Object> variables) throws Exception {
+		StringWriter output = new StringWriter();
+		getEngine().getTemplate(template , variables).render(output);
+		return output.toString();
+	}
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -24,11 +24,6 @@ import org.docx4j.TextUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 
-/**
- * Implementation of wordprocessing m l package extractor functionality.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
 public class WordprocessingMLPackageExtractor {
 
 	private static final WordprocessingMLPackageExtractor WML_PACKAGE_EXTRACTOR = new WordprocessingMLPackageExtractor();

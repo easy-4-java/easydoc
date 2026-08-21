@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -21,11 +21,6 @@ import java.util.List;
 import org.docx4j.TraversalUtil.CallbackImpl;
 import org.docx4j.wml.Tbl;  
   
-/**
- * Implementation of my tbl finder extending CallbackImpl.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
 public class MyTblFinder extends CallbackImpl { 
 	
     public List<Tbl> tblList = new ArrayList<Tbl>();  

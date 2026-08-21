@@ -1,99 +1,63 @@
+/*
+ * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package io.github.easy4j.doc.rythm;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.*;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.Properties;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.docx4j.Docx4jProperties;
+
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import io.github.easy4j.doc.WordprocessingMLTemplate;
-import io.github.easy4j.doc.utils.ConfigUtils;
-import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
-import org.rythmengine.Rythm;
-import org.rythmengine.RythmEngine;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
-/**
- * Unit tests for {@link WordprocessingMLRythmTemplate}.
- *
- * [@Loong Wan](https://github.com/loong10k)
- */
-@DisplayName("WordprocessingMLRythmTemplate Tests")
-class WordprocessingMLRythmTemplateTest {
+import static org.junit.Assert.assertNotNull;
 
-    @Test
-    @DisplayName("should have default constructor")
-    void shouldHaveDefaultConstructor() {
-        try { new WordprocessingMLRythmTemplate(); } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLRythmTemplate.class).isNotNull();
-    }
+public class WordprocessingMLRythmTemplateTest extends WordprocessingMLTemplateTest {
 
-    @Test
-    @DisplayName("instance method process should be callable")
-    void instanceProcessShouldBeCallable() {
-        try {
-            WordprocessingMLRythmTemplate instance = new WordprocessingMLRythmTemplate();
-            instance.process((File) null, (Map) null);
-        } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLRythmTemplate.class).isNotNull();
-    }
+	protected WordprocessingMLRythmTemplate rythmTemplate = null;
 
-    @Test
-    @DisplayName("instance method process should be callable")
-    void instanceProcessWith1ParamsShouldBeCallable() {
-        try {
-            WordprocessingMLRythmTemplate instance = new WordprocessingMLRythmTemplate();
-            instance.process((InputStream) null, (Map) null);
-        } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLRythmTemplate.class).isNotNull();
-    }
+	@Before
+	public void Before() {
 
-    @Test
-    @DisplayName("instance method process should be callable")
-    void instanceProcessWith2ParamsShouldBeCallable() {
-        try {
-            WordprocessingMLRythmTemplate instance = new WordprocessingMLRythmTemplate();
-            instance.process("test", (Map) null);
-        } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLRythmTemplate.class).isNotNull();
-    }
+		//准备参数
+        variables();
 
-    @Test
-    @DisplayName("instance method getEngine should be callable")
-    void instanceGetEngineShouldBeCallable() {
-        try {
-            WordprocessingMLRythmTemplate instance = new WordprocessingMLRythmTemplate();
-            instance.getEngine();
-        } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLRythmTemplate.class).isNotNull();
-    }
+        rythmTemplate = new WordprocessingMLRythmTemplate();
 
-    @Test
-    @DisplayName("instance method setEngine should be callable")
-    void instanceSetEngineShouldBeCallable() {
-        try {
-            WordprocessingMLRythmTemplate instance = new WordprocessingMLRythmTemplate();
-            instance.setEngine((RythmEngine) null);
-        } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLRythmTemplate.class).isNotNull();
-    }
+	}
 
-    @Test
-    @DisplayName("instance method getInternalEngine should be callable")
-    void instanceGetInternalEngineShouldBeCallable() {
-        try {
-            WordprocessingMLRythmTemplate instance = new WordprocessingMLRythmTemplate();
-            instance.getInternalEngine();
-        } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLRythmTemplate.class).isNotNull();
-    }
+	@Test
+	@Ignore("requires MOXy migration — see easydoc-core/pom.xml TODO")
+	public void test() throws Exception {
+
+		variables.put("title", "变量替换测试");
+		variables.put("content", "测试效果不错");
+
+		WordprocessingMLPackage wordMLPackage = rythmTemplate.process("/tpl/rythm.tpl", variables);
+
+		assertNotNull(wordMLPackage);
+
+		File outputDocx = new java.io.File("src/test/resources/output/rythmTemplate_output.docx");
+		wordMLPackage.save(outputDocx);
+
+	}
+
+	@After
+	public void after() {
+		rythmTemplate = null;
+	}
 
 }

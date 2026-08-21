@@ -1,33 +1,52 @@
+/*
+ * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package io.github.easy4j.doc;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import org.docx4j.Docx4J;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 
-/**
- * Unit tests for {@link WordprocessingMLTemplate}.
- *
- * [@Loong Wan](https://github.com/loong10k)
- */
-@DisplayName("WordprocessingMLTemplate Tests")
-class WordprocessingMLTemplateTest {
-
-    @Test
-    @DisplayName("should be an interface")
-    void shouldBeAnInterface() {
-        assertThat(WordprocessingMLTemplate.class).isInterface();
-    }
-
-    @Test
-    @DisplayName("class should be loadable")
-    void classShouldBeLoadable() {
-        assertThat(WordprocessingMLTemplate.class.getName()).isEqualTo("io.github.easy4j.doc.WordprocessingMLTemplate");
-    }
-
+public abstract class WordprocessingMLTemplateTest {
+	
+	protected Map<String, Object> variables = new HashMap<String, Object>();
+	
+	public void variables() {
+		
+		int count = 30;
+        long step = 60 * 1000;
+        long time = new Date().getTime() - count * step;
+        List<Map<String, Object>> models = new ArrayList<Map<String, Object>>(count);
+        Map<String, Object> model = null;
+        for (int i = 0; i < count; i++) {
+            model = new HashMap<String, Object>();
+            model.put("code", 1000 + i);
+            model.put("name", "\u6D4B\u8BD5\u6A21\u578B-" + i);
+            model.put("date", new Date(time + i * step));
+            model.put("bool", (i & 1) == 0);
+            model.put("value", i * 1.3d);
+            models.add(model);
+        }
+        variables.put("models", models);
+        String source="UTF-8", target = "UTF-8";
+        variables.put("source", source);
+        variables.put("target", target);
+        variables.put("format", false);
+        
+	}
+	
 }

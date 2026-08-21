@@ -17,9 +17,9 @@ import ognl.MemberAccess;
  */
 public class DefaultMemberAccess implements MemberAccess {
 	
-    private boolean allowPrivateAccess = false;
-    private boolean allowProtectedAccess = false;
-    private boolean allowPackageProtectedAccess = false;
+    private final boolean allowPrivateAccess;
+    private final boolean allowProtectedAccess;
+    private final boolean allowPackageProtectedAccess;
 
     public DefaultMemberAccess(boolean allowAllAccess) {
         this(allowAllAccess, allowAllAccess, allowAllAccess);

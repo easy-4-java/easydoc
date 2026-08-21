@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -32,8 +32,7 @@ import io.github.easy4j.doc.xhtml.io.WordprocessingMLPackageBuilder;
 import org.jsoup.nodes.Document;
 
 /**
- * Implementation of wordprocessing m l html template functionality.
- *
+ * 该模板仅负责将原生的HTML元素转换成XHTML后，作为模板生成WordprocessingMLPackage对象
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WordprocessingMLHtmlTemplate implements WordprocessingMLTemplate {
@@ -54,58 +53,56 @@ public class WordprocessingMLHtmlTemplate implements WordprocessingMLTemplate {
 
 	public WordprocessingMLPackage process(File htmlFile) throws Exception {
 		// 返回WordprocessingMLPackage对象
-		return wordMLPackageBuilder.buildWhithXhtml(htmlFile, landscape, altChunk);
+		return wordMLPackageBuilder.buildWithXhtml(htmlFile, landscape, altChunk);
 	}
-	
+
 	public WordprocessingMLPackage process(File htmlFile, PageSizePaper pageSize) throws Exception {
 		// 返回WordprocessingMLPackage对象
-		return wordMLPackageBuilder.buildWhithXhtml(htmlFile, pageSize, landscape, altChunk);
+		return wordMLPackageBuilder.buildWithXhtml(htmlFile, pageSize, landscape, altChunk);
 	}
 
 	public WordprocessingMLPackage process( Document doc) throws Exception {
 		// 返回WordprocessingMLPackage对象
-		return wordMLPackageBuilder.buildWhithDoc(doc, landscape, altChunk);
+		return wordMLPackageBuilder.buildWithDoc(doc, landscape, altChunk);
 	}
-	
+
 	public WordprocessingMLPackage process( Document doc, PageSizePaper pageSize) throws Exception {
 		// 返回WordprocessingMLPackage对象
-		return wordMLPackageBuilder.buildWhithDoc(doc, pageSize, landscape, altChunk);
+		return wordMLPackageBuilder.buildWithDoc(doc, pageSize, landscape, altChunk);
 	}
-	
-	@SuppressWarnings("deprecation")
+
 	public WordprocessingMLPackage process( InputStream input) throws Exception {
 		WordprocessingMLPackage wordMLPackage = null;
 		try {
-			wordMLPackage = wordMLPackageBuilder.buildWhithDoc(docHandler.handle(input), landscape, altChunk);
+			wordMLPackage = wordMLPackageBuilder.buildWithDoc(docHandler.handle(input), landscape, altChunk);
 		} finally {
 			IOUtils.closeQuietly(input);
 		}
 		// 返回WordprocessingMLPackage对象
 		return wordMLPackage;
 	}
-	
-	@SuppressWarnings("deprecation")
+
 	public WordprocessingMLPackage process( InputStream input, PageSizePaper pageSize) throws Exception {
 		WordprocessingMLPackage wordMLPackage = null;
 		try {
-			wordMLPackage = wordMLPackageBuilder.buildWhithDoc(docHandler.handle(input), pageSize, landscape, altChunk);
+			wordMLPackage = wordMLPackageBuilder.buildWithDoc(docHandler.handle(input), pageSize, landscape, altChunk);
 		} finally {
 			IOUtils.closeQuietly(input);
 		}
 		// 返回WordprocessingMLPackage对象
 		return wordMLPackage;
 	}
-	
+
 	public WordprocessingMLPackage process( URL url) throws Exception {
 		// 返回WordprocessingMLPackage对象
-		return wordMLPackageBuilder.buildWhithURL(url, landscape, altChunk);
+		return wordMLPackageBuilder.buildWithURL(url, landscape, altChunk);
 	}
-	
+
 	public WordprocessingMLPackage process( String url, Map<String, String> params, PageSizePaper pageSize) throws Exception {
 		DataMap dataMap = new DataMap();
 		dataMap.setData2(params);
 		// 返回WordprocessingMLPackage对象
-		return wordMLPackageBuilder.buildWhithURL(url, dataMap, pageSize, landscape, altChunk);
+		return wordMLPackageBuilder.buildWithURL(url, dataMap, pageSize, landscape, altChunk);
 	}
 
 	@Override
@@ -128,7 +125,7 @@ public class WordprocessingMLHtmlTemplate implements WordprocessingMLTemplate {
 	@Override
 	public WordprocessingMLPackage process(String template, Map<String, Object> variables) throws Exception {
 		// 返回WordprocessingMLPackage对象
-		return wordMLPackageBuilder.buildWhithXhtml(template, altChunk);
+		return wordMLPackageBuilder.buildWithXhtml(template, landscape, altChunk);
 	}
 
 	public DocumentHandler getDocHandler() {
@@ -153,6 +150,14 @@ public class WordprocessingMLHtmlTemplate implements WordprocessingMLTemplate {
 
 	public void setAltChunk(boolean altChunk) {
 		this.altChunk = altChunk;
+	}
+
+	public boolean isLandscape() {
+		return landscape;
+	}
+
+	public void setLandscape(boolean landscape) {
+		this.landscape = landscape;
 	}
 
 }

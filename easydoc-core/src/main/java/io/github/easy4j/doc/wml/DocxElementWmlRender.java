@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -28,8 +28,7 @@ import org.docx4j.wml.Tc;
 import org.docx4j.wml.Tr;
 
 /**
- * Implementation of docx element wml render functionality.
- *
+ * TODO
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class DocxElementWmlRender {

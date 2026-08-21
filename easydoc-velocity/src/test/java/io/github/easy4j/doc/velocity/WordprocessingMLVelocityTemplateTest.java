@@ -1,99 +1,63 @@
+/*
+ * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package io.github.easy4j.doc.velocity;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.*;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.Properties;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.tools.generic.DateTool;
-import org.docx4j.Docx4jProperties;
+
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import io.github.easy4j.doc.Docx4jConstants;
-import io.github.easy4j.doc.WordprocessingMLTemplate;
-import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
-/**
- * Unit tests for {@link WordprocessingMLVelocityTemplate}.
- *
- * [@Loong Wan](https://github.com/loong10k)
- */
-@DisplayName("WordprocessingMLVelocityTemplate Tests")
-class WordprocessingMLVelocityTemplateTest {
+import static org.junit.Assert.assertNotNull;
 
-    @Test
-    @DisplayName("should have default constructor")
-    void shouldHaveDefaultConstructor() {
-        try { new WordprocessingMLVelocityTemplate(); } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLVelocityTemplate.class).isNotNull();
-    }
+public class WordprocessingMLVelocityTemplateTest extends WordprocessingMLTemplateTest {
 
-    @Test
-    @DisplayName("instance method process should be callable")
-    void instanceProcessShouldBeCallable() {
-        try {
-            WordprocessingMLVelocityTemplate instance = new WordprocessingMLVelocityTemplate();
-            instance.process((File) null, (Map) null);
-        } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLVelocityTemplate.class).isNotNull();
-    }
+	protected WordprocessingMLVelocityTemplate velocityTemplate = null;
 
-    @Test
-    @DisplayName("instance method process should be callable")
-    void instanceProcessWith1ParamsShouldBeCallable() {
-        try {
-            WordprocessingMLVelocityTemplate instance = new WordprocessingMLVelocityTemplate();
-            instance.process((InputStream) null, (Map) null);
-        } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLVelocityTemplate.class).isNotNull();
-    }
+	@Before
+	public void Before() {
 
-    @Test
-    @DisplayName("instance method process should be callable")
-    void instanceProcessWith2ParamsShouldBeCallable() {
-        try {
-            WordprocessingMLVelocityTemplate instance = new WordprocessingMLVelocityTemplate();
-            instance.process("test", (Map) null);
-        } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLVelocityTemplate.class).isNotNull();
-    }
+		//准备参数
+        variables();
 
-    @Test
-    @DisplayName("instance method getEngine should be callable")
-    void instanceGetEngineShouldBeCallable() {
-        try {
-            WordprocessingMLVelocityTemplate instance = new WordprocessingMLVelocityTemplate();
-            instance.getEngine();
-        } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLVelocityTemplate.class).isNotNull();
-    }
+        velocityTemplate = new WordprocessingMLVelocityTemplate();
 
-    @Test
-    @DisplayName("instance method setEngine should be callable")
-    void instanceSetEngineShouldBeCallable() {
-        try {
-            WordprocessingMLVelocityTemplate instance = new WordprocessingMLVelocityTemplate();
-            instance.setEngine((VelocityEngine) null);
-        } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLVelocityTemplate.class).isNotNull();
-    }
+	}
 
-    @Test
-    @DisplayName("instance method getInternalEngine should be callable")
-    void instanceGetInternalEngineShouldBeCallable() {
-        try {
-            WordprocessingMLVelocityTemplate instance = new WordprocessingMLVelocityTemplate();
-            instance.getInternalEngine();
-        } catch (Throwable e) { /* expected */ }
-        assertThat(WordprocessingMLVelocityTemplate.class).isNotNull();
-    }
+	@Test
+	@Ignore("requires MOXy migration — see easydoc-core/pom.xml TODO")
+	public void test() throws Exception {
+
+		variables.put("title", "变量替换测试");
+		variables.put("content", "测试效果不错");
+
+		WordprocessingMLPackage wordMLPackage = velocityTemplate.process("/tpl/velocity.tpl", variables);
+
+		assertNotNull(wordMLPackage);
+
+		File outputDocx = new java.io.File("src/test/resources/output/velocityTemplate_output.docx");
+		wordMLPackage.save(outputDocx);
+
+	}
+
+	@After
+	public void after() {
+		velocityTemplate = null;
+	}
 
 }

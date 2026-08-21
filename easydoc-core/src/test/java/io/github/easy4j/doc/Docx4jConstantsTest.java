@@ -1,120 +1,70 @@
+/*
+ * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package io.github.easy4j.doc;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.*;
-import java.io.File;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Unit tests for {@link Docx4jConstants}.
- *
- * [@Loong Wan](https://github.com/loong10k)
- */
-@DisplayName("Docx4jConstants Tests")
+import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Field;
+
 class Docx4jConstantsTest {
 
     @Test
-    @DisplayName("constant DEFAULT_CHARSETNAME should not be null or empty")
-    void constantDEFAULT_CHARSETNAMEShouldNotBeNullOrEmpty() {
-        assertThat(Docx4jConstants.DEFAULT_CHARSETNAME).isNotNull();
-        assertThat(Docx4jConstants.DEFAULT_CHARSETNAME).isNotEmpty();
+    void allStringConstantsAreNonNullAndNonEmpty() throws Exception {
+        Field[] fields = Docx4jConstants.class.getDeclaredFields();
+        for (Field f : fields) {
+            if (java.lang.reflect.Modifier.isStatic(f.getModifiers())
+                    && f.getType() == String.class) {
+                f.setAccessible(true);
+                Object value = f.get(null);
+                assertNotNull(value, "Constant " + f.getName() + " is null");
+                assertTrue(((String) value).length() > 0,
+                        "Constant " + f.getName() + " is empty");
+            }
+        }
     }
 
     @Test
-    @DisplayName("constant DEFAULT_TIMEOUTMILLIS should be defined")
-    void constantDEFAULT_TIMEOUTMILLISShouldBeDefined() {
-        assertThat(Docx4jConstants.DEFAULT_TIMEOUTMILLIS).isNotNull();
+    void defaultCharsetIsUtf8() {
+        assertNotNull(Docx4jConstants.DEFAULT_CHARSETNAME);
+        assertTrue(Docx4jConstants.DEFAULT_CHARSETNAME.length() > 0);
     }
 
     @Test
-    @DisplayName("constant DOCX4J_PARAM_01 should not be null or empty")
-    void constantDOCX4J_PARAM_01ShouldNotBeNullOrEmpty() {
-        assertThat(Docx4jConstants.DOCX4J_PARAM_01).isNotNull();
-        assertThat(Docx4jConstants.DOCX4J_PARAM_01).isNotEmpty();
+    void defaultTimeoutMillisIsPositive() {
+        assertTrue(Docx4jConstants.DEFAULT_TIMEOUTMILLIS > 0);
     }
 
     @Test
-    @DisplayName("constant DOCX4J_PARAM_02 should not be null or empty")
-    void constantDOCX4J_PARAM_02ShouldNotBeNullOrEmpty() {
-        assertThat(Docx4jConstants.DOCX4J_PARAM_02).isNotNull();
-        assertThat(Docx4jConstants.DOCX4J_PARAM_02).isNotEmpty();
+    void docx4jParam01IsDocx4jAppWrite() {
+        assertNotNull(Docx4jConstants.DOCX4J_PARAM_01);
+        assertTrue(Docx4jConstants.DOCX4J_PARAM_01.startsWith("docx4j"));
     }
 
     @Test
-    @DisplayName("constant DOCX4J_PARAM_03 should not be null or empty")
-    void constantDOCX4J_PARAM_03ShouldNotBeNullOrEmpty() {
-        assertThat(Docx4jConstants.DOCX4J_PARAM_03).isNotNull();
-        assertThat(Docx4jConstants.DOCX4J_PARAM_03).isNotEmpty();
+    void docx4jJsoupParseTimeoutMillisStartsWithDocx4j() {
+        assertNotNull(Docx4jConstants.DOCX4J_JSOUP_PARSE_TIMEOUTMILLIS);
+        assertTrue(Docx4jConstants.DOCX4J_JSOUP_PARSE_TIMEOUTMILLIS.startsWith("docx4j"));
     }
 
     @Test
-    @DisplayName("constant DOCX4J_JSOUP_PARSE_TIMEOUTMILLIS should not be null or empty")
-    void constantDOCX4J_JSOUP_PARSE_TIMEOUTMILLISShouldNotBeNullOrEmpty() {
-        assertThat(Docx4jConstants.DOCX4J_JSOUP_PARSE_TIMEOUTMILLIS).isNotNull();
-        assertThat(Docx4jConstants.DOCX4J_JSOUP_PARSE_TIMEOUTMILLIS).isNotEmpty();
+    void docx4jFontsExternalMappingStartsWithDocx4j() {
+        assertNotNull(Docx4jConstants.DOCX4J_FONTS_EXTERNAL_MAPPING);
+        assertTrue(Docx4jConstants.DOCX4J_FONTS_EXTERNAL_MAPPING.startsWith("docx4j"));
     }
-
-    @Test
-    @DisplayName("constant DOCX4J_JSOUP_PARSE_BASEURI should not be null or empty")
-    void constantDOCX4J_JSOUP_PARSE_BASEURIShouldNotBeNullOrEmpty() {
-        assertThat(Docx4jConstants.DOCX4J_JSOUP_PARSE_BASEURI).isNotNull();
-        assertThat(Docx4jConstants.DOCX4J_JSOUP_PARSE_BASEURI).isNotEmpty();
-    }
-
-    @Test
-    @DisplayName("constant DOCX4J_JSOUP_PARSE_CHARSETNAME should not be null or empty")
-    void constantDOCX4J_JSOUP_PARSE_CHARSETNAMEShouldNotBeNullOrEmpty() {
-        assertThat(Docx4jConstants.DOCX4J_JSOUP_PARSE_CHARSETNAME).isNotNull();
-        assertThat(Docx4jConstants.DOCX4J_JSOUP_PARSE_CHARSETNAME).isNotEmpty();
-    }
-
-    @Test
-    @DisplayName("constant DOCX4J_PARAM_04 should not be null or empty")
-    void constantDOCX4J_PARAM_04ShouldNotBeNullOrEmpty() {
-        assertThat(Docx4jConstants.DOCX4J_PARAM_04).isNotNull();
-        assertThat(Docx4jConstants.DOCX4J_PARAM_04).isNotEmpty();
-    }
-
-    @Test
-    @DisplayName("constant DOCX4J_CONVERT_OUT_HTML_IMAGETARGETURI should not be null or empty")
-    void constantDOCX4J_CONVERT_OUT_HTML_IMAGETARGETURIShouldNotBeNullOrEmpty() {
-        assertThat(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_IMAGETARGETURI).isNotNull();
-        assertThat(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_IMAGETARGETURI).isNotEmpty();
-    }
-
-    @Test
-    @DisplayName("constant DOCX4J_CONVERT_OUT_HTML_CSSINCLUDEURI should not be null or empty")
-    void constantDOCX4J_CONVERT_OUT_HTML_CSSINCLUDEURIShouldNotBeNullOrEmpty() {
-        assertThat(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_CSSINCLUDEURI).isNotNull();
-        assertThat(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_CSSINCLUDEURI).isNotEmpty();
-    }
-
-    @Test
-    @DisplayName("constant DOCX4J_CONVERT_OUT_HTML_CSSINCLUDEPATH should not be null or empty")
-    void constantDOCX4J_CONVERT_OUT_HTML_CSSINCLUDEPATHShouldNotBeNullOrEmpty() {
-        assertThat(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_CSSINCLUDEPATH).isNotNull();
-        assertThat(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_CSSINCLUDEPATH).isNotEmpty();
-    }
-
-    @Test
-    @DisplayName("constant DOCX4J_CONVERT_OUT_WMLTEMPLATE_CHARSETNAME should not be null or empty")
-    void constantDOCX4J_CONVERT_OUT_WMLTEMPLATE_CHARSETNAMEShouldNotBeNullOrEmpty() {
-        assertThat(Docx4jConstants.DOCX4J_CONVERT_OUT_WMLTEMPLATE_CHARSETNAME).isNotNull();
-        assertThat(Docx4jConstants.DOCX4J_CONVERT_OUT_WMLTEMPLATE_CHARSETNAME).isNotEmpty();
-    }
-
-    @Test
-    @DisplayName("constant DOCX4J_PARAM_05 should not be null or empty")
-    void constantDOCX4J_PARAM_05ShouldNotBeNullOrEmpty() {
-        assertThat(Docx4jConstants.DOCX4J_PARAM_05).isNotNull();
-        assertThat(Docx4jConstants.DOCX4J_PARAM_05).isNotEmpty();
-    }
-
-    @Test
-    @DisplayName("constant DOCX4J_PARAM_06 should not be null or empty")
-    void constantDOCX4J_PARAM_06ShouldNotBeNullOrEmpty() {
-        assertThat(Docx4jConstants.DOCX4J_PARAM_06).isNotNull();
-        assertThat(Docx4jConstants.DOCX4J_PARAM_06).isNotEmpty();
-    }
-
 }

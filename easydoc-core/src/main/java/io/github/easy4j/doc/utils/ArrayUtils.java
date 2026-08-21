@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -20,8 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Implementation of array utils extending org.apache.commons.lang3.ArrayUtils.
- *
+ * TODO
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class ArrayUtils extends org.apache.commons.lang3.ArrayUtils {

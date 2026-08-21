@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -37,16 +37,17 @@ import org.docx4j.openpackaging.parts.WordprocessingML.AlternativeFormatInputPar
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.CTAltChunk;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of docx4j utils functionality.
- *
+ * TODO
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class Docx4jUtils {
 
-	protected static String CONTENT_TYPE = "";
-	
+	private static final Logger LOG = LoggerFactory.getLogger(Docx4jUtils.class);
+
 	/*
 	 * 生成临时文件位置
 	 */
@@ -54,62 +55,63 @@ public class Docx4jUtils {
 		return System.getProperty("java.io.tmpdir") + File.separator + System.currentTimeMillis();
 	}
 
-    public InputStream mergeDocx(final List<InputStream> streams)  throws Docx4JException, IOException {  
-      
-        WordprocessingMLPackage target = null;  
-        final File generated = File.createTempFile("generated", ".docx");  
-      
-        int chunkId = 0;  
-        Iterator<InputStream> it = streams.iterator();  
-        while (it.hasNext()) {  
-            InputStream is = it.next();  
-            if (is != null) {  
-                if (target == null) {  
-                    // Copy first (master) document   
-                    OutputStream os = new FileOutputStream(generated);  
-                    os.write(IOUtils.toByteArray(is));  
-                    os.close();  
-      
-                    target = WordprocessingMLPackage.load(generated);  
-                } else {  
-                    // Attach the others (Alternative input parts)   
-                    insertDocx(target.getMainDocumentPart(),  
-                            IOUtils.toByteArray(is), chunkId++);  
-                }  
-            }  
-        }  
-      
-        if (target != null) {  
-            target.save(generated);  
-            return new FileInputStream(generated);  
-        } else {  
-            return null;  
-        }  
-    }  
-      
-    // 插入文档   
-    private void insertDocx(MainDocumentPart main, byte[] bytes, int chunkId) {  
-        try {  
-            AlternativeFormatInputPart afiPart = new AlternativeFormatInputPart(new PartName("/part" + chunkId + ".docx"));  
-            // afiPart.setContentType(new ContentType(CONTENT_TYPE));
+    public InputStream mergeDocx(final List<InputStream> streams)  throws Docx4JException, IOException {
+
+        WordprocessingMLPackage target = null;
+        final File generated = File.createTempFile("generated", ".docx");
+        generated.deleteOnExit(); // (C-4) ensure temp file is reclaimed on JVM exit
+
+        int chunkId = 0;
+        Iterator<InputStream> it = streams.iterator();
+        while (it.hasNext()) {
+            InputStream is = it.next();
+            if (is != null) {
+                if (target == null) {
+                    // Copy first (master) document — stream rather than buffering twice on the heap.
+                    try (OutputStream os = new FileOutputStream(generated)) {
+                        IOUtils.copy(is, os);
+                    }
+
+                    target = WordprocessingMLPackage.load(generated);
+                } else {
+                    // Attach the others (Alternative input parts)
+                    insertDocx(target.getMainDocumentPart(),
+                            IOUtils.toByteArray(is), chunkId++);
+                }
+            }
+        }
+
+        if (target != null) {
+            target.save(generated);
+            return new FileInputStream(generated);
+        } else {
+            generated.delete();
+            return null;
+        }
+    }
+
+    // 插入文档
+    private void insertDocx(MainDocumentPart main, byte[] bytes, int chunkId) {
+        try {
+            AlternativeFormatInputPart afiPart = new AlternativeFormatInputPart(new PartName("/part" + chunkId + ".docx"));
             afiPart.setContentType(new ContentType(ContentTypes.APPLICATION_XML));
-            afiPart.setBinaryData(bytes);  
-            Relationship altChunkRel = main.addTargetPart(afiPart);  
-      
-            CTAltChunk chunk = Context.getWmlObjectFactory().createCTAltChunk();  
-            chunk.setId(altChunkRel.getId());  
-      
-            main.addObject(chunk);  
-        } catch (Exception e) {  
-            e.printStackTrace();  
-        }  
-    } 
-    
+            afiPart.setBinaryData(bytes);
+            Relationship altChunkRel = main.addTargetPart(afiPart);
+
+            CTAltChunk chunk = Context.getWmlObjectFactory().createCTAltChunk();
+            chunk.setId(altChunkRel.getId());
+
+            main.addObject(chunk);
+        } catch (Exception e) {
+            LOG.error("Failed to insert docx chunk {}", chunkId, e);
+        }
+    }
+
     public static void toP(WordprocessingMLPackage wordMLPackage,String outPath) throws Exception{
         OutputStream os = new FileOutputStream(outPath);
         FOSettings foSettings = Docx4J.createFOSettings();
         foSettings.setWmlPackage(wordMLPackage);
         Docx4J.toFO(foSettings, os, Docx4J.FLAG_EXPORT_PREFER_XSL);
     }
-    
+
 }

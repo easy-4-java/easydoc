@@ -30,7 +30,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
   
 public class Word_解压_Unzip_S3_Test2 {  
     public static void main(String[] args) throws Exception {  
-        Word_解压_Unzip_S3_Test t = new Word_解压_Unzip_S3_Test();  
+        Word_解压_Unzip_S3Test t = new Word_解压_Unzip_S3Test();  
         //t.unzipWord("f:/saveFile/temp/test_t.docx","f:/saveFile/temp/Unzip_3");  
         t.unzipWord("f:/saveFile/temp/img_word.docx","f:/saveFile/temp/Unzip_8");  
         //t.zipXml("f:/saveFile/temp/Unzip_2", "f:/saveFile/temp/test_t2.docx");  

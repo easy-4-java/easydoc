@@ -2,7 +2,7 @@
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-[![Java](https://img.shields.io/badge/Java-21-orange)](https://github.com/easy-4-java/easydoc) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
+[![Java](https://img.shields.io/badge/Java-17-orange)](https://github.com/easy-4-java/easydoc) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
 
 基于 [docx4j](https://www.docx4java.org/) 与多种模板引擎实现的 Word（.docx）快速输出组件。支持从模板（Freemarker、Velocity、Thymeleaf、Beetl、Rythm、Jetbrick、HTTL、Webit、JSP）或直接由 XHTML 渲染 WordprocessingML 文档。
 
@@ -113,7 +113,7 @@
 <dependency>
     <groupId>io.github.easy4j</groupId>
     <artifactId>easydoc-core</artifactId>
-    <version>3.0.x.x.20260630-SNAPSHOT</version>
+    <version>2.0.x.x.20260630-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -123,15 +123,15 @@
 <dependency>
     <groupId>io.github.easy4j</groupId>
     <artifactId>easydoc-freemarker</artifactId>
-    <version>3.0.x.x.20260630-SNAPSHOT</version>
+    <version>2.0.x.x.20260630-SNAPSHOT</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```groovy
-implementation 'io.github.easy4j:easydoc-core:3.0.x.x.20260630-SNAPSHOT'
-implementation 'io.github.easy4j:easydoc-freemarker:3.0.x.x.20260630-SNAPSHOT'
+implementation 'io.github.easy4j:easydoc-core:2.0.x.x.20260630-SNAPSHOT'
+implementation 'io.github.easy4j:easydoc-freemarker:2.0.x.x.20260630-SNAPSHOT'
 ```
 
 **可用性：** 构件发布至阿里云私有 Maven 仓库，并通过 GitHub Releases 分发；尚未发布到 Maven Central。
@@ -238,7 +238,7 @@ WordprocessingMLPackage doc = html.process(new File("page.html"));
 <a id="11-contributing--license"></a>
 ## 11. 参与贡献与许可协议
 
-欢迎参与贡献——请通过 Issue 反馈问题，或向对应版本线分支提交 Pull Request（JDK 21 相关改动提交到 `feature/3.0.x`）。
+欢迎参与贡献——请通过 Issue 反馈问题，或向对应版本线分支提交 Pull Request（JDK 17 相关改动提交到 `feature/2.0.x`）。
 
 本项目基于 [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0) 许可发布。详见仓库根目录的 `LICENSE` 文件。
 

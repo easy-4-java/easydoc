@@ -15,11 +15,15 @@ import org.docx4j.XmlUtils;
 import org.docx4j.fonts.PhysicalFont;
 import org.docx4j.fonts.PhysicalFonts;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** This class generates a sample document in case no
  *  document has been passed.
  */
 public class SampleDocument {
+
+	private static final Logger LOG = LoggerFactory.getLogger(SampleDocument.class);
     
 	public static void createContent(MainDocumentPart wordDocumentPart ) {
 		/*
@@ -45,7 +49,7 @@ public class SampleDocument {
 			    String fontName = (String)pairs.getKey();
 			    PhysicalFont pf = (PhysicalFont)pairs.getValue();
 			    
-			    System.out.println("Added paragraph for " + fontName);
+			    LOG.debug("Added paragraph for " + fontName);
 			    addObject(wordDocumentPart, sampleText, fontName );
 	
 			    // bold, italic etc
@@ -64,7 +68,7 @@ public class SampleDocument {
 			    
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.warn("Failed to evaluate expression", e);
 		}    		    
 		
 	}

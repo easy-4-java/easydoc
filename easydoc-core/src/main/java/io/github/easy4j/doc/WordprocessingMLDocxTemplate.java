@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -23,13 +23,15 @@ import java.util.Map;
 import org.docx4j.Docx4J;
 import org.docx4j.model.datastorage.migration.VariablePrepare;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import io.github.easy4j.doc.fonts.FontMapperHolder;
 import io.github.easy4j.doc.utils.WMLPackageUtils;
 
 /**
- * Implementation of wordprocessing m l docx template functionality.
- *
+ * 该模板负责对WordprocessingMLPackage进行普通变量替换和复杂变量替换并返回处理后的WordprocessingMLPackage对象
+ * 备注：该工具只能解决固定模板的word生成（来自：https://blog.csdn.net/qq_35598240/article/details/84439929）
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WordprocessingMLDocxTemplate implements WordprocessingMLTemplate {
@@ -46,11 +48,11 @@ public class WordprocessingMLDocxTemplate implements WordprocessingMLTemplate {
 		WordprocessingMLPackage wordMLPackage;
 		if (template == null || !template.exists() || !template.isFile() ) {
 			// Create a docx
-			System.out.println("No imput path passed, creating dummy document");
+			LOG.debug("No imput path passed, creating dummy document");
 			wordMLPackage = WordprocessingMLPackage.createPackage();
 			SampleDocument.createContent(wordMLPackage.getMainDocumentPart());	
 		} else {
-			System.out.println("Loading file from " + template.getAbsolutePath());
+			LOG.debug("Loading file from " + template.getAbsolutePath());
 			wordMLPackage = Docx4J.load(template);
 		}
 		if (null != variables && !variables.isEmpty()) {
@@ -81,11 +83,11 @@ public class WordprocessingMLDocxTemplate implements WordprocessingMLTemplate {
 		WordprocessingMLPackage wordMLPackage;
 		if (template == null) {
 			// Create a docx
-			System.out.println("No imput path passed, creating dummy document");
+			LOG.debug("No imput path passed, creating dummy document");
 			wordMLPackage = WordprocessingMLPackage.createPackage();
 			SampleDocument.createContent(wordMLPackage.getMainDocumentPart());	
 		} else {
-			System.out.println("Loading file from InputStream");
+			LOG.debug("Loading file from InputStream");
 			wordMLPackage = Docx4J.load(template);
 		}
         if (null != variables && !variables.isEmpty()) {

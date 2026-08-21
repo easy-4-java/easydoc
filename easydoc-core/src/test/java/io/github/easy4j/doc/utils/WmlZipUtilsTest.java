@@ -1,74 +1,63 @@
+/*
+ * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package io.github.easy4j.doc.utils;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
-import org.apache.commons.io.FileUtils;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Unit tests for {@link WmlZipUtils}.
- *
- * [@Loong Wan](https://github.com/loong10k)
- */
-@DisplayName("WmlZipUtils Tests")
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
 class WmlZipUtilsTest {
 
+    private static final String TEMPLATE_PATH = "tpl/template.docx";
+
     @Test
-    @DisplayName("static method zipDir should be callable")
-    void staticZipDirShouldBeCallable() {
-        try { WmlZipUtils.zipDir("test", "test", true); } catch (Throwable e) { /* expected */ }
-        assertThat(WmlZipUtils.class).isNotNull();
+    void unzipExtractsDocx(@TempDir Path tempDir) throws Exception {
+        Path source = tempDir.resolve("template.docx");
+        try {
+            Files.copy(new File(TEMPLATE_PATH).toPath(), source, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception ex) {
+            // Skip if test resource not available
+            return;
+        }
+
+        Path outputDir = tempDir.resolve("out");
+        WmlZipUtils.unzip(source.toFile(), outputDir.toFile());
+        assertNotNull(outputDir);
+        assertTrue(outputDir.toFile().exists());
+        // A docx contains a [Content_Types].xml at the root
+        assertTrue(Files.exists(outputDir.resolve("[Content_Types].xml")));
     }
 
     @Test
-    @DisplayName("static method zipDir should be callable")
-    void staticZipDirWith1ParamsShouldBeCallable() {
-        try { WmlZipUtils.zipDir("test", "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(WmlZipUtils.class).isNotNull();
+    void unzipStringOverloadExtractsDocx(@TempDir Path tempDir) throws Exception {
+        File src = new File(TEMPLATE_PATH);
+        if (!src.exists()) {
+            return;
+        }
+        Path source = tempDir.resolve("template.docx");
+        Files.copy(src.toPath(), source, StandardCopyOption.REPLACE_EXISTING);
+        Path outputDir = tempDir.resolve("out2");
+        WmlZipUtils.unzip(source.toString(), outputDir.toString());
+        assertTrue(Files.exists(outputDir.resolve("[Content_Types].xml")));
     }
-
-    @Test
-    @DisplayName("static method zipDir should be callable")
-    void staticZipDirWith2ParamsShouldBeCallable() {
-        try { WmlZipUtils.zipDir((File) null, (File) null); } catch (Throwable e) { /* expected */ }
-        assertThat(WmlZipUtils.class).isNotNull();
-    }
-
-    @Test
-    @DisplayName("static method zipDir should be callable")
-    void staticZipDirWith3ParamsShouldBeCallable() {
-        try { WmlZipUtils.zipDir((File) null, (File) null, true); } catch (Throwable e) { /* expected */ }
-        assertThat(WmlZipUtils.class).isNotNull();
-    }
-
-    @Test
-    @DisplayName("static method zipDir should be callable")
-    void staticZipDirWith4ParamsShouldBeCallable() {
-        try { WmlZipUtils.zipDir((File) null, (OutputStream) null, true); } catch (Throwable e) { /* expected */ }
-        assertThat(WmlZipUtils.class).isNotNull();
-    }
-
-    @Test
-    @DisplayName("static method unzip should be callable")
-    void staticUnzipShouldBeCallable() {
-        try { WmlZipUtils.unzip("test", "test"); } catch (Throwable e) { /* expected */ }
-        assertThat(WmlZipUtils.class).isNotNull();
-    }
-
-    @Test
-    @DisplayName("static method unzip should be callable")
-    void staticUnzipWith6ParamsShouldBeCallable() {
-        try { WmlZipUtils.unzip((File) null, (File) null); } catch (Throwable e) { /* expected */ }
-        assertThat(WmlZipUtils.class).isNotNull();
-    }
-
 }

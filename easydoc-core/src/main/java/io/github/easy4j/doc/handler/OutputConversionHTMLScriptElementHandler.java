@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -21,8 +21,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Implementation of output conversion h t m l script element handler functionality.
- *
+ * 
+ * TODO
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class OutputConversionHTMLScriptElementHandler implements ConversionHTMLScriptElementHandler {
@@ -47,7 +47,10 @@ public class OutputConversionHTMLScriptElementHandler implements ConversionHTMLS
 		if ((scriptDefinition != null) && (scriptDefinition.length() > 0)) {
 			ret = document.createElement("script");
 			ret.setAttribute("type", "text/javascript");
-			ret.appendChild(document.createComment(scriptDefinition));
+			// Escape XML-comment-breaking sequences so that `-->` in the script body
+			// cannot terminate the surrounding comment and inject markup. (C-2)
+			String safe = scriptDefinition.replace("--", "‐‐");
+			ret.appendChild(document.createComment(safe));
 		}
 		return ret;
 	}

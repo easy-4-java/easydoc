@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -25,8 +25,7 @@ import io.github.easy4j.doc.io.WordprocessingMLPackageWriter;
 import io.github.easy4j.doc.xhtml.io.WordprocessingMLPackageBuilder;
 
 /**
- * Implementation of docx4j html utils functionality.
- *
+ * TODO
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class Docx4jHtmlUtils {
@@ -34,7 +33,7 @@ public class Docx4jHtmlUtils {
 	protected static WordprocessingMLPackageBuilder WMLPACKAGE_BUILDER = WordprocessingMLPackageBuilder.getWMLPackageBuilder();
 	protected static WordprocessingMLPackageWriter WMLPACKAGE_WRITER = WordprocessingMLPackageWriter.getWMLPackageWriter();
 
-	/**
+	/*
 	 * docx文档转换为PDF
 	 * 
 	 * @param docx 		：docx文档
@@ -56,7 +55,7 @@ public class Docx4jHtmlUtils {
 		}
 	}
 
-	/**
+	/*
 	 * 把docx转成html
 	 * @param docxFilePath	：docx文档路径
 	 * @param htmlPath		：html输出路径

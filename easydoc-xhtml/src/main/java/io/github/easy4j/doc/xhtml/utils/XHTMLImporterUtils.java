@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -29,11 +29,6 @@ import io.github.easy4j.doc.Docx4jConstants;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Entities;
 
-/**
- * Implementation of x h t m l importer utils functionality.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
 public class XHTMLImporterUtils {
 
 	public static WordprocessingMLPackage handle(WordprocessingMLPackage wmlPackage, Document doc,boolean fragment,boolean altChunk) throws IOException, Docx4JException {

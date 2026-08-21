@@ -1,54 +1,78 @@
+/*
+ * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package io.github.easy4j.doc.utils;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import java.math.BigInteger;
+
 import org.docx4j.wml.CTBorder;
 import org.docx4j.wml.STBorder;
 import org.docx4j.wml.TblBorders;
+import org.junit.jupiter.api.Test;
 
-/**
- * Unit tests for {@link BorderUtils}.
- *
- * [@Loong Wan](https://github.com/loong10k)
- */
-@DisplayName("BorderUtils Tests")
 class BorderUtilsTest {
 
     @Test
-    @DisplayName("static method ctBorder should be callable")
-    void staticCtBorderShouldBeCallable() {
-        try { BorderUtils.ctBorder(); } catch (Throwable e) { /* expected */ }
-        assertThat(BorderUtils.class).isNotNull();
+    void ctBorderNoArgsReturnsBorder() {
+        CTBorder border = BorderUtils.ctBorder();
+        assertNotNull(border);
+        assertEquals("auto", border.getColor());
+        assertEquals(new BigInteger("4"), border.getSz());
+        assertEquals(new BigInteger("0"), border.getSpace());
+        assertEquals(STBorder.SINGLE, border.getVal());
     }
 
     @Test
-    @DisplayName("static method ctBorder should be callable")
-    void staticCtBorderWith1ParamsShouldBeCallable() {
-        try { BorderUtils.ctBorder("test"); } catch (Throwable e) { /* expected */ }
-        assertThat(BorderUtils.class).isNotNull();
+    void ctBorderWithColor() {
+        CTBorder border = BorderUtils.ctBorder("FF0000");
+        assertNotNull(border);
+        assertEquals("FF0000", border.getColor());
     }
 
     @Test
-    @DisplayName("static method ctBorder should be callable")
-    void staticCtBorderWith2ParamsShouldBeCallable() {
-        try { BorderUtils.ctBorder("test", (BigInteger) null); } catch (Throwable e) { /* expected */ }
-        assertThat(BorderUtils.class).isNotNull();
+    void ctBorderWithColorAndWidth() {
+        CTBorder border = BorderUtils.ctBorder("FF0000", new BigInteger("8"));
+        assertNotNull(border);
+        assertEquals("FF0000", border.getColor());
+        assertEquals(new BigInteger("8"), border.getSz());
     }
 
     @Test
-    @DisplayName("static method ctBorder should be callable")
-    void staticCtBorderWith3ParamsShouldBeCallable() {
-        try { BorderUtils.ctBorder("test", (BigInteger) null, (BigInteger) null); } catch (Throwable e) { /* expected */ }
-        assertThat(BorderUtils.class).isNotNull();
+    void ctBorderWithAllArgs() {
+        CTBorder border = BorderUtils.ctBorder("FF0000", new BigInteger("8"), new BigInteger("1"));
+        assertNotNull(border);
+        assertEquals("FF0000", border.getColor());
+        assertEquals(new BigInteger("8"), border.getSz());
+        assertEquals(new BigInteger("1"), border.getSpace());
+        assertEquals(STBorder.SINGLE, border.getVal());
     }
 
     @Test
-    @DisplayName("static method tblBorders should be callable")
-    void staticTblBordersShouldBeCallable() {
-        try { BorderUtils.tblBorders((CTBorder) null); } catch (Throwable e) { /* expected */ }
-        assertThat(BorderUtils.class).isNotNull();
+    void tblBordersSetsAllSides() {
+        CTBorder border = BorderUtils.ctBorder();
+        TblBorders tblBorders = BorderUtils.tblBorders(border);
+        assertNotNull(tblBorders);
+        assertSame(border, tblBorders.getTop());
+        assertSame(border, tblBorders.getBottom());
+        assertSame(border, tblBorders.getLeft());
+        assertSame(border, tblBorders.getRight());
+        assertSame(border, tblBorders.getInsideH());
+        assertSame(border, tblBorders.getInsideV());
     }
-
 }

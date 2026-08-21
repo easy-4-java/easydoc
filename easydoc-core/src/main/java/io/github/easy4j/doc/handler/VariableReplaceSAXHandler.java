@@ -15,13 +15,12 @@ import ognl.DefaultClassResolver;
 import ognl.DefaultTypeConverter;
 import ognl.Ognl;
 import ognl.OgnlContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Implementation of variable replace s a x handler extending SAXHandler.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
 public class VariableReplaceSAXHandler extends SAXHandler implements ContentHandler {
+
+	private static final Logger LOG = LoggerFactory.getLogger(VariableReplaceSAXHandler.class);
 	
 	/**
 	 * 变量占位符开始位，默认：${
@@ -79,7 +78,7 @@ public class VariableReplaceSAXHandler extends SAXHandler implements ContentHand
 		sb.append(ch, start, length);
 
 		String wmlString = replace(sb.toString(), 0, new StringBuilder(), variables).toString();
-//		System.out.println(wmlString);
+//		LOG.debug(wmlString);
 
 		char[] charOut = wmlString.toCharArray();
 		
@@ -106,11 +105,11 @@ public class VariableReplaceSAXHandler extends SAXHandler implements ContentHand
 					if(value != null) {
 						strB.append(value.toString());
 					} else {
-						System.out.println("Invalid key '" + key + "' or key not mapped to a value");
+						LOG.debug("Invalid key '" + key + "' or key not mapped to a value");
 						strB.append(key);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					LOG.warn("Failed to evaluate expression", e);
 					strB.append(key);
 				}
 			} else {

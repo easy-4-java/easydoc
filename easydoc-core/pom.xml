@@ -31,7 +31,7 @@
 		</dependency>
 		
 		<!-- ###################### Docx4j ###################### -->
-
+		
 		<!-- Docx4j Core -->
 		<dependency>
 		    <groupId>org.docx4j</groupId>
@@ -44,10 +44,26 @@
 	        <artifactId>docx4j-JAXB-Internal</artifactId>
 	    </dependency> -->
 	        
-	    <!-- Docx4j JAXB MOXy（Jakarta；EclipseLink 4.x 由该模块传递引入） -->
+	    <!-- Docx4j JAXB MOXy -->
+
+	    <!-- TODO(easydoc#MOXY): migrate to docx4j-JAXB-ReferenceImpl + jakarta.xml.bind-api 4.x to drop MOXy + asm + core + moxy transitive deps. Tracked as future major-version work. -->
+
+	    <!-- jaxb.properties files specifying that docx4j should use the EclipseLink MOXy (JAXB) runtime -->
 	    <dependency>
 	      	<groupId>org.docx4j</groupId>
 	      	<artifactId>docx4j-JAXB-MOXy</artifactId>
+	    </dependency>
+	    <dependency>
+	      	<groupId>org.eclipse.persistence</groupId>
+	      	<artifactId>org.eclipse.persistence.asm</artifactId>
+	    </dependency>
+	    <dependency>
+	     	<groupId>org.eclipse.persistence</groupId>
+	      	<artifactId>org.eclipse.persistence.core</artifactId>
+	    </dependency>
+	    <dependency>
+	      	<groupId>org.eclipse.persistence</groupId>
+	      	<artifactId>org.eclipse.persistence.moxy</artifactId>
 	    </dependency>
 	     
 	    <!-- Docx4j JAXB ReferenceImpl
@@ -62,7 +78,14 @@
 		    <artifactId>ognl</artifactId>
 		</dependency>
 
-		<!-- JAXB Runtime for Jakarta XML Bind -->
+		<!-- JAXB 4.x runtime provider. docx4j 11.5.14 statically initializes
+		     org.docx4j.jaxb.Context to look up jakarta.xml.bind.JAXBContext
+		     via ServiceLoader; the default fallback class
+		     (org.glassfish.jaxb.runtime.v2.ContextFactory) is not on the
+		     classpath without this jar, so jcContentTypes ends up null and
+		     every WordprocessingMLPackage.load() throws "Bad [Content_Types].xml".
+		     Adding jaxb-runtime provides the missing provider so the docx4j
+		     static initializer completes. -->
 		<dependency>
 		    <groupId>org.glassfish.jaxb</groupId>
 		    <artifactId>jaxb-runtime</artifactId>

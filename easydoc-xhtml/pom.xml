@@ -34,7 +34,11 @@
 			<artifactId>jsoup</artifactId>
 		</dependency>
 		
- 		<!-- Docx4j ImportXHTML（Jakarta 线，内置 openhtmltopdf） -->
+ 		<!-- Docx4j ImportXHTML -->
+		<dependency>
+		    <groupId>org.docx4j</groupId>
+		    <artifactId>xhtmlrenderer</artifactId>
+		</dependency>
 		<dependency>
 		    <groupId>org.docx4j</groupId>
 		    <artifactId>docx4j-ImportXHTML-core</artifactId>

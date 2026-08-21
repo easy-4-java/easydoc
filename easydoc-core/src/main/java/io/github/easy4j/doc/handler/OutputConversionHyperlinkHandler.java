@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -20,11 +20,6 @@ import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.OpcPackage;
 import org.docx4j.openpackaging.parts.Part;
 
-/**
- * Implementation of output conversion hyperlink handler functionality.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
 public class OutputConversionHyperlinkHandler implements ConversionHyperlinkHandler {
 
 	private static final OutputConversionHyperlinkHandler OUTPUT_CONVERSION_HYPERLINK_HANDLER = new OutputConversionHyperlinkHandler();

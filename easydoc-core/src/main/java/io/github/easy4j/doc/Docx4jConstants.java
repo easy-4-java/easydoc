@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -16,11 +16,6 @@
 package io.github.easy4j.doc;
 
 
-/**
- * Implementation of docx4j constants functionality.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
 public final class Docx4jConstants {
 	
 	public static final String DEFAULT_CHARSETNAME = "UTF-8";

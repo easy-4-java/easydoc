@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -24,8 +24,8 @@ import io.github.easy4j.doc.xhtml.DataMap;
 import org.jsoup.nodes.Document;
 
 /**
- * Contract interface for DocumentHandler operations.
- *
+ * 
+ * TODO
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public interface DocumentHandler {

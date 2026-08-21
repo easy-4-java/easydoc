@@ -2,7 +2,7 @@
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-[![Java](https://img.shields.io/badge/Java-21-orange)](https://github.com/easy-4-java/easydoc) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
+[![Java](https://img.shields.io/badge/Java-17-orange)](https://github.com/easy-4-java/easydoc) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
 
 A Word (.docx) generation component built on [docx4j](https://www.docx4java.org/) and a variety of template engines. Render WordprocessingML documents from templates (Freemarker, Velocity, Thymeleaf, Beetl, Rythm, Jetbrick, HTTL, Webit, JSP) or directly from XHTML.
 
@@ -109,7 +109,7 @@ Typical use cases:
 <dependency>
     <groupId>io.github.easy4j</groupId>
     <artifactId>easydoc-core</artifactId>
-    <version>3.0.x.x.20260630-SNAPSHOT</version>
+    <version>2.0.x.x.20260630-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -119,15 +119,15 @@ Add the engine module(s) you need, e.g.:
 <dependency>
     <groupId>io.github.easy4j</groupId>
     <artifactId>easydoc-freemarker</artifactId>
-    <version>3.0.x.x.20260630-SNAPSHOT</version>
+    <version>2.0.x.x.20260630-SNAPSHOT</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```groovy
-implementation 'io.github.easy4j:easydoc-core:3.0.x.x.20260630-SNAPSHOT'
-implementation 'io.github.easy4j:easydoc-freemarker:3.0.x.x.20260630-SNAPSHOT'
+implementation 'io.github.easy4j:easydoc-core:2.0.x.x.20260630-SNAPSHOT'
+implementation 'io.github.easy4j:easydoc-freemarker:2.0.x.x.20260630-SNAPSHOT'
 ```
 
 **Availability:** the artifacts are published to the Aliyun private Maven repository and distributed through GitHub Releases; they have not yet been published to Maven Central.
@@ -228,6 +228,6 @@ Maintenance strategy: the 1.0.x line receives bug fixes while JDK 8 remains the 
 
 ## 11. Contributing & License
 
-Contributions are welcome — open an issue or submit a pull request against the matching version-line branch (`feature/3.0.x` for JDK 21 changes).
+Contributions are welcome — open an issue or submit a pull request against the matching version-line branch (`feature/2.0.x` for JDK 17 changes).
 
 This project is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0). See the `LICENSE` file in the repository root for details.

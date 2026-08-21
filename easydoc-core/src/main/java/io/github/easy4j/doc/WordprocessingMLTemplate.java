@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -22,14 +22,17 @@ import java.util.Map;
 
 import org.docx4j.Docx4J;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Contract interface for WordprocessingMLTemplate operations.
- *
+ * 模板处理接口
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public interface WordprocessingMLTemplate {
-	
+
+	Logger LOG = LoggerFactory.getLogger(WordprocessingMLTemplate.class);
+
 	/**
 	 * @param template ：模板文件
 	 * @param variables ：变量
@@ -41,16 +44,16 @@ public interface WordprocessingMLTemplate {
 		WordprocessingMLPackage wordMLPackage;
 		if (template == null || !template.exists() || !template.isFile() ) {
 			// Create a docx
-			System.out.println("No imput path passed, creating dummy document");
+			LOG.debug("No input path passed, creating dummy document");
 			wordMLPackage = WordprocessingMLPackage.createPackage();
-			SampleDocument.createContent(wordMLPackage.getMainDocumentPart());	
+			SampleDocument.createContent(wordMLPackage.getMainDocumentPart());
 		} else {
-			System.out.println("Loading file from " + template.getAbsolutePath());
+			LOG.debug("Loading file from {}", template.getAbsolutePath());
 			wordMLPackage = Docx4J.load(template);
 		}
 		return wordMLPackage;
 	}
-	
+
 	/**
 	 * @param template ：模板文件流
 	 * @param variables ：变量
@@ -62,11 +65,11 @@ public interface WordprocessingMLTemplate {
 		WordprocessingMLPackage wordMLPackage;
 		if (template == null) {
 			// Create a docx
-			System.out.println("No imput path passed, creating dummy document");
+			LOG.debug("No input path passed, creating dummy document");
 			wordMLPackage = WordprocessingMLPackage.createPackage();
-			SampleDocument.createContent(wordMLPackage.getMainDocumentPart());	
+			SampleDocument.createContent(wordMLPackage.getMainDocumentPart());
 		} else {
-			System.out.println("Loading file from InputStream");
+			LOG.debug("Loading file from InputStream");
 			wordMLPackage = Docx4J.load(template);
 		}
 		return wordMLPackage;
