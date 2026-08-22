@@ -49,6 +49,14 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- xhtmlrenderer 通过 PDFBox 反射调用 commons-logging.LogFactory；test scope -->
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>${commons-logging.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 	
 </project>

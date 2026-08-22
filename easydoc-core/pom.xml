@@ -92,6 +92,15 @@
 		    <scope>test</scope>
 		</dependency>
 
+		<!-- FOP / Xalan 通过反射加载 commons-logging.LogFactory；docx4j 的传递依赖
+		     在某些配置下被排除。test scope 显式声明以确保运行时类可达 -->
+		<dependency>
+		    <groupId>commons-logging</groupId>
+		    <artifactId>commons-logging</artifactId>
+		    <version>${commons-logging.version}</version>
+		    <scope>test</scope>
+		</dependency>
+
 	</dependencies>
 	
 </project>

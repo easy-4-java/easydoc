@@ -29,6 +29,14 @@
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-jasper</artifactId>
 		</dependency>
+		<!-- FOP/PDFBox via xhtmlrenderer reflectively loads commons-logging.LogFactory;
+		     test scope ensures reachability for engine HelloTest rendering path -->
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>${commons-logging.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
-	
 </project>
