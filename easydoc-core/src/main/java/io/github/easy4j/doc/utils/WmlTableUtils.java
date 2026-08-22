@@ -157,7 +157,7 @@ public final class WmlTableUtils {
         rel.setTarget(url);
         rel.setTargetMode("External");
         mainPart.getRelationshipsPart().addRelationship(rel);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         // addRelationship sets the rel's @Id
         // 安全：所有用户可控值先做 XML 转义，防止属性/文本注入（H-2）
         sb.append("<w:hyperlink r:id=\"");
@@ -388,10 +388,10 @@ public final class WmlTableUtils {
         List<String> resultList = new ArrayList<String>();
         List<Tr> trList = getTblAllTr(tbl);
         for (Tr tr : trList) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             List<Tc> tcList = getTrAllCell(tr);
             for (Tc tc : tcList) {
-                sb.append(WmlElementTraversal.getElementContent(tc) + ",");
+                sb.append(WmlElementTraversal.getElementContent(tc)).append(",");
             }
             resultList.add(sb.toString());
         }
@@ -445,7 +445,7 @@ public final class WmlTableUtils {
         colsNum = Math.max(1, Math.min(colsNum, widthArr.length));
         rowNum = Math.max(1, rowNum);
         Tbl tbl = new Tbl();
-        StringBuffer tblSb = new StringBuffer();
+        StringBuilder tblSb = new StringBuilder();
         tblSb.append("<w:tblPr ").append(Namespaces.W_NAMESPACE_DECLARATION).append(">");
         tblSb.append("<w:tblStyle w:val=\"TableGrid\"/>");
         tblSb.append("<w:tblW w:w=\"0\" w:type=\"auto\"/>");

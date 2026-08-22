@@ -27,8 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+import java.nio.file.Files;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import io.github.easy4j.doc.WordprocessingMLTemplate;
 import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
@@ -82,12 +81,12 @@ public class WordprocessingMLJspTemplate implements WordprocessingMLTemplate {
 
 	@Override
 	public WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception {
-		return this.process(FileUtils.readFileToString(template, StandardCharsets.UTF_8), variables);
+		return this.process(Files.readString(template.toPath()), variables);
 	}
 
 	@Override
 	public WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception {
-		return this.process(IOUtils.toString(template, StandardCharsets.UTF_8), variables);
+		return this.process(new String(template.readAllBytes(), StandardCharsets.UTF_8), variables);
 	}
 
 	/**

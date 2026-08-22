@@ -15,12 +15,11 @@
  */
 package io.github.easy4j.doc.utils;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -196,8 +195,7 @@ public final class WmlParagraphUtils {
             run.getContent().add(text);
         }
 
-        InputStream is = new FileInputStream(filePath);
-        byte[] bytes = IOUtils.toByteArray(is);
+        byte[] bytes = Files.readAllBytes(Path.of(filePath));
         BinaryPartAbstractImage imagePart = BinaryPartAbstractImage.createImagePart(wordMLPackage, bytes);
         Inline inline = imagePart.createImageInline(filePath, altText, id1, id2, false);
         Drawing drawing = factory.createDrawing();

@@ -21,8 +21,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import io.github.easy4j.doc.Docx4jConstants;
 import io.github.easy4j.doc.WordprocessingMLTemplate;
@@ -75,7 +73,7 @@ public abstract class AbstractStringTemplateWrappingTemplate implements Wordproc
 	@Override
 	public WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception {
 		Charset cs = Charset.forName(Docx4jConstants.DEFAULT_CHARSETNAME);
-		String content = (template == null) ? null : new String(IOUtils.toByteArray(template), cs);
+		String content = (template == null) ? null : new String(template.readAllBytes(), cs);
 		return process(content, variables);
 	}
 
