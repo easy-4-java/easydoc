@@ -40,7 +40,7 @@ import org.docx4j.wml.SdtPr;
 import org.docx4j.wml.SdtPr.Alias;  
 import org.docx4j.wml.SdtRun;  
 import org.docx4j.wml.Tag;  
-import org.jvnet.jaxb2_commons.ppp.Child;  
+import org.jvnet.jaxb.lang.Child;  
 /**
  * Docx4j读取word 2007内容控件
  * http://53873039oycg.iteye.com/blog/2193684

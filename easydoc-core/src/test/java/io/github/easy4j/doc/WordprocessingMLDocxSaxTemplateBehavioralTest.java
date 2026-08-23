@@ -17,9 +17,10 @@ import org.junit.jupiter.api.io.TempDir;
 /**
  * Behavioral tests for {@link WordprocessingMLDocxSaxTemplate}.
  *
- * On JDK 21+, {@code assertJdkCompatible()} throws {@link UnsupportedOperationException}
- * when variables are non-empty. We test all branches: null template, real template,
- * null/empty/non-empty variables, and the assertJdkCompatible guard.
+ * On JDK 21+, docx4j's {@code SAXHandler} cannot be used ("Transformer didn't set
+ * ContentHandler"; unchanged in docx4j 17.0.3). Instead of failing fast, the template
+ * logs a one-time WARN and transparently delegates to {@link WordprocessingMLDocxStAXTemplate}.
+ * We test all branches: null template, real template, null/empty/non-empty variables.
  */
 @DisplayName("WordprocessingMLDocxSaxTemplate Behavioral Tests")
 class WordprocessingMLDocxSaxTemplateBehavioralTest {
@@ -57,7 +58,7 @@ class WordprocessingMLDocxSaxTemplateBehavioralTest {
     // ---------------------------------------------------------------
 
     @Test
-    @DisplayName("process(File, Map) with null file creates dummy document, null vars skips assertJdkCompatible")
+    @DisplayName("process(File, Map) with null file creates dummy document, null vars skip fallback")
     void processFileWithNullTemplateAndNullVars() throws Exception {
         WordprocessingMLDocxSaxTemplate tpl = new WordprocessingMLDocxSaxTemplate();
         WordprocessingMLPackage result = tpl.process((File) null, null);
@@ -66,7 +67,7 @@ class WordprocessingMLDocxSaxTemplateBehavioralTest {
     }
 
     @Test
-    @DisplayName("process(File, Map) with null file and empty vars skips assertJdkCompatible")
+    @DisplayName("process(File, Map) with null file and empty vars skips fallback")
     void processFileWithNullTemplateAndEmptyVars() throws Exception {
         WordprocessingMLDocxSaxTemplate tpl = new WordprocessingMLDocxSaxTemplate();
         Map<String, Object> vars = new HashMap<>();
@@ -75,31 +76,15 @@ class WordprocessingMLDocxSaxTemplateBehavioralTest {
     }
 
     @Test
-    @DisplayName("process(File, Map) with null file and non-empty vars hits assertJdkCompatible (JDK 21 throws)")
+    @DisplayName("process(File, Map) with null file and non-empty vars transparently falls back on JDK 21+")
     void processFileWithNullTemplateAndVarsJdk21() throws Exception {
         WordprocessingMLDocxSaxTemplate tpl = new WordprocessingMLDocxSaxTemplate();
         Map<String, Object> vars = new HashMap<>();
         vars.put("name", "value");
 
-        String version = System.getProperty("java.specification.version");
-        int major = 0;
-        if (version != null) {
-            try {
-                major = Integer.parseInt(version.contains(".") ? version.substring(0, version.indexOf('.')) : version);
-            } catch (NumberFormatException ignored) {
-            }
-        }
-
-        if (major >= 21) {
-            // JDK 21+ => assertJdkCompatible throws UnsupportedOperationException
-            assertThrows(UnsupportedOperationException.class, () -> {
-                tpl.process((File) null, vars);
-            });
-        } else {
-            // JDK < 21 => process succeeds
-            WordprocessingMLPackage result = tpl.process((File) null, vars);
-            assertNotNull(result);
-        }
+        // JDK 21+ => transparent StAX fallback; JDK < 21 => native SAX path; both succeed
+        WordprocessingMLPackage result = tpl.process((File) null, vars);
+        assertNotNull(result);
     }
 
     @Test
@@ -147,7 +132,7 @@ class WordprocessingMLDocxSaxTemplateBehavioralTest {
     }
 
     @Test
-    @DisplayName("process(File, Map) with real template and non-empty vars hits assertJdkCompatible")
+    @DisplayName("process(File, Map) with real template and non-empty vars transparently falls back on JDK 21+")
     void processFileWithRealTemplateAndVars(@TempDir java.nio.file.Path tempDir) throws Exception {
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
         File templateFile = tempDir.resolve("template3.docx").toFile();
@@ -157,23 +142,8 @@ class WordprocessingMLDocxSaxTemplateBehavioralTest {
         Map<String, Object> vars = new HashMap<>();
         vars.put("title", "Test");
 
-        String version = System.getProperty("java.specification.version");
-        int major = 0;
-        if (version != null) {
-            try {
-                major = Integer.parseInt(version.contains(".") ? version.substring(0, version.indexOf('.')) : version);
-            } catch (NumberFormatException ignored) {
-            }
-        }
-
-        if (major >= 21) {
-            assertThrows(UnsupportedOperationException.class, () -> {
-                tpl.process(templateFile, vars);
-            });
-        } else {
-            WordprocessingMLPackage result = tpl.process(templateFile, vars);
-            assertNotNull(result);
-        }
+        WordprocessingMLPackage result = tpl.process(templateFile, vars);
+        assertNotNull(result);
     }
 
     // ---------------------------------------------------------------
@@ -198,29 +168,14 @@ class WordprocessingMLDocxSaxTemplateBehavioralTest {
     }
 
     @Test
-    @DisplayName("process(InputStream, Map) with null stream and non-empty vars hits assertJdkCompatible")
+    @DisplayName("process(InputStream, Map) with null stream and non-empty vars transparently falls back on JDK 21+")
     void processInputStreamWithNullStreamAndVars() throws Exception {
         WordprocessingMLDocxSaxTemplate tpl = new WordprocessingMLDocxSaxTemplate();
         Map<String, Object> vars = new HashMap<>();
         vars.put("key", "val");
 
-        String version = System.getProperty("java.specification.version");
-        int major = 0;
-        if (version != null) {
-            try {
-                major = Integer.parseInt(version.contains(".") ? version.substring(0, version.indexOf('.')) : version);
-            } catch (NumberFormatException ignored) {
-            }
-        }
-
-        if (major >= 21) {
-            assertThrows(UnsupportedOperationException.class, () -> {
-                tpl.process((InputStream) null, vars);
-            });
-        } else {
-            WordprocessingMLPackage result = tpl.process((InputStream) null, vars);
-            assertNotNull(result);
-        }
+        WordprocessingMLPackage result = tpl.process((InputStream) null, vars);
+        assertNotNull(result);
     }
 
     @Test
@@ -238,7 +193,7 @@ class WordprocessingMLDocxSaxTemplateBehavioralTest {
     }
 
     @Test
-    @DisplayName("process(InputStream, Map) with real stream and vars hits assertJdkCompatible")
+    @DisplayName("process(InputStream, Map) with real stream and vars transparently falls back on JDK 21+")
     void processInputStreamWithRealStreamAndVars(@TempDir java.nio.file.Path tempDir) throws Exception {
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
         File f = tempDir.resolve("stream-test2.docx").toFile();
@@ -249,22 +204,7 @@ class WordprocessingMLDocxSaxTemplateBehavioralTest {
         Map<String, Object> vars = new HashMap<>();
         vars.put("name", "World");
 
-        String version = System.getProperty("java.specification.version");
-        int major = 0;
-        if (version != null) {
-            try {
-                major = Integer.parseInt(version.contains(".") ? version.substring(0, version.indexOf('.')) : version);
-            } catch (NumberFormatException ignored) {
-            }
-        }
-
-        if (major >= 21) {
-            assertThrows(UnsupportedOperationException.class, () -> {
-                tpl.process(new ByteArrayInputStream(bytes), vars);
-            });
-        } else {
-            WordprocessingMLPackage result = tpl.process(new ByteArrayInputStream(bytes), vars);
-            assertNotNull(result);
-        }
+        WordprocessingMLPackage result = tpl.process(new ByteArrayInputStream(bytes), vars);
+        assertNotNull(result);
     }
 }

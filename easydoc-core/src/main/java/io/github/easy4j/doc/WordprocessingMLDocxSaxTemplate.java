@@ -53,6 +53,14 @@ public class WordprocessingMLDocxSaxTemplate implements WordprocessingMLTemplate
 	 */
 	@Override
 	public WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception{
+		// JDK 21+：docx4j 的 SAXHandler 在该环境下不可用（见 checkJdk21OrFallback），
+		// 在加载文档前就透明降级到 StAX 模板，避免同一文档被加载两次
+		if (null != variables && !variables.isEmpty()) {
+			checkJdk21OrFallback();
+			if (jdk21FallbackTriggered) {
+				return fallback().process(template, variables);
+			}
+		}
 		// Document loading (required)
 		WordprocessingMLPackage wordMLPackage;
 		if (template == null || !template.exists() || !template.isFile() ) {
@@ -65,8 +73,7 @@ public class WordprocessingMLDocxSaxTemplate implements WordprocessingMLTemplate
 			wordMLPackage = Docx4J.load(template);
 		}
 		if (null != variables && !variables.isEmpty()) {
-			assertJdkCompatible();
-        	// 替换变量并输出Word文档 
+        	// 替换变量并输出Word文档
         	MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();
         	// 将${}里的内容结构层次替换为一层
         	VariablePrepare.prepare(wordMLPackage);
@@ -87,20 +94,27 @@ public class WordprocessingMLDocxSaxTemplate implements WordprocessingMLTemplate
 	 */
 	@Override
 	public WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception {
+		// JDK 21+：docx4j 的 SAXHandler 在该环境下不可用（见 checkJdk21OrFallback），
+		// 在加载文档前就透明降级到 StAX 模板，避免同一文档被加载两次
+		if (null != variables && !variables.isEmpty()) {
+			checkJdk21OrFallback();
+			if (jdk21FallbackTriggered) {
+				return fallback().process(template, variables);
+			}
+		}
 		// Document loading (required)
 		WordprocessingMLPackage wordMLPackage;
 		if (template == null) {
 			// Create a docx
 			LOG.debug("No imput path passed, creating dummy document");
 			wordMLPackage = WordprocessingMLPackage.createPackage();
-			SampleDocument.createContent(wordMLPackage.getMainDocumentPart());	
+			SampleDocument.createContent(wordMLPackage.getMainDocumentPart());
 		} else {
 			LOG.debug("Loading file from InputStream");
 			wordMLPackage = Docx4J.load(template);
 		}
         if (null != variables && !variables.isEmpty()) {
-        	assertJdkCompatible();
-        	// 替换变量并输出Word文档 
+        	// 替换变量并输出Word文档
         	MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();
         	// 将${}里的内容结构层次替换为一层
         	VariablePrepare.prepare(wordMLPackage);
@@ -113,30 +127,57 @@ public class WordprocessingMLDocxSaxTemplate implements WordprocessingMLTemplate
 	}
 
 	/**
-	 * docx4j 11.5.14 的 {@code SAXHandler} 在 JDK 21+ 下无法工作：
-	 * Transformer（无论 JDK 内置 XSLTC 还是 docx4j 的 Xalan interpretive）
-	 * 都不会通过 SAXSource 的 XMLReader 触发 setContentHandler 回调，
-	 * 抛出 "Transformer didn't set ContentHandler"。与其让用户在最深处
-	 * 看到 cryptic 错误，不如在此 fail-fast 给出可操作的提示。
+	 * docx4j（含 17.0.3，其 SAXHandler 与 11.5.3 相比没有变化）的
+	 * {@code SAXHandler} 在 JDK 21+ 下无法工作：Transformer（无论 JDK 内置
+	 * XSLTC 还是 docx4j 的 Xalan interpretive）都不会通过 SAXSource 的
+	 * XMLReader 触发 setContentHandler 回调，抛出 "Transformer didn't set
+	 * ContentHandler"。与其让用户在最深处看到 cryptic 错误，首次使用时
+	 * 记录一次 WARN 并透明降级到 StAX 模板。
 	 */
-	private void assertJdkCompatible() {
-		String version = System.getProperty("java.specification.version");
-		if (version != null) {
-			try {
-				int major = Integer.parseInt(version.contains(".") ? version.substring(0, version.indexOf('.')) : version);
-				if (major >= 21) {
-					throw new UnsupportedOperationException(
-							"WordprocessingMLDocxSaxTemplate is incompatible with JDK " + major
-							+ " (docx4j 11.5.14 SAXHandler limitation). "
-							+ "Use DocxTemplates.create(DocxMode.DEFAULT) or DocxTemplates.create(DocxMode.STAX) instead, "
-							+ "or run on JDK 17.");
+	// volatile + synchronized single-flight init: process(...) may be invoked
+	// concurrently from many virtual threads; the fallback must be published
+	// safely (visibility) and created exactly once (no duplicate instances).
+	private volatile boolean jdk21FallbackTriggered = false;
+
+	private volatile WordprocessingMLDocxStAXTemplate staxFallback;
+
+	/**
+	 * 懒加载并复用 StAX 降级模板；占位符配置与当前 SAX 模板保持一致，
+	 * 保证降级前后的变量替换语义透明一致。
+	 */
+	private WordprocessingMLDocxStAXTemplate fallback() {
+		WordprocessingMLDocxStAXTemplate local = staxFallback;
+		if (local == null) {
+			synchronized (this) {
+				local = staxFallback;
+				if (local == null) {
+					local = new WordprocessingMLDocxStAXTemplate();
+					local.setPlaceholderStart(this.getPlaceholderStart());
+					local.setPlaceholderEnd(this.getPlaceholderEnd());
+					staxFallback = local;
 				}
-			} catch (NumberFormatException e) {
-				// 无法解析版本号时不拦截，保持原有行为
 			}
 		}
+		return local;
 	}
-	
+
+	/**
+	 * JDK 21+ 下 docx4j 的 SAXHandler 不可用（见 {@link #fallback()} 的说明），
+	 * 首次触发时记录一次 WARN；{@link #jdk21FallbackTriggered} 置位后
+	 * {@code process(...)} 会透明地委托给 StAX 模板。
+	 */
+	private void checkJdk21OrFallback() {
+		int major = Runtime.version().feature();
+		if (major >= 21 && !jdk21FallbackTriggered) {
+			jdk21FallbackTriggered = true;
+			LOG.warn("WordprocessingMLDocxSaxTemplate is incompatible with JDK {} "
+					+ "(docx4j 17.0.3 SAXHandler limitation: Transformer doesn't invoke "
+					+ "SAXSource.setContentHandler). Falling back transparently to "
+					+ "WordprocessingMLDocxStAXTemplate; consider switching "
+					+ "DocxTemplates.create(DocxMode.SAX) to DocxMode.STAX explicitly.", major);
+		}
+	}
+
 	public String getPlaceholderStart() {
 		return placeholderStart;
 	}

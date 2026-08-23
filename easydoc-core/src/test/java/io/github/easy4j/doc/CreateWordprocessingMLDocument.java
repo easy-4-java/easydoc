@@ -52,7 +52,7 @@ public class CreateWordprocessingMLDocument {
 		org.docx4j.wml.R run = factory.createR();// 创建文本段R
 		org.docx4j.wml.Text t = factory.createText();// 创建文本段内容Text
 		t.setValue("text");
-		run.getRunContent().add(t);// Text添加到R
+		run.getContent().add(t);// Text添加到R
 		// 设置文本段R属性,Optionally,setpPr/rPr@w:b
 		org.docx4j.wml.RPr rpr = factory.createRPr();
 		org.docx4j.wml.BooleanDefaultTrue b = new org.docx4j.wml.BooleanDefaultTrue();// 创建带缺省值的boolen属性对象
@@ -60,7 +60,7 @@ public class CreateWordprocessingMLDocument {
 		rpr.setB(b);
 		run.setRPr(rpr);// 设置文本段R属性
 
-		p.getParagraphContent().add(run);// R添加到P
+		p.getContent().add(run);// R添加到P
 
 		// 创建默认的段落属性,并加入到段落对象中去
 		org.docx4j.wml.PPr ppr = factory.createPPr();

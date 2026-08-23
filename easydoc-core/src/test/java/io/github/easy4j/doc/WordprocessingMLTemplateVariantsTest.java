@@ -17,17 +17,20 @@ package io.github.easy4j.doc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 /**
  * Tests for the three {@link WordprocessingMLTemplate} implementations:
@@ -44,6 +47,10 @@ import org.junit.jupiter.api.Test;
 class WordprocessingMLTemplateVariantsTest {
 
     private static final String TEMPLATE_DOCX = "src/test/resources/tpl/template.docx";
+
+    /** Stable marker inside the JDK 21 transparent-fallback WARN message. */
+    private static final String JDK21_FALLBACK_WARN_MARKER =
+            "WordprocessingMLDocxSaxTemplate is incompatible with JDK";
 
     private static Map<String, Object> sampleVars() {
         Map<String, Object> vars = new HashMap<>();
@@ -63,6 +70,30 @@ class WordprocessingMLTemplateVariantsTest {
             // TODO: fix production bug — SampleDocument.createContent catches Exception but not Error
             // Font discovery AssertionError on macOS: code was still executed for JaCoCo coverage
         }
+    }
+
+    /**
+     * Runs {@code executable} with {@code System.err} captured (the slf4j-simple
+     * test binding writes WARN records there) and returns how many times the
+     * JDK 21 transparent-fallback WARN marker was emitted.
+     */
+    private static int countFallbackWarnsWhile(Executable executable) throws Throwable {
+        PrintStream originalErr = System.err;
+        ByteArrayOutputStream captured = new ByteArrayOutputStream();
+        System.setErr(new PrintStream(captured, true, StandardCharsets.UTF_8));
+        try {
+            executable.execute();
+        } finally {
+            System.setErr(originalErr);
+        }
+        String output = captured.toString(StandardCharsets.UTF_8);
+        int count = 0;
+        int index = 0;
+        while ((index = output.indexOf(JDK21_FALLBACK_WARN_MARKER, index)) >= 0) {
+            count++;
+            index += JDK21_FALLBACK_WARN_MARKER.length();
+        }
+        return count;
     }
 
     // ========================================================================
@@ -234,11 +265,11 @@ class WordprocessingMLTemplateVariantsTest {
     // ========================================================================
     // WordprocessingMLDocxSaxTemplate
     // ========================================================================
-    // @Disabled: docx4j 11.5.14 的 org.docx4j.openpackaging.parts.SAXHandler 依赖
-    // Transformer 在 transform 时通过 SAXSource 的 XMLReader 调用 setContentHandler；
-    // JDK 21 下（无论内置 XSLTC 还是 docx4j 的 Xalan interpretive）该回调都不会触发，
-    // 抛 "Transformer didn't set ContentHandler"。这是 docx4j 与 JDK 21 的兼容限制
-    // （非本组件代码缺陷），StAX 与 Docx 模板不受影响。JDK 17 下可恢复。
+    // docx4j 17.0.3 的 org.docx4j.openpackaging.parts.SAXHandler 与 11.5.3 完全相同，
+    // 在 JDK 21+ 下依旧不可用（Transformer 不会通过 SAXSource 的 XMLReader 触发
+    // setContentHandler）。模板现在会在首次携带非空变量调用 process(...) 时记录一次
+    // WARN 并透明降级到 WordprocessingMLDocxStAXTemplate，因此以下测试在 JDK 21+
+    // 上通过降级路径执行，JDK 17 上走原生 SAX 路径。
     @Nested
     @DisplayName("WordprocessingMLDocxSaxTemplate")
     class SaxTemplateTests {
@@ -271,7 +302,39 @@ class WordprocessingMLTemplateVariantsTest {
             assertThat(tmpl.getPlaceholderEnd()).isEqualTo(">>");
         }
 
-        @Disabled("docx4j 11.5.14 SAXHandler incompatible with JDK 21 — see class Javadoc")
+        @Test
+        @DisplayName("process(File,vars) returns non-null package; fallback WARN logged exactly once on JDK 21+")
+        void processFile_vars_nonNullAndFallbackWarnExactlyOnce() throws Throwable {
+            File source = new File(TEMPLATE_DOCX);
+            // 两次调用共用同一模板实例：WARN 只允许在首次触发时出现一次
+            int warns = countFallbackWarnsWhile(() -> {
+                assertThat(tmpl.process(source, sampleVars())).isNotNull();
+                assertThat(tmpl.process(source, sampleVars())).isNotNull();
+            });
+            if (Runtime.version().feature() >= 21) {
+                assertThat(warns).isEqualTo(1);
+            } else {
+                assertThat(warns).isZero();
+            }
+        }
+
+        @Test
+        @DisplayName("process(InputStream,vars) returns non-null package; fallback WARN logged exactly once on JDK 21+")
+        void processStream_vars_nonNullAndFallbackWarnExactlyOnce() throws Throwable {
+            int warns = countFallbackWarnsWhile(() -> {
+                try (InputStream first = new FileInputStream(TEMPLATE_DOCX);
+                        InputStream second = new FileInputStream(TEMPLATE_DOCX)) {
+                    assertThat(tmpl.process(first, sampleVars())).isNotNull();
+                    assertThat(tmpl.process(second, sampleVars())).isNotNull();
+                }
+            });
+            if (Runtime.version().feature() >= 21) {
+                assertThat(warns).isEqualTo(1);
+            } else {
+                assertThat(warns).isZero();
+            }
+        }
+
         @Test
         @DisplayName("process(File,null) creates dummy document")
         void processFile_null_createsDummy() throws Exception {
@@ -285,7 +348,6 @@ class WordprocessingMLTemplateVariantsTest {
             });
         }
 
-        @Disabled("docx4j 11.5.14 SAXHandler incompatible with JDK 21 — see class Javadoc")
         @Test
         @DisplayName("process(File,null,null vars) creates dummy")
         void processFile_null_nullVars_createsDummy() throws Exception {
@@ -299,7 +361,6 @@ class WordprocessingMLTemplateVariantsTest {
             });
         }
 
-        @Disabled("docx4j 11.5.14 SAXHandler incompatible with JDK 21 — see class Javadoc")
         @Test
         @DisplayName("process(File,existing,variables) loads and processes")
         void processFile_existing_replacesVariables() throws Exception {
@@ -313,7 +374,6 @@ class WordprocessingMLTemplateVariantsTest {
             }
         }
 
-        @Disabled("docx4j 11.5.14 SAXHandler incompatible with JDK 21 — see class Javadoc")
         @Test
         @DisplayName("process(File,existing,null vars) loads only")
         void processFile_existing_nullVars() throws Exception {
@@ -322,7 +382,6 @@ class WordprocessingMLTemplateVariantsTest {
             assertThat(result).isNotNull();
         }
 
-        @Disabled("docx4j 11.5.14 SAXHandler incompatible with JDK 21 — see class Javadoc")
         @Test
         @DisplayName("process(InputStream,null) creates dummy document")
         void processStream_null_createsDummy() throws Exception {
@@ -336,7 +395,6 @@ class WordprocessingMLTemplateVariantsTest {
             });
         }
 
-        @Disabled("docx4j 11.5.14 SAXHandler incompatible with JDK 21 — see class Javadoc")
         @Test
         @DisplayName("process(InputStream,real stream,variables) loads and processes")
         void processStream_realStream_replacesVariables() throws Exception {
@@ -351,7 +409,6 @@ class WordprocessingMLTemplateVariantsTest {
             }
         }
 
-        @Disabled("docx4j 11.5.14 SAXHandler incompatible with JDK 21 — see class Javadoc")
         @Test
         @DisplayName("process(InputStream,real stream,null vars) loads only")
         void processStream_realStream_nullVars() throws Exception {
@@ -361,7 +418,6 @@ class WordprocessingMLTemplateVariantsTest {
             }
         }
 
-        @Disabled("docx4j 11.5.14 SAXHandler incompatible with JDK 21 — see class Javadoc")
         @Test
         @DisplayName("process(File,existing,empty vars) loads without replacement")
         void processFile_existing_emptyVars() throws Exception {
@@ -370,7 +426,6 @@ class WordprocessingMLTemplateVariantsTest {
             assertThat(result).isNotNull();
         }
 
-        @Disabled("docx4j 11.5.14 SAXHandler incompatible with JDK 21 — see class Javadoc")
         @Test
         @DisplayName("process(File,non-existent) creates dummy")
         void processFile_nonExistent_createsDummy() throws Exception {
@@ -385,7 +440,6 @@ class WordprocessingMLTemplateVariantsTest {
             });
         }
 
-        @Disabled("docx4j 11.5.14 SAXHandler incompatible with JDK 21 — see class Javadoc")
         @Test
         @DisplayName("process with custom placeholders and variables")
         void processFile_customPlaceholders() throws Exception {

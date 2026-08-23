@@ -65,11 +65,22 @@
 	        <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
 	    </dependency>
 	    
-	    <!-- https://mvnrepository.com/artifact/ognl/ognl -->
+		<!-- https://mvnrepository.com/artifact/ognl/ognl -->
 		<dependency>
-		    <groupId>ognl</groupId>
-		    <artifactId>ognl</artifactId>
+			<groupId>ognl</groupId>
+			<artifactId>ognl</artifactId>
 		</dependency>
+
+		<!-- SLF4J binding（test scope）：否则测试类路径上没有任何 provider，
+		     LOG.warn 会落到 NOP logger，WordprocessingMLTemplateVariantsTest
+		     无法断言 JDK 21 透明降级的 WARN 日志（slf4j-simple 默认输出到
+		     System.err，版本由根 pom dependencyManagement 管理） -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 
 		<!-- JAXB 4.x runtime provider. docx4j 11.5.14 statically initializes
 		     org.docx4j.jaxb.Context to look up jakarta.xml.bind.JAXBContext
@@ -89,6 +100,24 @@
 		<dependency>
 		    <groupId>org.docx4j</groupId>
 		    <artifactId>docx4j-export-fo</artifactId>
+		    <scope>test</scope>
+		</dependency>
+
+		<!-- docx4j FOP 字体子模块（11.5.3 引入）；test scope 让 PDF/HTML 渲染能解析
+		     Symbol / Common Cross-core / Cross-extra 字体集，无需系统级字体 -->
+		<dependency>
+		    <groupId>org.docx4j</groupId>
+		    <artifactId>docx4j-export-fo-fonts-symbol</artifactId>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.docx4j</groupId>
+		    <artifactId>docx4j-export-fo-fonts-croscore</artifactId>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.docx4j</groupId>
+		    <artifactId>docx4j-export-fo-fonts-crosextra</artifactId>
 		    <scope>test</scope>
 		</dependency>
 

@@ -39,7 +39,7 @@ import org.docx4j.wml.Comments;
 import org.docx4j.wml.Comments.Comment;  
 import org.docx4j.wml.ContentAccessor;  
 import org.docx4j.wml.R.CommentReference;  
-import org.jvnet.jaxb2_commons.ppp.Child; 
+import org.jvnet.jaxb.lang.Child; 
 /**
  * http://53873039oycg.iteye.com/blog/2193312
  */

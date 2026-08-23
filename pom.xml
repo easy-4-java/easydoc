@@ -56,12 +56,12 @@
         <commons-io.version>2.22.0</commons-io.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <commons-logging.version>1.3.6</commons-logging.version>
-        <docx4j-export-fo.version>11.5.14</docx4j-export-fo.version>
-        <docx4j-importxhtml.version>${docx4j.version}</docx4j-importxhtml.version>
-        <docx4j-jaxb.version>11.5.14</docx4j-jaxb.version>
-        <docx4j-openxml.version>${docx4j.version}</docx4j-openxml.version>
+        <docx4j-export-fo.version>17.0.3</docx4j-export-fo.version>
+        <docx4j-importxhtml.version>17.0.2</docx4j-importxhtml.version>
+        <docx4j-jaxb.version>17.0.3</docx4j-jaxb.version>
+        <docx4j-openxml.version>17.0.3</docx4j-openxml.version>
         <docx4j-xhtmlrenderer.version>3.0.0</docx4j-xhtmlrenderer.version>
-        <docx4j.version>11.5.14</docx4j.version>
+        <docx4j.version>17.0.3</docx4j.version>
         <freemarker.version>2.3.34</freemarker.version>
         <httl.version>1.0.12</httl.version>
         <jackson.version>2.18.4</jackson.version>
@@ -202,6 +202,24 @@
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-export-fo</artifactId>
+                <version>${docx4j-export-fo.version}</version>
+            </dependency>
+
+            <!-- docx4j-export-fo fonts 子模块（11.5.3 起独立发布），
+                 PDF/HTML 渲染需要的 Symbol/Cross-core/Cross-extra 字体集 -->
+            <dependency>
+                <groupId>org.docx4j</groupId>
+                <artifactId>docx4j-export-fo-fonts-symbol</artifactId>
+                <version>${docx4j-export-fo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.docx4j</groupId>
+                <artifactId>docx4j-export-fo-fonts-croscore</artifactId>
+                <version>${docx4j-export-fo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.docx4j</groupId>
+                <artifactId>docx4j-export-fo-fonts-crosextra</artifactId>
                 <version>${docx4j-export-fo.version}</version>
             </dependency>
 

@@ -31,7 +31,7 @@ import org.docx4j.wml.Text;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Entities;
-import org.jvnet.jaxb2_commons.ppp.Child;
+import org.jvnet.jaxb.lang.Child;
 
 
 public class HtmlToDOCDemo {
