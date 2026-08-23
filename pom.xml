@@ -59,7 +59,10 @@
         <docx4j-export-fo.version>17.0.3</docx4j-export-fo.version>
         <docx4j-importxhtml.version>17.0.2</docx4j-importxhtml.version>
         <docx4j-jaxb.version>17.0.3</docx4j-jaxb.version>
-        <docx4j-openxml.version>17.0.3</docx4j-openxml.version>
+        <!-- 旧 openxml-objects 模型构件（docx4j 11.5.x 时代）的最终版本：
+             docx4j 17.0.x 已把模型构件改名为 docx4j-generated-objects，
+             但为兼容仍引用旧构件的第三方/历史依赖，这里显式锁定其最后版本 -->
+        <docx4j-openxml.version>11.5.14</docx4j-openxml.version>
         <docx4j-xhtmlrenderer.version>3.0.0</docx4j-xhtmlrenderer.version>
         <docx4j.version>17.0.3</docx4j.version>
         <freemarker.version>2.3.34</freemarker.version>
@@ -305,6 +308,19 @@
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-generated-objects</artifactId>
+                <version>${docx4j.version}</version>
+            </dependency>
+
+            <!-- 旧 openxml-objects 模型构件（docx4j 11.5.x 时代，最终版 11.5.14）；
+                 仅当外部依赖显式引用时生效，docx4j 17.0.x 树内不再使用 -->
+            <dependency>
+                <groupId>org.docx4j</groupId>
+                <artifactId>docx4j-openxml-objects</artifactId>
+                <version>${docx4j-openxml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.docx4j</groupId>
+                <artifactId>docx4j-openxml-objects-pml</artifactId>
                 <version>${docx4j-openxml.version}</version>
             </dependency>
 
