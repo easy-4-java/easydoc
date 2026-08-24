@@ -61,11 +61,15 @@
 
 | 依赖项 | 版本 |
 |:---|:---|
-| JDK | 8 |
-| Maven | 3.0+ |
-| docx4j | `docx4j-core` + JAXB 变体（Internal / MOXy / ReferenceImpl） |
+| JDK | 21+ |
+| Maven | 4.0.0-rc-6 及以上（由 `requireMavenVersion` 强制；注意 Maven 版本序中 `4.0.0-rc-N` 小于 `4.0.0`） |
+| docx4j | 17.0.3（`docx4j-core` + `docx4j-JAXB-ReferenceImpl`）；`docx4j-ImportXHTML-core` 17.0.2；旧版 `docx4j-openxml-objects(-pml)` 兼容锁定在 11.5.14 |
 | OGNL | 核心模块表达式支持 |
 | 引擎模块 | Freemarker、Velocity、Thymeleaf、Beetl、Rythm、Jetbrick、HTTL、Webit、JSP（按模块） |
+
+> **Maven 3 说明：** Maven 3.9.x 用户必须加 `-Denforcer.skip=true`（此时 enforcer
+> 护栏，包括 `docx4j-openxml-objects` 禁令，不会执行）。常规方式构建——不带任何
+> skip 的 `mvn clean verify`——要求 Maven 4。
 
 ### 版本线矩阵
 

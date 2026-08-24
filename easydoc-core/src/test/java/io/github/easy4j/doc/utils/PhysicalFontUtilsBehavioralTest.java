@@ -85,21 +85,12 @@ class PhysicalFontUtilsBehavioralTest {
     // ---------------------------------------------------------------
 
     @Test
-    @DisplayName("setWmlPackageFonts does not throw on a real package")
+    @DisplayName("setWmlPackageFonts sets a non-null font mapper on the package")
     void setWmlPackageFontsSetsMapper() throws Exception {
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        // docx4j 17.0.3 的 setWmlPackageFonts 内部使用 IdentityPlusMapper，
-        // 其 <clinit> 在 JVM 21 上可能失败（NoClassDefFoundError），
-        // 异常被吞/包装。此测试只验证：调用过程不向调用方抛意外异常。
-        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> {
-            try {
-                PhysicalFontUtils.setWmlPackageFonts(pkg);
-            } catch (org.docx4j.openpackaging.exceptions.Docx4JException expected) {
-                // IdentityPlusMapper 失败被包装为 Docx4JException，属预期
-            } catch (RuntimeException expected) {
-                // 静态初始化失败等运行时异常也属预期
-            }
-        });
+        PhysicalFontUtils.setWmlPackageFonts(pkg);
+        Mapper mapper = pkg.getFontMapper();
+        assertNotNull(mapper, "Font mapper should be set after setWmlPackageFonts");
     }
 
     // ---------------------------------------------------------------

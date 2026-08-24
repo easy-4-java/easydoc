@@ -59,11 +59,15 @@ Typical use cases:
 
 | Requirement | Version |
 |:---|:---|
-| JDK | 8 |
-| Maven | 3.0+ |
-| docx4j | `docx4j-core` + JAXB variants (Internal / MOXy / ReferenceImpl) |
+| JDK | 21+ |
+| Maven | 4.0.0-rc-6 or newer (enforced by `requireMavenVersion`; note that in Maven version ordering `4.0.0-rc-N` is lower than `4.0.0`) |
+| docx4j | 17.0.3 (`docx4j-core` + `docx4j-JAXB-ReferenceImpl`); `docx4j-ImportXHTML-core` 17.0.2; legacy `docx4j-openxml-objects(-pml)` pinned at 11.5.14 for compatibility |
 | OGNL | Expression support in the core module |
 | Engine modules | Freemarker, Velocity, Thymeleaf, Beetl, Rythm, Jetbrick, HTTL, Webit, JSP (per-module) |
+
+> **Maven 3 note:** Maven 3.9.x users must pass `-Denforcer.skip=true` (the enforcer
+> gate, including the `docx4j-openxml-objects` ban, will not run). Building the
+> regular way — `mvn clean verify` with no skips — requires Maven 4.
 
 ### Version lines
 

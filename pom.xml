@@ -530,8 +530,8 @@
                                 <rules>
                                     <requireMavenVersion>
                                         <message>
-                                            <![CDATA[You are running an older version of Maven. This application requires at least Maven 4.]]></message>
-                                        <version>[4.0.0,)</version>
+                                            <![CDATA[You are running an older version of Maven. This application requires at least Maven 4 (4.0.0-rc-6 or newer; note that in Maven version ordering 4.0.0-rc-N is LOWER than 4.0.0, so the range starts at the rc).]]></message>
+                                        <version>[4.0.0-rc-6,)</version>
                                     </requireMavenVersion>
                                     <requireJavaVersion>
                                         <message>

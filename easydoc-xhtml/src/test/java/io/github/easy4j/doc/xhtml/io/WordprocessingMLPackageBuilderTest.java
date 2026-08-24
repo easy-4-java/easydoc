@@ -47,15 +47,15 @@ class WordprocessingMLPackageBuilderTest {
 	// They operate on a freshly-created (in-memory) WordprocessingMLPackage.
 	// ---------------------------------------------------------------------
 	//
-	// Note: the three config* methods all transitively trigger the static
-	// initializer of org.docx4j.fonts.IdentityPlusMapper. Previously this
-	// threw an AssertionError under docx4j 11.5.14 + JVM 21 (FOP font reader).
-	// Now re-enabled to verify whether the docx4j-JAXB-ReferenceImpl switch
-	// resolved this. If they still fail, @Disabled will be re-added with an
-	// updated reason.
+	// Note: the three config* methods all transitively call
+	// PhysicalFontUtils.setWmlPackageFonts, which used to NPE on systems
+	// without Microsoft fonts installed (PhysicalFonts.get returns null for
+	// missing fonts and docx4j Mapper.put rejects null values). Fixed by
+	// PhysicalFontUtils.putIfAvailable — mappings for missing fonts are
+	// skipped and IdentityPlusMapper's Panose fallback applies. These tests
+	// run green on any OS with or without the CJK font packs installed.
 
 	@Test
-	@Disabled("IdentityPlusMapper.<clinit> fails on docx4j 11.5.14 + JVM 21 — needs font-mapping investigation")
 	void configChineseFontsReturnsThis() throws Exception {
 		WordprocessingMLPackageBuilder b = WordprocessingMLPackageBuilder.getWMLPackageBuilder();
 		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
@@ -65,7 +65,6 @@ class WordprocessingMLPackageBuilderTest {
 	}
 
 	@Test
-	@Disabled("IdentityPlusMapper.<clinit> fails on docx4j 11.5.14 + JVM 21 — needs font-mapping investigation")
 	void configDefaultFontReturnsNonNull() throws Exception {
 		WordprocessingMLPackageBuilder b = WordprocessingMLPackageBuilder.getWMLPackageBuilder();
 		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
@@ -75,7 +74,6 @@ class WordprocessingMLPackageBuilderTest {
 	}
 
 	@Test
-	@Disabled("IdentityPlusMapper.<clinit> fails on docx4j 11.5.14 + JVM 21 — needs font-mapping investigation")
 	void configSimSunFontReturnsNonNull() throws Exception {
 		WordprocessingMLPackageBuilder b = WordprocessingMLPackageBuilder.getWMLPackageBuilder();
 		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
