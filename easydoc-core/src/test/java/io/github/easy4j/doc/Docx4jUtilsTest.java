@@ -15,12 +15,14 @@
  */
 package io.github.easy4j.doc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -68,5 +70,28 @@ class Docx4jUtilsTest {
 		} finally {
 			merged.close();
 		}
+	}
+
+	@Test
+	void mergeDocxDeletesTempFileWhenStreamClosed() throws Exception {
+		// mergeDocx 返回 DeleteOnCloseFileInputStream：close() 必须立即回收临时文件，
+		// 不再依赖 deleteOnExit（长生命周期服务/虚拟线程场景下会无限累积临时文件）
+		byte[] bytes = Files.readAllBytes(Paths.get("src/test/resources/tpl/template.docx"));
+		int before = countTempGeneratedFiles();
+
+		InputStream merged = new Docx4jUtils().mergeDocx(Arrays.asList(new ByteArrayInputStream(bytes)));
+		assertNotNull(merged);
+		assertEquals(before + 1, countTempGeneratedFiles(),
+				"an open merge stream must hold exactly one live temp file");
+
+		merged.close();
+		assertEquals(before, countTempGeneratedFiles(),
+				"closing the stream must delete the temp file immediately");
+	}
+
+	private static int countTempGeneratedFiles() {
+		File dir = new File(System.getProperty("java.io.tmpdir"));
+		String[] names = dir.list((d, name) -> name.startsWith("generated") && name.endsWith(".docx"));
+		return names == null ? 0 : names.length;
 	}
 }

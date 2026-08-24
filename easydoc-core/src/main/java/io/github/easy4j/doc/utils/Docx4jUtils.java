@@ -59,7 +59,6 @@ public class Docx4jUtils {
 
         WordprocessingMLPackage target = null;
         final File generated = File.createTempFile("generated", ".docx");
-        generated.deleteOnExit(); // (C-4) ensure temp file is reclaimed on JVM exit
 
         int chunkId = 0;
         Iterator<InputStream> it = streams.iterator();
@@ -83,10 +82,42 @@ public class Docx4jUtils {
 
         if (target != null) {
             target.save(generated);
-            return new FileInputStream(generated);
+            // close() 时删除临时文件：调用方读完关闭流即可回收，不再依赖
+            // deleteOnExit（长生命周期服务/虚拟线程场景下会无限累积临时文件）；
+            // 即使调用方忘记 close，也只在本次 JVM 留一个孤儿文件而非全部依赖 JVM 退出
+            return new DeleteOnCloseFileInputStream(generated);
         } else {
             generated.delete();
             return null;
+        }
+    }
+
+    /**
+     * close() 时删除底层临时文件的 FileInputStream。用于 mergeDocx 的返回值，
+     * 使临时文件生命周期与流一致：调用方关闭流即回收磁盘文件。
+     */
+    private static final class DeleteOnCloseFileInputStream extends FileInputStream {
+
+        private final File file;
+        private boolean closed = false;
+
+        DeleteOnCloseFileInputStream(File file) throws IOException {
+            super(file);
+            this.file = file;
+        }
+
+        @Override
+        public void close() throws IOException {
+            try {
+                super.close();
+            } finally {
+                if (!closed) {
+                    closed = true;
+                    if (!file.delete() && file.exists()) {
+                        LOG.warn("Failed to delete temp file {} after stream close", file.getAbsolutePath());
+                    }
+                }
+            }
         }
     }
 
