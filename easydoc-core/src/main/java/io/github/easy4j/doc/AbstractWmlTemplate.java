@@ -62,10 +62,10 @@ abstract class AbstractWmlTemplate implements WordprocessingMLTemplate {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
-	/** Variable placeholder start, default {@code ${}. */
+	/** Variable placeholder start, default: ${ */
 	protected String placeholderStart = "${";
 
-	/** Variable placeholder end, default {@code }. */
+	/** Variable placeholder end, default: } */
 	protected String placeholderEnd = "}";
 
 	/** Concrete subclass picks the variable-replacement strategy. */

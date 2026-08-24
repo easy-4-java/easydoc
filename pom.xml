@@ -682,6 +682,12 @@
                         <charset>${project.build.sourceEncoding}</charset>
                         <encoding>${project.build.sourceEncoding}</encoding>
                         <docencoding>${project.build.sourceEncoding}</docencoding>
+                        <!-- doclint=none：历史上 disable-javadoc-doclint profile 通过
+                             additionalparam 传 -Xdoclint:none，但 javadoc-plugin 3.x 已
+                             移除该参数（改名 additionalJOption），导致配置从未生效、
+                             release profile 的 javadoc jar 在存量中文注释上 80+ 报错。
+                             在此处用插件原生 doclint 属性恢复原意 -->
+                        <doclint>none</doclint>
                     </configuration>
                     <executions>
                         <execution>
