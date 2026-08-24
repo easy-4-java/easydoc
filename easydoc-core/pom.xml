@@ -65,14 +65,14 @@
 	        <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
 	    </dependency>
 
-	    <!-- docx4j-openxml-objects 11.5.14：javax 时代的 OOXML 模型构件。
-	         与 docx4j-generated-objects 17.0.3（jakarta 时代）同 FQN，两者
-	         同时进类路径存在撞类风险——保留此处声明以便实证，结论见提交说明 -->
-	    <dependency>
-	        <groupId>org.docx4j</groupId>
-	        <artifactId>docx4j-openxml-objects</artifactId>
-	    </dependency>
-	    
+	    <!-- docx4j-openxml-objects 11.5.14 只留在根 pom 的 <dependencyManagement>
+	         中作版本锁定，不在本模块 <dependencies> 声明。原因：它与 docx4j-core
+	         17.0.3 传递的 docx4j-generated-objects 17.0.3 同 FQN（jakarta 模型类），
+	         两个 jar 同时进入运行时是确定性遮蔽（17.0.3 先加载 → OK），但任何下游
+	         升级若把 openxml-objects 排在 docx4j-core 之前就会丢失 17.0.x 新增
+	         的 schema 类。本模块禁掉直接声明，由 enforcer bannedDependencies
+	         护栏；如下游按 11.5.14 mvnrepository 片段复制粘贴，此处会构建失败提示 -->
+
 		<!-- https://mvnrepository.com/artifact/ognl/ognl -->
 		<dependency>
 			<groupId>ognl</groupId>

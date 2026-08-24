@@ -544,6 +544,23 @@
                                         </message>
                                         <version>[${java.version}.0,)</version>
                                     </requireJavaVersion>
+                                    <!-- 护栏：禁止任何模块直接声明 11.5.x 时代的 OOXML 模型构件。
+                                         这三个构件与 docx4j-generated-objects 17.0.3 同 FQN，谁先进类路径谁生效；
+                                         任何直接声明都依赖 Maven 解析顺序，会丢失 17.0.x 新增 schema 类。
+                                         如确实需要旧版本模型，单独提 issue 评估：是否升级到 17.0.x 的新构件名 -->
+                                    <bannedDependencies>
+                                        <message><![CDATA[禁止直接声明 docx4j-openxml-objects/-pml/-sml（11.5.x 时代的 OOXML 模型构件）。
+该构件与 docx4j-generated-objects 17.0.3 同 FQN，运行时依赖 Maven 解析顺序决定谁遮蔽谁，
+会被 17.0.3 反遮蔽而丢失新 schema 类，或反过来遮蔽 17.0.3 同样丢类。
+运行时所需的 jakarta 模型由 docx4j-core 17.0.3 的传递依赖 docx4j-generated-objects 17.0.3 自动提供，
+无需也无法直接声明。如有 11.5.x 兼容需求，请单独开 issue 评估迁移方案。]]></message>
+                                        <excludes>
+                                            <exclude>org.docx4j:docx4j-openxml-objects</exclude>
+                                            <exclude>org.docx4j:docx4j-openxml-objects-pml</exclude>
+                                            <exclude>org.docx4j:docx4j-openxml-objects-sml</exclude>
+                                        </excludes>
+                                        <searchTransitive>false</searchTransitive>
+                                    </bannedDependencies>
                                 </rules>
                             </configuration>
                         </execution>
@@ -765,6 +782,16 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+
+            <!-- 继承式 enforcer 绑定：pluginManagement 里的 execution 不会自动跑，
+                 必须在这里显式 enable。规则来自根 pom pluginManagement 的
+                 maven-enforcer-plugin（requireMavenVersion / requireJavaVersion
+                 + bannedDependencies 三个旧 docx4j-openxml-objects* 构件）。
+                 所有 easydoc-* 子模块都会执行 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
