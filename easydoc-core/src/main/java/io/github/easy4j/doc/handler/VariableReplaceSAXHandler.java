@@ -42,6 +42,15 @@ public class VariableReplaceSAXHandler extends SAXHandler implements ContentHand
 	 * 变量集合
 	 */
 	protected Map<String, Object> variables;
+
+	/**
+	 * 严格模式（-Deasydoc.variable.strict=true）：占位符无法解析或 OGNL 求值失败时
+	 * 抛 {@link IllegalStateException}，而不是把 key 原样写进文档。默认宽松模式保持
+	 * 历史行为（WARN 日志 + 原样输出）。仅在失败路径读取，故可在测试/运行期切换。
+	 */
+	protected static boolean strictMode() {
+		return Boolean.getBoolean("easydoc.variable.strict");
+	}
 	/**
 	 * Ognl上下文对象
 	 */
@@ -108,11 +117,24 @@ public class VariableReplaceSAXHandler extends SAXHandler implements ContentHand
 					if(value != null) {
 						strB.append(value.toString());
 					} else {
+						if (strictMode()) {
+							throw new IllegalStateException("Unresolved template variable '" + placeholderStart + key + placeholderEnd
+									+ "' (strict mode: easydoc.variable.strict=true)");
+						}
 						LOG.debug("Invalid key '" + key + "' or key not mapped to a value");
 						strB.append(key);
 					}
 				} catch (Exception e) {
-					LOG.warn("Failed to evaluate expression", e);
+					// else 分支抛出的 IllegalStateException（未解析变量）原样透传，
+					// 不做二次包装
+					if (e instanceof IllegalStateException ise) {
+						throw ise;
+					}
+					if (strictMode()) {
+						throw new IllegalStateException("Failed to evaluate OGNL expression '" + placeholderStart + key + placeholderEnd
+								+ "' (strict mode: easydoc.variable.strict=true)", e);
+					}
+					LOG.warn("Failed to evaluate expression '" + placeholderStart + key + placeholderEnd + "': {}", e.getMessage());
 					strB.append(key);
 				}
 			} else {
