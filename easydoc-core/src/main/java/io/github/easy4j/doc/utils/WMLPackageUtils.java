@@ -50,8 +50,7 @@ public class WMLPackageUtils {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WMLPackageUtils.class);
 	
-	protected static ObjectFactory factory = Context.getWmlObjectFactory();
-	protected static String CONTENT_TYPE = "";
+	private static final ObjectFactory FACTORY = Context.getWmlObjectFactory();
 	
     /*
      * cleanDocumentPart
@@ -198,8 +197,8 @@ public class WMLPackageUtils {
 					theList.remove(j);
 				}
 				// now add a run
-				org.docx4j.wml.R run = factory.createR();
-				org.docx4j.wml.Text t = factory.createText();
+				org.docx4j.wml.R run = FACTORY.createR();
+				org.docx4j.wml.Text t = FACTORY.createText();
 				// if (rpr != null)
 				// run.setRPr(paraRPr2RPr(rpr));
 				t.setValue(value);
