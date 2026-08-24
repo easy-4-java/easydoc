@@ -65,15 +65,14 @@ public class WordprocessingMLThymeleafTemplate extends AbstractStringTemplateWra
 		AbstractConfigurableTemplateResolver templateResolver =  getTemplateResolver();
 		if( getTemplateResolver() == null){
 			String resolver = Docx4jProperties.getProperty("docx4j.thymeleaf.templateResolver","org.thymeleaf.templateresolver.FileTemplateResolver");
-			if("org.thymeleaf.templateresolver.FileTemplateResolver".equalsIgnoreCase(resolver)){
-				templateResolver = new FileTemplateResolver();
-			}else if("org.thymeleaf.templateresolver.ClassLoaderTemplateResolver".equalsIgnoreCase(resolver)){
-				templateResolver = new ClassLoaderTemplateResolver();
-			}else if("org.thymeleaf.templateresolver.UrlTemplateResolver".equalsIgnoreCase(resolver)){
-				templateResolver = new UrlTemplateResolver();
-			}else{
-				templateResolver = new FileTemplateResolver();
-			}
+			// JDK 21 switch expression: 4-arm resolver selector becomes one expression.
+			// Unknown values fall back to FileTemplateResolver, matching original else-branch.
+			templateResolver = switch (resolver) {
+				case "org.thymeleaf.templateresolver.ClassLoaderTemplateResolver" -> new ClassLoaderTemplateResolver();
+				case "org.thymeleaf.templateresolver.UrlTemplateResolver" -> new UrlTemplateResolver();
+				case String s when s.equalsIgnoreCase("org.thymeleaf.templateresolver.FileTemplateResolver") -> new FileTemplateResolver();
+				default -> new FileTemplateResolver();
+			};
 		}
 		templateResolver.setCacheable(Docx4jProperties.getProperty("docx4j.thymeleaf.cacheable", true));
 		templateResolver.setCacheablePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.cacheablePatterns", ""))));
