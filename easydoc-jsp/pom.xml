@@ -21,6 +21,7 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
+			<version>${servlet-api.version}</version>
 		</dependency>
 		<!-- Tomcat 9.x Jasper JSP engine (replaces the hand-rolled easydoc-jsp engine).
 		     Tomcat 10+ ships Jakarta-namespace APIs which conflict with the javax.servlet
@@ -28,6 +29,7 @@
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-jasper</artifactId>
+			<version>${tomcat-jasper.version}</version>
 		</dependency>
 	</dependencies>
 	
