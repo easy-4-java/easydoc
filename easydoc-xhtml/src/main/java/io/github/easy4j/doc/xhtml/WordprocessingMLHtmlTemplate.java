@@ -22,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import java.nio.file.Files;
-import org.apache.commons.io.IOUtils;
 import org.docx4j.model.structure.PageSizePaper;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import io.github.easy4j.doc.WordprocessingMLTemplate;
@@ -72,22 +71,25 @@ public class WordprocessingMLHtmlTemplate implements WordprocessingMLTemplate {
 	}
 
 	public WordprocessingMLPackage process( InputStream input) throws Exception {
-		WordprocessingMLPackage wordMLPackage = null;
+		// 显式 close 调用方传入的 stream（保留原 finally-close 行为，
+		// 不使用 try-with-resources 因为 stream 是入参而非本地资源）
+		WordprocessingMLPackage wordMLPackage;
 		try {
 			wordMLPackage = wordMLPackageBuilder.buildWithDoc(docHandler.handle(input), landscape, altChunk);
 		} finally {
-			IOUtils.closeQuietly(input);
+			input.close();
 		}
 		// 返回WordprocessingMLPackage对象
 		return wordMLPackage;
 	}
 
 	public WordprocessingMLPackage process( InputStream input, PageSizePaper pageSize) throws Exception {
-		WordprocessingMLPackage wordMLPackage = null;
+		// 显式 close 调用方传入的 stream（同上语义）
+		WordprocessingMLPackage wordMLPackage;
 		try {
 			wordMLPackage = wordMLPackageBuilder.buildWithDoc(docHandler.handle(input), pageSize, landscape, altChunk);
 		} finally {
-			IOUtils.closeQuietly(input);
+			input.close();
 		}
 		// 返回WordprocessingMLPackage对象
 		return wordMLPackage;

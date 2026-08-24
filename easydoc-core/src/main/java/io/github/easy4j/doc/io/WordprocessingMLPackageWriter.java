@@ -20,7 +20,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.docx4j.Docx4J;
 import org.docx4j.Docx4jProperties;
 import org.docx4j.convert.out.ConversionHTMLScriptElementHandler;
@@ -116,10 +115,12 @@ public class WordprocessingMLPackageWriter  {
 	public void writeToDocx(WordprocessingMLPackage wmlPackage,OutputStream output) throws IOException, Docx4JException {
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
 		Assert.notNull(output, " output is not specified!");
+        // 显式 close 调用方传入的 stream（不吞掉 close 异常 — 与原 IOUtils.closeQuietly
+        // 行为不同，但避免屏蔽调用方真实的 I/O 错误，调用方自行 try-finally 即可）
         try {
         	wmlPackage.save(output , Docx4J.FLAG_SAVE_ZIP_FILE );//保存到 docx 文件
-		} finally{
-			IOUtils.closeQuietly(output);
+		} finally {
+			output.close();
         }
 	}
 	
@@ -160,40 +161,34 @@ public class WordprocessingMLPackageWriter  {
 	 */
 	public File writeToHtml(WordprocessingMLPackage wmlPackage,File outFile) throws IOException, Docx4JException {
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
-		Assert.isTrue( outFile.exists() , " outFile is not founded !");
-		OutputStream output = null;
-        try {
-        	String imageTargetUri = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_IMAGETARGETURI, "images");
-        	File[] files = outFile.listFiles(new OutputDirFilterHandler(imageTargetUri));
-        	if(files.length != 1){
-        		File imageDir = new File(outFile,imageTargetUri);
-        		imageDir.setWritable(true);
-        		imageDir.setReadable(true);
-        		imageDir.mkdir();
-        	}
-        	//创建文件输出流
-        	output = new FileOutputStream(outFile);	
-        	//创建Html输出设置
-            HTMLSettings htmlSettings = Docx4J.createHTMLSettings();  
-            htmlSettings.setImageDirPath(outFile.getParent());  
-            htmlSettings.setImageTargetUri(imageTargetUri);  
-            htmlSettings.setWmlPackage(wmlPackage);
-          
-            //d
-            htmlSettings.setHyperlinkHandler(getHyperlinkHandler());
-            htmlSettings.setScriptElementHandler(getScriptElementHandler());
-            htmlSettings.setStyleElementHandler(getStyleElementHandler());
-            
-            Docx4jProperties.setProperty(Docx4jConstants.DOCX4J_PARAM_04, true);  
+		Assert.isTrue( outFile.exists() , " outFile is not founded!");
+		String imageTargetUri = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_IMAGETARGETURI, "images");
+		File[] files = outFile.listFiles(new OutputDirFilterHandler(imageTargetUri));
+		if(files.length != 1){
+			File imageDir = new File(outFile, imageTargetUri);
+			imageDir.setWritable(true);
+			imageDir.setReadable(true);
+			imageDir.mkdir();
+		}
+		// 本地资源用 try-with-resources 保证 close + 自动 flush
+		try (OutputStream output = new FileOutputStream(outFile)) {
+			//创建Html输出设置
+			HTMLSettings htmlSettings = Docx4J.createHTMLSettings();
+			htmlSettings.setImageDirPath(outFile.getParent());
+			htmlSettings.setImageTargetUri(imageTargetUri);
+			htmlSettings.setWmlPackage(wmlPackage);
 
-            //Docx4J.toHTML(settings, outputStream, flags);
-            //Docx4J.toHTML(wmlPackage, imageDirPath, imageTargetUri, outputStream);
-            Docx4J.toHTML(htmlSettings, output, Docx4J.FLAG_EXPORT_PREFER_XSL);  
-            
-		} finally{
-			IOUtils.closeQuietly(output);
-        }
-		
+			htmlSettings.setHyperlinkHandler(getHyperlinkHandler());
+			htmlSettings.setScriptElementHandler(getScriptElementHandler());
+			htmlSettings.setStyleElementHandler(getStyleElementHandler());
+
+			Docx4jProperties.setProperty(Docx4jConstants.DOCX4J_PARAM_04, true);
+
+			//Docx4J.toHTML(settings, outputStream, flags);
+			//Docx4J.toHTML(wmlPackage, imageDirPath, imageTargetUri, outputStream);
+			Docx4J.toHTML(htmlSettings, output, Docx4J.FLAG_EXPORT_PREFER_XSL);
+		}
+
 		return outFile;
 	}
 	
@@ -248,11 +243,12 @@ public class WordprocessingMLPackageWriter  {
 	public void writeToPDF(WordprocessingMLPackage wmlPackage,OutputStream output) throws IOException, Docx4JException {
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
 		Assert.notNull(output, " output is not specified!");
+        // 显式 close 调用方传入的 stream（同 writeToDocx 语义）
         try {
 			Docx4J.toPDF(wmlPackage, output); //保存到 pdf 文件
 			output.flush();
-		} finally{
-			IOUtils.closeQuietly(output);
+		} finally {
+			output.close();
         }
 	}
 	
@@ -320,8 +316,8 @@ public class WordprocessingMLPackageWriter  {
 			updater = null;
 			foSettings = null;
 			wmlPackage = null;
-		} finally{
-			IOUtils.closeQuietly(output);
+		} finally {
+			output.close();
         }
 	}
 

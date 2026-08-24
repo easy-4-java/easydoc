@@ -56,13 +56,12 @@ public class WordprocessingMLTemplateWriter {
 	
 	public String writeToString(File docFile) throws IOException, Docx4JException {
 		WordprocessingMLPackage wmlPackage = WordprocessingMLPackage.load(docFile);
-		StringBuilderWriter output = new StringBuilderWriter();
-		try {
+		String extracted;
+		try (StringBuilderWriter output = new StringBuilderWriter()) {
 			this.writeToWriter(wmlPackage, output);
-		} finally {
-			IOUtils.closeQuietly(output);
+			extracted = output.toString();
 		}
-		return output.toString();
+		return extracted;
 	}
 	
 	public String writeToString(WordprocessingMLPackage wmlPackage) throws IOException, Docx4JException {
@@ -84,20 +83,16 @@ public class WordprocessingMLTemplateWriter {
 	public void writeToWriter(WordprocessingMLPackage wmlPackage,Writer output) throws IOException, Docx4JException {
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
 		Assert.notNull(output, " output is not specified!");
-		InputStream input = null;
-		try {
-			//Document对象
-			MainDocumentPart document = wmlPackage.getMainDocumentPart();
-			//Document XML
-			String documentXML = document.getXML();
-			//转成字节输入流
-			input = IOUtils.toBufferedInputStream(new ByteArrayInputStream(documentXML.getBytes()));
+		//Document对象
+		MainDocumentPart document = wmlPackage.getMainDocumentPart();
+		//Document XML
+		String documentXML = document.getXML();
+		//转成字节输入流（input 是本地资源，用 try-with-resources；output 是入参不变）
+		try (InputStream input = IOUtils.toBufferedInputStream(new ByteArrayInputStream(documentXML.getBytes()))) {
 			//获取模板输出编码格式
-			String charsetName = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_CONVERT_OUT_WMLTEMPLATE_CHARSETNAME, Docx4jConstants.DEFAULT_CHARSETNAME );
+			String charsetName = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_CONVERT_OUT_WMLTEMPLATE_CHARSETNAME, Docx4jConstants.DEFAULT_CHARSETNAME);
 			//输出模板
 			IOUtils.copy(input, output, Charset.forName(charsetName));
-		} finally {
-			IOUtils.closeQuietly(input);
 		}
 	}
 	

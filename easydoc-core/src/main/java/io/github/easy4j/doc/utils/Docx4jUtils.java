@@ -108,10 +108,11 @@ public class Docx4jUtils {
     }
 
     public static void toP(WordprocessingMLPackage wordMLPackage,String outPath) throws Exception{
-        OutputStream os = new FileOutputStream(outPath);
-        FOSettings foSettings = Docx4J.createFOSettings();
-        foSettings.setWmlPackage(wordMLPackage);
-        Docx4J.toFO(foSettings, os, Docx4J.FLAG_EXPORT_PREFER_XSL);
+        try (OutputStream os = new FileOutputStream(outPath)) {
+            FOSettings foSettings = Docx4J.createFOSettings();
+            foSettings.setWmlPackage(wordMLPackage);
+            Docx4J.toFO(foSettings, os, Docx4J.FLAG_EXPORT_PREFER_XSL);
+        }
     }
 
 }
