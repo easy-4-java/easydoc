@@ -240,17 +240,49 @@
             </dependency>
 
             <!-- openhtmltopdf（docx4j-ImportXHTML 的传递依赖，XHTML 解析核心）：
-                 显式锁定到 1.1.34 以消除旧版在 JDK 解析器上 setProperty 失败的
-                 "Unable to disable XML External Entities" SEVERE 警告 -->
+                 全部 8 个构件统一锁定到 1.1.75（Maven Central 最新版）。
+                 openhtmltopdf 在 JDK 解析器上 setProperty(ACCESS_EXTERNAL_DTD)
+                 失败会打 SEVERE 警告——XXE 防护由 XHTMLImporterUtils.handle()
+                 的 JAXP 系统属性兜底，与本版本无关 -->
             <dependency>
                 <groupId>io.github.openhtmltopdf</groupId>
                 <artifactId>openhtmltopdf-core</artifactId>
-                <version>1.1.34</version>
+                <version>1.1.75</version>
             </dependency>
             <dependency>
                 <groupId>io.github.openhtmltopdf</groupId>
                 <artifactId>openhtmltopdf-pdfbox</artifactId>
-                <version>1.1.34</version>
+                <version>1.1.75</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-objects</artifactId>
+                <version>1.1.75</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-latex-support</artifactId>
+                <version>1.1.75</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-slf4j</artifactId>
+                <version>1.1.75</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-rtl-support</artifactId>
+                <version>1.1.75</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-mathml-support</artifactId>
+                <version>1.1.75</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-svg-support</artifactId>
+                <version>1.1.75</version>
             </dependency>
 
             <dependency>
