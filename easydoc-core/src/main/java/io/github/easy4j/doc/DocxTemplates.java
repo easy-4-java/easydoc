@@ -15,6 +15,9 @@
  */
 package io.github.easy4j.doc;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Factory that resolves a {@link WordprocessingMLTemplate} implementation for
  * a {@link WordprocessingMLDocxTemplate}-style docx pipeline based on the
@@ -28,19 +31,35 @@ package io.github.easy4j.doc;
  */
 public final class DocxTemplates {
 
+	private static final Logger LOG = LoggerFactory.getLogger(DocxTemplates.class);
+
 	private DocxTemplates() {
 	}
 
 	/**
 	 * Create the {@link WordprocessingMLTemplate} backing the requested docx mode.
 	 *
+	 * <p>On JDK 21+ a {@link DocxMode#SAX} request is short-circuited to the
+	 * {@link DocxMode#STAX} factory at creation time (docx4j 17.0.3's
+	 * {@code SAXHandler} is incompatible with JDK 21's {@code Transformer}).
+	 * The runtime fallback inside {@link VariableReplacer.Sax} is retained
+	 * only as a defence against direct {@code new WordprocessingMLDocxSaxTemplate()}
+	 * instantiation.</p>
+	 *
 	 * @param mode docx engine selector; {@code null} falls through to {@link DocxMode#DEFAULT}.
 	 * @return a fresh {@link WordprocessingMLDocxTemplate}, {@link WordprocessingMLDocxSaxTemplate},
 	 *         or {@link WordprocessingMLDocxStAXTemplate} — all wrapped as a {@link WordprocessingMLTemplate}.
 	 */
 	public static WordprocessingMLTemplate create(DocxMode mode) {
-		// 注册制工厂：新增 DocxMode 只需向 FACTORIES 注册，无需改 switch
 		DocxMode resolved = mode == null ? DocxMode.DEFAULT : mode;
+		// JDK 21+ static short-circuit: SAX → STAX at factory level
+		if (resolved == DocxMode.SAX && Runtime.version().feature() >= 21) {
+			LOG.info("DocxMode.SAX short-circuited to STAX on JDK {} "
+					+ "(docx4j 17.0.3 SAXHandler is incompatible with JDK 21+ Transformer); "
+					+ "returning WordprocessingMLDocxStAXTemplate directly.",
+					Runtime.version().feature());
+			return FACTORIES.get(DocxMode.STAX).get();
+		}
 		return FACTORIES.getOrDefault(resolved, FACTORIES.get(DocxMode.DEFAULT)).get();
 	}
 

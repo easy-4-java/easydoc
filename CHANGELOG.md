@@ -59,7 +59,10 @@ Maven 4 构建基线、安全加固与一系列正确性修复。相对 1.0.x（
   抛出含占位符名的 `IllegalStateException`；宽松模式（默认）行为不变，但 WARN 日志带上
   占位符文本，模板拼写错误不再静默。
 - SAX 模板在 JDK 21 下首次使用记录一次 WARN 并透明降级到 StAX（docx4j 17.0.3 的
-  SAXHandler 与 JDK 21 Transformer 不兼容）。
+  SAXHandler 与 JDK 21 Transformer 不兼容）。`DocxTemplates` 工厂在 JDK 21+ 上对
+  `DocxMode.SAX` 静态短路直接返回 StAX 模板（info 日志一次），消除"名不副实"问题。
+- httl / rythm / webit 引擎标记 `@Deprecated(since = "3.0")`（上游停更，httl 2014 年、
+  rythm 2015 年、webit 2016 年最后发布；建议新项目选用 freemarker / thymeleaf / velocity）。
 
 ### 安全
 
@@ -77,12 +80,13 @@ Maven 4 构建基线、安全加固与一系列正确性修复。相对 1.0.x（
 
 ### 已知边界
 
-- `DocxMode.SAX` 在 JDK 21 实际执行 StAX 路径（透明降级，行为一致）。
+- `DocxMode.SAX` 在 JDK 21 实际执行 StAX 路径——`DocxTemplates` 工厂在 JDK 21+ 上静态短路
+  直接返回 StAX 模板（行为一致，运行时降级保留防御直接 new 实例化）。
+- httl / rythm / webit 引擎标记 `@Deprecated`（上游停更 2014–2016），可用但建议新项目选用
+  freemarker / thymeleaf / velocity。
 - easydoc-jsp 仍是 javax.servlet + Tomcat 9 Jasper（Jakarta EE 用户不可用，其余模块不受影响）。
 - HTML→PDF 的 openhtmltopdf（docx4j-xhtmlrenderer 3.0.0）会打印 XXE 相关 SEVERE 警告；
   处理不可信 HTML 时建议 JVM 参数 `javax.xml.accessExternalDTD=""`。
-- httl / rythm / webit 引擎上游停更（2014–2016），可用但建议新项目选用
-  freemarker / thymeleaf / velocity。
 
 ## [1.0.x] — 1.0.1.RELEASE（JDK 8 基线）
 

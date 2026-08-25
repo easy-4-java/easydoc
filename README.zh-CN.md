@@ -49,7 +49,10 @@
 | `WordprocessingMLTemplate` 契约 | 可用 | `process(File/InputStream, Map<String,Object>)` -> `WordprocessingMLPackage` |
 | `WordprocessingMLDocxTemplate` | 可用 | 通过 `Docx4J.load` 加载 `.docx` 模板；未提供模板时创建示例文档 |
 | Freemarker 引擎 | 可用 | `WordprocessingMLFreemarkerTemplate`（另有 `process(String, Map)` 重载） |
-| Velocity / Thymeleaf / Beetl / Rythm / Jetbrick / HTTL / Webit / JSP 引擎 | 可用 | 每引擎一个模块，`WordprocessingML{引擎}Template` |
+| Velocity / Thymeleaf / Beetl / Jetbrick / JSP 引擎 | 可用 | 每引擎一个模块，`WordprocessingML{引擎}Template` |
+| Rythm 引擎 | 停更维护 | 上游已停止维护（2015 年最后发布）；功能可用且有测试覆盖，但新项目建议选用 Freemarker / Thymeleaf / Velocity |
+| HTTL 引擎 | 停更维护 | 上游已停止维护（2014 年最后发布）；功能可用且有测试覆盖，但新项目建议选用 Freemarker / Thymeleaf / Velocity |
+| Webit 引擎 | 停更维护 | 上游已停止维护（2016 年最后发布）；功能可用且有测试覆盖，但新项目建议选用 Freemarker / Thymeleaf / Velocity |
 | XHTML 导入 | 可用 | `WordprocessingMLHtmlTemplate`（File / InputStream / `Document` / URL）+ `XHTMLImporterUtils` |
 | WML 工具 | 可用 | WML 元素/段落/边框工具、变量清理、zip 辅助、字体映射（`ChineseFont`、`FontMapperHolder`） |
 | 输出管线 | 可用 | `WordprocessingMLPackageRender` / `-Writer` / `-Extractor` |
@@ -105,7 +108,7 @@
 |:---|:---|
 | `easydoc-core` | 模板契约、docx4j/WML 工具、渲染/写出/抽取管线 |
 | `easydoc-xhtml` | XHTML/HTML -> `WordprocessingMLPackage`（基于 docx4j ImportXHTML） |
-| `easydoc-freemarker` / `easydoc-velocity` / `easydoc-thymeleaf` / `easydoc-beetl` / `easydoc-rythm` / `easydoc-jetbrick` / `easydoc-httl` / `easydoc-webit` / `easydoc-jsp` | 每模板引擎一个适配模块 |
+| `easydoc-freemarker` / `easydoc-velocity` / `easydoc-thymeleaf` / `easydoc-beetl` / `easydoc-rythm`（停更维护） / `easydoc-jetbrick` / `easydoc-httl`（停更维护） / `easydoc-webit`（停更维护） / `easydoc-jsp` | 每模板引擎一个适配模块 |
 | `easydoc-bom` | 依赖管理 BOM |
 
 <a id="5-installation"></a>

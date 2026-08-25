@@ -24,9 +24,16 @@ import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
 import httl.Engine;
 
 /**
- * 该模板仅负责使用Httl模板引擎将指定模板生成HTML并将HTML转换成XHTML后，作为模板生成WordprocessingMLPackage对象
+ * 该模板仅负责使用Httl模板引擎将指定模板生成HTML并将HTML转换成XHTML后，作为模板生成WordprocessingMLPackage对象。
+ *
+ * <p><b>注意：</b>HTTL 上游已停止维护（最后发布：2014 年，版本 1.0.12）。
+ * 功能可用且有测试覆盖，但新项目建议选用 Freemarker / Thymeleaf / Velocity。</p>
+ *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @deprecated since 3.0 — upstream HTTL is unmaintained (last release: 2014).
+ *     New projects should use Freemarker, Thymeleaf, or Velocity instead.
  */
+@Deprecated(since = "3.0")
 public class WordprocessingMLHttlTemplate extends AbstractStringTemplateWrappingTemplate {
 
 	private final EngineFactory factory = new EngineFactory();

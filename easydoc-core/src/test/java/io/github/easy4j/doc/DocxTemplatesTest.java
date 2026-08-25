@@ -37,10 +37,16 @@ class DocxTemplatesTest {
 	}
 
 	@Test
-	void createSAXReturnsWordprocessingMLDocxSaxTemplate() {
+	@SuppressWarnings("deprecation")
+	void createSAXReturnsCorrectTypeForJdkVersion() {
 		WordprocessingMLTemplate template = DocxTemplates.create(DocxMode.SAX);
 		assertNotNull(template);
-		assertInstanceOf(WordprocessingMLDocxSaxTemplate.class, template);
+		if (Runtime.version().feature() >= 21) {
+			// JDK 21+ factory short-circuits SAX → STAX
+			assertInstanceOf(WordprocessingMLDocxStAXTemplate.class, template);
+		} else {
+			assertInstanceOf(WordprocessingMLDocxSaxTemplate.class, template);
+		}
 	}
 
 	@Test

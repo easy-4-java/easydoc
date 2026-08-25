@@ -91,6 +91,12 @@ public interface VariableReplacer {
      * double-checked-locking on a volatile field. Fallback is logged once
      * per template instance — preserves the historical
      * {@code WordprocessingMLDocxSaxTemplate} behavior.
+     *
+     * <p><b>Factory-layer note:</b> {@link DocxTemplates#create(DocxMode)} already
+     * short-circuits {@code DocxMode.SAX} to {@code WordprocessingMLDocxStAXTemplate}
+     * on JDK 21+ (logged once at INFO). The runtime fallback here only applies when
+     * a caller directly instantiates {@code new WordprocessingMLDocxSaxTemplate()}
+     * bypassing the factory.
      */
     final class Sax implements VariableReplacer {
         // volatile + single-flight: beforeProcess() may be invoked from many

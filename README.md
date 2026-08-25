@@ -4,7 +4,7 @@
 
 [![Java](https://img.shields.io/badge/Java-17-orange)](https://github.com/easy-4-java/easydoc) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
 
-A Word (.docx) generation component built on [docx4j](https://www.docx4java.org/) and a variety of template engines. Render WordprocessingML documents from templates (Freemarker, Velocity, Thymeleaf, Beetl, Rythm, Jetbrick, HTTL, Webit, JSP) or directly from XHTML.
+A Word (.docx) generation component built on [docx4j](https://www.docx4java.org/) and a variety of template engines. Render WordprocessingML documents from templates (Freemarker, Velocity, Thymeleaf, Beetl, Rythm [deprecated], Jetbrick, HTTL [deprecated], Webit [deprecated], JSP) or directly from XHTML.
 
 ## Table of Contents
 
@@ -48,7 +48,10 @@ Typical use cases:
 | `WordprocessingMLTemplate` contract | Available | `process(File/InputStream, Map<String,Object>)` -> `WordprocessingMLPackage` |
 | `WordprocessingMLDocxTemplate` | Available | Loads a `.docx` template via `Docx4J.load`, creates a dummy document when no template is given |
 | Freemarker engine | Available | `WordprocessingMLFreemarkerTemplate` (also `process(String, Map)` overload) |
-| Velocity / Thymeleaf / Beetl / Rythm / Jetbrick / HTTL / Webit / JSP engines | Available | One module per engine, `WordprocessingML{Engine}Template` |
+| Velocity / Thymeleaf / Beetl / JSP engines | Available | One module per engine, `WordprocessingML{Engine}Template` |
+| Rythm engine | Deprecated | Upstream unmaintained since 2015; functional, but new projects should use Freemarker / Thymeleaf / Velocity |
+| HTTL engine | Deprecated | Upstream unmaintained since 2014; functional, but new projects should use Freemarker / Thymeleaf / Velocity |
+| Webit engine | Deprecated | Upstream unmaintained since 2016; functional, but new projects should use Freemarker / Thymeleaf / Velocity |
 | XHTML import | Available | `WordprocessingMLHtmlTemplate` (File / InputStream / `Document` / URL) + `XHTMLImporterUtils` |
 | WML utilities | Available | WML element / paragraph / border utilities, variable clearing, zip helpers, font mapping (`ChineseFont`, `FontMapperHolder`) |
 | Output pipeline | Available | `WordprocessingMLPackageRender` / `-Writer` / `-Extractor` |
@@ -102,7 +105,7 @@ Typical use cases:
 |:---|:---|
 | `easydoc-core` | Template contract, docx4j/WML utilities, render/write/extract pipeline |
 | `easydoc-xhtml` | XHTML/HTML -> `WordprocessingMLPackage` (docx4j ImportXHTML based) |
-| `easydoc-freemarker` / `easydoc-velocity` / `easydoc-thymeleaf` / `easydoc-beetl` / `easydoc-rythm` / `easydoc-jetbrick` / `easydoc-httl` / `easydoc-webit` / `easydoc-jsp` | One adapter per template engine |
+| `easydoc-freemarker` / `easydoc-velocity` / `easydoc-thymeleaf` / `easydoc-beetl` / `easydoc-rythm` (deprecated) / `easydoc-jetbrick` / `easydoc-httl` (deprecated) / `easydoc-webit` (deprecated) / `easydoc-jsp` | One adapter per template engine |
 | `easydoc-bom` | Dependency management BOM |
 
 ## 5. Installation
@@ -222,7 +225,8 @@ WordprocessingMLPackage doc = html.process(new File("page.html"));
 
 | Limitation | Details | Workaround |
 |:---|:---|:---|
-| SAX template on JDK 21 | `WordprocessingMLDocxSaxTemplate` is incompatible with JDK 21 (docx4j 11.5.14 `SAXHandler` limitation); `process()` fails fast with `UnsupportedOperationException`. | Use `DocxTemplates.create(DocxMode.DEFAULT)` or `DocxMode.STAX`, or run on JDK 17. |
+| SAX template on JDK 21 | `WordprocessingMLDocxSaxTemplate` is incompatible with JDK 21 (docx4j 17.0.3 `SAXHandler` limitation). The `DocxTemplates` factory short-circuits `SAX` → `STAX` on JDK 21+ automatically. | Use `DocxMode.STAX` explicitly, or rely on the automatic short-circuit. |
+| httl / rythm / webit engines | Upstream libraries are unmaintained (last releases: 2014–2016). Functional and tested, but `@Deprecated` since 3.0. | New projects should use Freemarker, Thymeleaf, or Velocity. |
 | JSP module requires a servlet container | `easydoc-jsp` now delegates to `RequestDispatcher.include` (Tomcat 9.x, javax). | Run inside a servlet container; see `MIGRATION.md` §2.3. |
 | `IdentityPlusMapper` on JVM 21 | Font-mapping config helpers (`configChineseFonts` etc.) fail during docx4j font discovery on JVM 21. | Avoid these helpers on JVM 21; see `MIGRATION.md` §4. |
 

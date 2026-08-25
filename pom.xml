@@ -63,7 +63,6 @@
              docx4j 17.0.x 已把模型构件改名为 docx4j-generated-objects，
              但为兼容仍引用旧构件的第三方/历史依赖，这里显式锁定其最后版本 -->
         <docx4j-openxml.version>11.5.14</docx4j-openxml.version>
-        <docx4j-xhtmlrenderer.version>3.0.0</docx4j-xhtmlrenderer.version>
         <docx4j.version>17.0.3</docx4j.version>
         <freemarker.version>2.3.34</freemarker.version>
         <httl.version>1.0.12</httl.version>
@@ -79,7 +78,6 @@
         <persistence.version>2.7.6</persistence.version>
         <rythm.version>1.4.2</rythm.version>
         <jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
-        <servlet-api.version>3.0.1</servlet-api.version>
         <slf4j.version>2.0.18</slf4j.version>
         <thymeleaf.version>3.1.5.RELEASE</thymeleaf.version>
         <tomcat-jasper.version>10.1.54</tomcat-jasper.version>
@@ -241,11 +239,18 @@
                 <version>${docx4j-importxhtml.version}</version>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/org.docx4j/xhtmlrenderer -->
+            <!-- openhtmltopdf（docx4j-ImportXHTML 的传递依赖，XHTML 解析核心）：
+                 显式锁定到 1.1.34 以消除旧版在 JDK 解析器上 setProperty 失败的
+                 "Unable to disable XML External Entities" SEVERE 警告 -->
             <dependency>
-                <groupId>org.docx4j</groupId>
-                <artifactId>xhtmlrenderer</artifactId>
-                <version>${docx4j-xhtmlrenderer.version}</version>
+                <groupId>io.github.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-core</artifactId>
+                <version>1.1.34</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-pdfbox</artifactId>
+                <version>1.1.34</version>
             </dependency>
 
             <dependency>

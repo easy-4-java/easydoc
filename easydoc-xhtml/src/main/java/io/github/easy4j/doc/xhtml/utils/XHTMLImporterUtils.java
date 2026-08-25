@@ -32,6 +32,32 @@ import org.jsoup.nodes.Entities;
 public class XHTMLImporterUtils {
 
 	public static WordprocessingMLPackage handle(WordprocessingMLPackage wmlPackage, Document doc,boolean fragment,boolean altChunk) throws IOException, Docx4JException {
+		// XXE 防护：docx4j-ImportXHTML 内部的 openhtmltopdf 尝试在 XMLReader 上
+		// setProperty(ACCESS_EXTERNAL_DTD) 时被 JDK 解析器拒绝（"不支持"），打
+		// "Unable to disable XML External Entities" SEVERE 警告。这里通过 JAXP
+		// 系统属性兜底：解析器创建时读取系统属性作为默认，外部 DTD/Schema 被
+		// 真正禁止（空串 = 不允许任何外部访问），try/finally 恢复调用方原值。
+		String oldDtd = System.getProperty("javax.xml.accessExternalDTD");
+		String oldSchema = System.getProperty("javax.xml.accessExternalSchema");
+		System.setProperty("javax.xml.accessExternalDTD", "");
+		System.setProperty("javax.xml.accessExternalSchema", "");
+		try {
+			return handleInternal(wmlPackage, doc, fragment, altChunk);
+		} finally {
+			restore("javax.xml.accessExternalDTD", oldDtd);
+			restore("javax.xml.accessExternalSchema", oldSchema);
+		}
+	}
+
+	private static void restore(String key, String value) {
+		if (value == null) {
+			System.clearProperty(key);
+		} else {
+			System.setProperty(key, value);
+		}
+	}
+
+	private static WordprocessingMLPackage handleInternal(WordprocessingMLPackage wmlPackage, Document doc,boolean fragment,boolean altChunk) throws IOException, Docx4JException {
 		//设置转换模式
 		doc.outputSettings().syntax(Document.OutputSettings.Syntax.xml).escapeMode(Entities.EscapeMode.xhtml);  //转为 xhtml 格式
 		

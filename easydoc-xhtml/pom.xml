@@ -15,12 +15,6 @@
 	
 	<dependencies>
 	
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>${servlet-api.version}</version>
-			<scope>provided</scope>
-		</dependency>
     	
     	<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -36,10 +30,6 @@
 		</dependency>
 		
  		<!-- Docx4j ImportXHTML -->
-		<dependency>
-		    <groupId>org.docx4j</groupId>
-		    <artifactId>xhtmlrenderer</artifactId>
-		</dependency>
 		<dependency>
 		    <groupId>org.docx4j</groupId>
 		    <artifactId>docx4j-ImportXHTML-core</artifactId>

@@ -31,6 +31,18 @@ package io.github.easy4j.doc;
 public enum DocxMode {
 
 	DEFAULT,
+
+	/**
+	 * SAX-driven path.
+	 *
+	 * @deprecated since 3.0 — docx4j 17.0.3's {@code SAXHandler} is incompatible with
+	 * JDK 21+ (the {@code Transformer} does not invoke {@code SAXSource.setContentHandler}).
+	 * The {@link DocxTemplates} factory now returns {@link #STAX} directly on JDK 21+,
+	 * making this enum constant semantically equivalent to {@code STAX} at creation time.
+	 * The runtime fallback in {@link VariableReplacer.Sax} is retained only as a defence
+	 * against direct {@code new WordprocessingMLDocxSaxTemplate()} instantiation.
+	 */
+	@Deprecated(since = "3.0")
 	SAX,
 	STAX
 }
