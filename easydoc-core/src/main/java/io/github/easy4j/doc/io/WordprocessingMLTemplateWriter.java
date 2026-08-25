@@ -35,7 +35,7 @@ import io.github.easy4j.doc.Docx4jConstants;
 import io.github.easy4j.doc.utils.Assert;
 
 /**
- * Implementation of wordprocessing m l template writer functionality.
+ * WordprocessingML template writer.
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
@@ -50,71 +50,55 @@ public class WordprocessingMLTemplateWriter {
 	public static WordprocessingMLTemplateWriter getWMLTemplateWriter() {
 		return WML_TEMPLATE_WRITER;
 	}
-	
+
 	protected WordprocessingMLTemplateWriter() {
-		
+
 	}
-	
+
 	public String writeToString(String docFile) throws Exception {
 		return this.writeToString(new File(docFile));
 	}
-	
+
 	public String writeToString(File docFile) throws IOException, Docx4JException {
 		WordprocessingMLPackage wmlPackage = WordprocessingMLPackage.load(docFile);
-		StringBuilderWriter output = new StringBuilderWriter();
-		try {
+		String extracted;
+		try (StringBuilderWriter output = new StringBuilderWriter()) {
 			this.writeToWriter(wmlPackage, output);
-		} finally {
-			IOUtils.closeQuietly(output);
+			extracted = output.toString();
 		}
-		return output.toString();
+		return extracted;
 	}
-	
+
 	public String writeToString(WordprocessingMLPackage wmlPackage) throws IOException, Docx4JException {
-		MainDocumentPart document = wmlPackage.getMainDocumentPart();		
-		return XmlUtils.marshaltoString(wmlPackage);
+		MainDocumentPart document = wmlPackage.getMainDocumentPart();
+		return document.getXML();
 	}
-	
-	public static void writeToFile(WordprocessingMLPackage wmlPackage,File outFile) throws IOException, Docx4JException {
+
+	public static void writeToFile(WordprocessingMLPackage wmlPackage, File outFile) throws IOException, Docx4JException {
 		writeToStream(wmlPackage, new FileOutputStream(outFile));
 	}
-	
-	public static void writeToStream(WordprocessingMLPackage wmlPackage,OutputStream output) throws IOException, Docx4JException {
+
+	public static void writeToStream(WordprocessingMLPackage wmlPackage, OutputStream output) throws IOException, Docx4JException {
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
 		Assert.notNull(output, " output is not specified!");
-		InputStream input = null;
-		try {
-			//Document对象
-			MainDocumentPart document = wmlPackage.getMainDocumentPart();	
-			//Document XML
-			String documentXML = XmlUtils.marshaltoString(wmlPackage);
-			//转成字节输入流
-			input = IOUtils.toBufferedInputStream(new ByteArrayInputStream(documentXML.getBytes()));
-			//输出模板
-			IOUtils.copy(input, output);
-		} finally {
-			IOUtils.closeQuietly(input);
-		}
+		// .docx 是 ZIP 容器：保存整个包而不是把 XML 文本写入文件
+		wmlPackage.save(output);
 	}
-	
-	public void writeToWriter(WordprocessingMLPackage wmlPackage,Writer output) throws IOException, Docx4JException {
+
+	public void writeToWriter(WordprocessingMLPackage wmlPackage, Writer output) throws IOException, Docx4JException {
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
 		Assert.notNull(output, " output is not specified!");
-		InputStream input = null;
-		try {
-			//Document对象
-			MainDocumentPart document = wmlPackage.getMainDocumentPart();	
-			//Document XML
-			String documentXML = XmlUtils.marshaltoString(wmlPackage.getPackage());
-			//转成字节输入流
-			input = IOUtils.toBufferedInputStream(new ByteArrayInputStream(documentXML.getBytes()));
+		//Document对象
+		MainDocumentPart document = wmlPackage.getMainDocumentPart();
+		//Document XML
+		String documentXML = document.getXML();
+		//转成字节输入流（input 是本地资源，用 try-with-resources；output 是入参不变）
+		try (InputStream input = IOUtils.toBufferedInputStream(new ByteArrayInputStream(documentXML.getBytes()))) {
 			//获取模板输出编码格式
-			String charsetName = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_CONVERT_OUT_WMLTEMPLATE_CHARSETNAME, Docx4jConstants.DEFAULT_CHARSETNAME );
+			String charsetName = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_CONVERT_OUT_WMLTEMPLATE_CHARSETNAME, Docx4jConstants.DEFAULT_CHARSETNAME);
 			//输出模板
 			IOUtils.copy(input, output, Charset.forName(charsetName));
-		} finally {
-			IOUtils.closeQuietly(input);
 		}
 	}
-	
+
 }

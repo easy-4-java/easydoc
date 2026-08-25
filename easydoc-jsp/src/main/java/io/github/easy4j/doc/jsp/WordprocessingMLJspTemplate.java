@@ -92,6 +92,14 @@ public class WordprocessingMLJspTemplate implements WordprocessingMLTemplate {
  */
 	@Override
 	public WordprocessingMLPackage process(String template, Map<String, Object> variables) throws Exception {
+		// 把调用方变量注入 request attributes，让 JSP EL（${name} 等）能在容器
+		// 编译执行 JSP 时解析到值。此前 variables 完全未传给容器，模板里
+		// 的 EL 表达式永远无法被赋值。
+		if (variables != null) {
+			for (Map.Entry<String, Object> entry : variables.entrySet()) {
+				request.setAttribute(entry.getKey(), entry.getValue());
+			}
+		}
 		// 创建模板输出内容接收对象
 		StringWriter output = new StringWriter();
 		// 使用Jsp模板引擎渲染模板

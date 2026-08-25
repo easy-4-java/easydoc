@@ -20,7 +20,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Enumeration;
+import java.util.Collections;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -69,16 +70,22 @@ public class WmlZipUtils {
 	public static void unzip(File sourceFile, File outputDir) throws ZipException, IOException {
 		FileUtils.deleteDirectory(outputDir);
 		ZipFile zipFile = new ZipFile(sourceFile);
-		Enumeration<?> files = zipFile.entries();
+		List<? extends ZipEntry> entries = Collections.list(zipFile.entries());
 		File f = null;
 		FileOutputStream fos = null;
-		while (files.hasMoreElements()) {
+		for (ZipEntry entry : entries) {
 			try {
-				ZipEntry entry = (ZipEntry) files.nextElement();
 				InputStream eis = zipFile.getInputStream(entry);
 				byte[] buffer = new byte[BUFFER];
 				int bytesRead = 0;
-				f = new File(outputDir.getAbsolutePath() + File.separator + entry.getName());
+				f = new File(outputDir, entry.getName());
+				// Zip Slip 防护：规范化后必须仍在目标目录内，拒绝路径穿越条目
+				String canonicalBase = outputDir.getCanonicalPath();
+				String canonicalTarget = f.getCanonicalPath();
+				if (!canonicalTarget.startsWith(canonicalBase + File.separator)
+						&& !canonicalTarget.equals(canonicalBase)) {
+					throw new IOException("Zip entry escapes target directory: " + entry.getName());
+				}
 				if (entry.isDirectory()) {
 					f.mkdirs();
 					continue;

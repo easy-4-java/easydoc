@@ -85,18 +85,35 @@ public class XHTMLDocumentHandler implements DocumentHandler {
 	/**
 	 * Jsoup.parse(String url, int timeoutMillis)
 	 * Jsoup.connect(String url) 方法创建一个新的 Connection, 和  post() 取得和解析一个HTML文件。如果从该URL获取HTML时发生错误，便会抛出 IOException，应适当处理。
-	 * 这两个方法只支持Web URLs (http和https 协议); 
+	 * 这两个方法只支持Web URLs (http和https 协议);
+	 *
+	 * <p>jsoup 的 URL 重载（{@link Jsoup#parse(URL, int)}）内部走
+	 * {@code Connection.connect(url.toString())}，只接受 http/https；对
+	 * {@code file:} / {@code jar:} 等本地协议会抛异常。本地协议在这里打开
+	 * 流后按 {@link #handle(InputStream)} 的等价路径解析。
 	 */
 	@Override
 	public Document handle(URL url) throws IOException{
 		//获取Jsoup参数
 		String baseUri = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_JSOUP_PARSE_BASEURI,"");
-		int timeout = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_JSOUP_PARSE_TIMEOUTMILLIS, Docx4jConstants.DEFAULT_TIMEOUTMILLIS);
-		//fetch the specified URL and parse to a HTML DOM
-		Document doc = Jsoup.parse(url,timeout);
-		doc.setBaseUri(baseUri);
-		//返回Document对象
-		return doc;
+		String protocol = url.getProtocol();
+		if ("http".equalsIgnoreCase(protocol) || "https".equalsIgnoreCase(protocol)) {
+			int timeout = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_JSOUP_PARSE_TIMEOUTMILLIS, Docx4jConstants.DEFAULT_TIMEOUTMILLIS);
+			//fetch the specified URL and parse to a HTML DOM
+			Document doc = Jsoup.parse(url,timeout);
+			doc.setBaseUri(baseUri);
+			return doc;
+		}
+		// file:/jar: 等本地协议：jsoup 不支持 URL 重载，打开流解析（等价 handle(InputStream)）
+		String charsetName = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_JSOUP_PARSE_CHARSETNAME, Docx4jConstants.DEFAULT_CHARSETNAME);
+		try (InputStream in = url.openStream()) {
+			Document doc = Jsoup.parse(in, charsetName, baseUri);
+			OutputSettings outputSettings = new OutputSettings();
+			outputSettings.prettyPrint(false);
+			doc.outputSettings(outputSettings);
+			doc.setBaseUri(baseUri);
+			return doc;
+		}
 	}
 	
 	/**

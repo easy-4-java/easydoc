@@ -25,7 +25,9 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
  */
 public class FontMapperHolder {
 
-	private static Mapper fontMapper;
+	// volatile: read from every render (potentially on many virtual threads);
+	// writes are rare (app bootstrap) but must be visible across threads.
+	private static volatile Mapper fontMapper;
 
 	public static Mapper getFontMapper() {
 		return fontMapper;

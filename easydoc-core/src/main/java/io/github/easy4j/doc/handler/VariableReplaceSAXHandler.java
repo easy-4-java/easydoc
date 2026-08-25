@@ -1,6 +1,6 @@
-/** 
+/**
  * Copyright (C) 2018 Jeebiz (http://jeebiz.net).
- * All Rights Reserved. 
+ * All Rights Reserved.
  */
 package io.github.easy4j.doc.handler;
 
@@ -15,68 +15,60 @@ import ognl.DefaultClassResolver;
 import ognl.DefaultTypeConverter;
 import ognl.Ognl;
 import ognl.OgnlContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of variable replace s a x handler extending SAXHandler.
+ * SAX-based variable replacement handler.
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class VariableReplaceSAXHandler extends SAXHandler implements ContentHandler {
-	
-	/**
- * Implementation of variable replace s a x handler extending SAXHandler.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
+
+	private static final Logger LOG = LoggerFactory.getLogger(VariableReplaceSAXHandler.class);
+
+	/** 变量占位符开始位，默认：${ */
 	protected String placeholderStart = "${";
-	/**
- * Implementation of variable replace s a x handler extending SAXHandler.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
+	/** 变量占位符结束位，默认：} */
 	protected String placeholderEnd = "}";
-	/**
- * Implementation of variable replace s a x handler extending SAXHandler.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
+	/** SPEL表达式占位符开始位，默认：#{ */
 	protected String spelExpressionStart = "#{";
-	/**
- * Implementation of variable replace s a x handler extending SAXHandler.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
+	/** SPEL表达式占位符结束位，默认：} */
 	protected String spelExpressionEnd = "}";
-	/**
- * Implementation of variable replace s a x handler extending SAXHandler.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
+	/** 变量集合 */
 	protected Map<String, Object> variables;
+
 	/**
- * Implementation of variable replace s a x handler extending SAXHandler.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
+	 * 严格模式（-Deasydoc.variable.strict=true）：占位符无法解析或 OGNL 求值失败时
+	 * 抛 {@link IllegalStateException}，而不是把 key 原样写进文档。默认宽松模式保持
+	 * 历史行为（WARN 日志 + 原样输出）。仅在失败路径读取，故可在测试/运行期切换。
+	 */
+	protected static boolean strictMode() {
+		return Boolean.getBoolean("easydoc.variable.strict");
+	}
+
+	/** Ognl上下文对象 */
 	protected OgnlContext context;
 
 	public VariableReplaceSAXHandler(Map<String, Object> variables) throws SAXException {
 		super();
+		this.variables = variables;
 		this.initContext();
 	}
-	
-	public VariableReplaceSAXHandler(String placeholderStart, String placeholderEnd ,Map<String, Object> variables) throws SAXException {
+
+	public VariableReplaceSAXHandler(String placeholderStart, String placeholderEnd, Map<String, Object> variables) throws SAXException {
 		super();
 		this.placeholderStart = placeholderStart;
 		this.placeholderEnd = placeholderEnd;
 		this.variables = variables;
 		this.initContext();
 	}
-	
+
 	protected void initContext() {
-		// 构建一个OgnlContext对象
-		context = (OgnlContext) Ognl.createDefaultContext(this, 
-		        new DefaultMemberAccess(true), 
+		// 安全：仅允许访问 public 成员（allowPrivate/Protected/PackageProtected 全 false），
+		// 防止模板内容可控时通过 OGNL 反射访问私有成员造成 RCE
+		context = (OgnlContext) Ognl.createDefaultContext(this,
+		        new DefaultMemberAccess(false, false, false),
 		        new DefaultClassResolver(),
 		        new DefaultTypeConverter());
 		// 设置根节点，以及初始化一些实例对象
@@ -91,10 +83,9 @@ public class VariableReplaceSAXHandler extends SAXHandler implements ContentHand
 		sb.append(ch, start, length);
 
 		String wmlString = replace(sb.toString(), 0, new StringBuilder(), variables).toString();
-//		System.out.println(wmlString);
 
 		char[] charOut = wmlString.toCharArray();
-		
+
 		this.getContentHandler().characters(charOut, 0, charOut.length);
 
 	}
@@ -113,16 +104,28 @@ public class VariableReplaceSAXHandler extends SAXHandler implements ContentHand
 			if (val == null) {
 				try {
 					// 先构建一个Ognl表达式，再解析表达式
-			        Object ognl = Ognl.parseExpression(key);//构建Ognl表达式
-			        Object value = Ognl.getValue(ognl, context, context.getRoot()); //解析表达式
-					if(value != null) {
+			        Object ognl = Ognl.parseExpression(key);
+			        Object value = Ognl.getValue(ognl, context, context.getRoot());
+					if (value != null) {
 						strB.append(value.toString());
 					} else {
-						System.out.println("Invalid key '" + key + "' or key not mapped to a value");
+						if (strictMode()) {
+							throw new IllegalStateException("Unresolved template variable '" + placeholderStart + key + placeholderEnd
+									+ "' (strict mode: easydoc.variable.strict=true)");
+						}
+						LOG.debug("Invalid key '{}' or key not mapped to a value", key);
 						strB.append(key);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					// else 分支抛出的 IllegalStateException（未解析变量）原样透传，不做二次包装
+					if (e instanceof IllegalStateException) {
+						throw (IllegalStateException) e;
+					}
+					if (strictMode()) {
+						throw new IllegalStateException("Failed to evaluate OGNL expression '" + placeholderStart + key + placeholderEnd
+								+ "' (strict mode: easydoc.variable.strict=true)", e);
+					}
+					LOG.warn("Failed to evaluate expression '" + placeholderStart + key + placeholderEnd + "': {}", e.getMessage());
 					strB.append(key);
 				}
 			} else {

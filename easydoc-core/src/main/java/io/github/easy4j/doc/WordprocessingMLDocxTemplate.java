@@ -15,104 +15,22 @@
  */
 package io.github.easy4j.doc;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.docx4j.Docx4J;
-import org.docx4j.model.datastorage.migration.VariablePrepare;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
-import io.github.easy4j.doc.fonts.FontMapperHolder;
-import io.github.easy4j.doc.utils.WMLPackageUtils;
-
 /**
- * Implementation of wordprocessing m l docx template functionality.
+ * 该模板负责对WordprocessingMLPackage进行普通变量替换和复杂变量替换并返回处理后的WordprocessingMLPackage对象
+ * 备注：该工具只能解决固定模板的word生成（来自：https://blog.csdn.net/qq_35598240/article/details/84439929）
+ *
+ * <p>This class is now a thin facade over
+ * {@link AbstractWmlTemplate} + a {@link VariableReplacer.Default}
+ * strategy. All historical public API is preserved verbatim.
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
-public class WordprocessingMLDocxTemplate implements WordprocessingMLTemplate {
-	
-	/**
- * Implementation of wordprocessing m l docx template functionality.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
-	@Override
-	public WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception{
-		// Document loading (required)
-		WordprocessingMLPackage wordMLPackage;
-		if (template == null || !template.exists() || !template.isFile() ) {
-			// Create a docx
-			System.out.println("No imput path passed, creating dummy document");
-			wordMLPackage = WordprocessingMLPackage.createPackage();
-			SampleDocument.createContent(wordMLPackage.getMainDocumentPart());	
-		} else {
-			System.out.println("Loading file from " + template.getAbsolutePath());
-			wordMLPackage = Docx4J.load(template);
-		}
-		if (null != variables && !variables.isEmpty()) {
-        	// 替换变量并输出Word文档 
-        	MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();  
-        	// 将${}里的内容结构层次替换为一层
-        	VariablePrepare.prepare(wordMLPackage);
-        	WMLPackageUtils.cleanDocumentPart(documentPart);
-            // 获取静态变量集合
-            HashMap<String, String> staticMap = getStaticData(variables);
-            // 替换普通变量  
-            documentPart.variableReplace(staticMap);  
-         }
-        // 返回WordprocessingMLPackage对象
-		return FontMapperHolder.useFontMapper(wordMLPackage);
-	}
-	
-	/**
- * Implementation of wordprocessing m l docx template functionality.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
-	@Override
-	public WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception {
-		// Document loading (required)
-		WordprocessingMLPackage wordMLPackage;
-		if (template == null) {
-			// Create a docx
-			System.out.println("No imput path passed, creating dummy document");
-			wordMLPackage = WordprocessingMLPackage.createPackage();
-			SampleDocument.createContent(wordMLPackage.getMainDocumentPart());	
-		} else {
-			System.out.println("Loading file from InputStream");
-			wordMLPackage = Docx4J.load(template);
-		}
-        if (null != variables && !variables.isEmpty()) {
-        	// 替换变量并输出Word文档 
-        	MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();  
-        	// 将${}里的内容结构层次替换为一层
-        	VariablePrepare.prepare(wordMLPackage);
-        	WMLPackageUtils.cleanDocumentPart(documentPart);
-            // 获取静态变量集合
-            HashMap<String, String> staticMap = getStaticData(variables);
-            // 替换普通变量  
-            documentPart.variableReplace(staticMap);  
-         }
-        // 返回WordprocessingMLPackage对象
-		return FontMapperHolder.useFontMapper(wordMLPackage);
-	}
-	
-	/*
-     * 获取静态数据
-     */
-	protected HashMap<String, String> getStaticData(Map<String, Object> variables) { 
-    	//静态数据集合
-        HashMap<String, String> dataMap = new HashMap<String, String>();  
-        if (variables != null) {
-			for (String key : variables.keySet()) {
-				Object val = variables.get(key);
-				dataMap.put(key, val == null ? "" : val.toString()); 
-			}
-		}
-        return dataMap;  
-    }
+public class WordprocessingMLDocxTemplate extends AbstractWmlTemplate {
 
+	private final VariableReplacer replacer = new VariableReplacer.Default();
+
+	@Override
+	protected VariableReplacer replacer() {
+		return replacer;
+	}
 }
