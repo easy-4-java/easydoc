@@ -33,7 +33,7 @@ import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
  */
 public class WordprocessingMLBeetlTemplate extends AbstractStringTemplateWrappingTemplate {
 
-	private GroupTemplate engine;
+	private volatile GroupTemplate engine;
 
 	public WordprocessingMLBeetlTemplate() {
 		super();
@@ -55,34 +55,42 @@ public class WordprocessingMLBeetlTemplate extends AbstractStringTemplateWrappin
 		this.engine = engine;
 	}
 
-	protected synchronized GroupTemplate getInternalEngine() throws IOException {
-		ClasspathResourceLoader loader = new ClasspathResourceLoader();
-		Configuration cfg = Configuration.defaultConfiguration();
-		cfg.setCharset(Docx4jProperties.getProperty("docx4j.beetl.charset", Docx4jConstants.DEFAULT_CHARSETNAME));
-		cfg.setPlaceholderStart(Docx4jProperties.getProperty("docx4j.beetl.placeholderStart", "${"));
-		cfg.setPlaceholderEnd(Docx4jProperties.getProperty("docx4j.beetl.placeholderEnd", "}"));
-		cfg.setStatementStart(Docx4jProperties.getProperty("docx4j.beetl.statementStart", "<%"));
-		cfg.setStatementEnd(Docx4jProperties.getProperty("docx4j.beetl.statementEnd", "%>"));
-		cfg.setHtmlTagSupport(Docx4jProperties.getProperty("docx4j.beetl.htmlTagSupport", false));
-		cfg.setHtmlTagFlag(Docx4jProperties.getProperty("docx4j.beetl.htmlTagFlag", "#"));
-		cfg.setHtmlTagBindingAttribute(Docx4jProperties.getProperty("docx4j.beetl.htmlTagBindingAttribute", "var"));
-		cfg.setNativeCall(Docx4jProperties.getProperty("docx4j.beetl.nativeCall", false));
-		cfg.setDirectByteOutput(Docx4jProperties.getProperty("docx4j.beetl.directByteOutput", true));
-		cfg.setStrict(Docx4jProperties.getProperty("docx4j.beetl.strict", false));
-		cfg.setIgnoreClientIOError(Docx4jProperties.getProperty("docx4j.beetl.ignoreClientIOError", true));
-		cfg.setErrorHandlerClass(Docx4jProperties.getProperty("docx4j.beetl.errorHandlerClass", "org.beetl.core.ConsoleErrorHandler"));
+	protected GroupTemplate getInternalEngine() throws IOException {
+		GroupTemplate local = engine;
+		if (local == null) {
+			synchronized (this) {
+				local = engine;
+				if (local == null) {
+					ClasspathResourceLoader loader = new ClasspathResourceLoader();
+					Configuration cfg = Configuration.defaultConfiguration();
+					cfg.setCharset(Docx4jProperties.getProperty("docx4j.beetl.charset", Docx4jConstants.DEFAULT_CHARSETNAME));
+					cfg.setPlaceholderStart(Docx4jProperties.getProperty("docx4j.beetl.placeholderStart", "${"));
+					cfg.setPlaceholderEnd(Docx4jProperties.getProperty("docx4j.beetl.placeholderEnd", "}"));
+					cfg.setStatementStart(Docx4jProperties.getProperty("docx4j.beetl.statementStart", "<%"));
+					cfg.setStatementEnd(Docx4jProperties.getProperty("docx4j.beetl.statementEnd", "%>"));
+					cfg.setHtmlTagSupport(Docx4jProperties.getProperty("docx4j.beetl.htmlTagSupport", false));
+					cfg.setHtmlTagFlag(Docx4jProperties.getProperty("docx4j.beetl.htmlTagFlag", "#"));
+					cfg.setHtmlTagBindingAttribute(Docx4jProperties.getProperty("docx4j.beetl.htmlTagBindingAttribute", "var"));
+					cfg.setNativeCall(Docx4jProperties.getProperty("docx4j.beetl.nativeCall", false));
+					cfg.setDirectByteOutput(Docx4jProperties.getProperty("docx4j.beetl.directByteOutput", true));
+					cfg.setStrict(Docx4jProperties.getProperty("docx4j.beetl.strict", false));
+					cfg.setIgnoreClientIOError(Docx4jProperties.getProperty("docx4j.beetl.ignoreClientIOError", true));
+					cfg.setErrorHandlerClass(Docx4jProperties.getProperty("docx4j.beetl.errorHandlerClass", "org.beetl.core.ConsoleErrorHandler"));
 
-		Map<String, String> resourceMap = cfg.getResourceMap();
-		resourceMap.put("root", Docx4jProperties.getProperty("docx4j.beetl.resource.root", "/"));
-		resourceMap.put("autoCheck", Docx4jProperties.getProperty("docx4j.beetl.resource.autoCheck", "true"));
-		resourceMap.put("functionRoot", Docx4jProperties.getProperty("docx4j.beetl.resource.functionRoot", "functions"));
-		resourceMap.put("functionSuffix", Docx4jProperties.getProperty("docx4j.beetl.resource.functionSuffix", "html"));
-		resourceMap.put("tagRoot", Docx4jProperties.getProperty("docx4j.beetl.resource.tagRoot", "htmltag"));
-		resourceMap.put("tagSuffix", Docx4jProperties.getProperty("docx4j.beetl.resource.tagSuffix", "tag"));
-		cfg.setResourceMap(resourceMap);
-		GroupTemplate e = new GroupTemplate(loader, cfg);
-		this.setEngine(e);
-		return e;
+					Map<String, String> resourceMap = cfg.getResourceMap();
+					resourceMap.put("root", Docx4jProperties.getProperty("docx4j.beetl.resource.root", "/"));
+					resourceMap.put("autoCheck", Docx4jProperties.getProperty("docx4j.beetl.resource.autoCheck", "true"));
+					resourceMap.put("functionRoot", Docx4jProperties.getProperty("docx4j.beetl.resource.functionRoot", "functions"));
+					resourceMap.put("functionSuffix", Docx4jProperties.getProperty("docx4j.beetl.resource.functionSuffix", "html"));
+					resourceMap.put("tagRoot", Docx4jProperties.getProperty("docx4j.beetl.resource.tagRoot", "htmltag"));
+					resourceMap.put("tagSuffix", Docx4jProperties.getProperty("docx4j.beetl.resource.tagSuffix", "tag"));
+					cfg.setResourceMap(resourceMap);
+					local = new GroupTemplate(loader, cfg);
+					engine = local;
+				}
+			}
+		}
+		return local;
 	}
 
 	@Override

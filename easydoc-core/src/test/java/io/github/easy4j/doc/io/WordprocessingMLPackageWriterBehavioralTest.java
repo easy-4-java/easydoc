@@ -236,14 +236,15 @@ class WordprocessingMLPackageWriterBehavioralTest {
     // ---------------------------------------------------------------
 
     @Test
-    @DisplayName("writeToDocx no-arg creates temp file path and delegates")
+    @DisplayName("writeToDocx no-arg creates temp file and delegates")
     void writeToDocxNoArgDelegates() throws Exception {
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        // Creates temp path that doesn't exist, so File.exists() assertion fails
-        assertThrows(IllegalArgumentException.class, () -> {
-            writer.writeToDocx(pkg);
-        });
+        // P0-2 fix: Assert.isTrue(outFile.exists()) removed; the no-arg version
+        // now creates a temp file and writes successfully.
+        File result = writer.writeToDocx(pkg);
+        assertNotNull(result);
+        assertTrue(result.exists());
     }
 
     @Test

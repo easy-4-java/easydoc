@@ -37,7 +37,7 @@ import org.thymeleaf.templateresolver.UrlTemplateResolver;
  */
 public class WordprocessingMLThymeleafTemplate extends AbstractStringTemplateWrappingTemplate {
 
-	protected TemplateEngine engine;
+	protected volatile TemplateEngine engine;
 	protected AbstractConfigurableTemplateResolver templateResolver;
 
 	public WordprocessingMLThymeleafTemplate() {
@@ -60,48 +60,56 @@ public class WordprocessingMLThymeleafTemplate extends AbstractStringTemplateWra
 		this.engine = engine;
 	}
 
-	protected synchronized TemplateEngine getInternalEngine() throws IOException{
-		//初始化模板解析器
-		AbstractConfigurableTemplateResolver templateResolver =  getTemplateResolver();
-		if( getTemplateResolver() == null){
-			String resolver = Docx4jProperties.getProperty("docx4j.thymeleaf.templateResolver","org.thymeleaf.templateresolver.FileTemplateResolver");
-			// JDK 21 switch expression: 4-arm resolver selector becomes one expression.
-			// Unknown values fall back to FileTemplateResolver, matching original else-branch.
-			templateResolver = switch (resolver) {
-				case "org.thymeleaf.templateresolver.ClassLoaderTemplateResolver" -> new ClassLoaderTemplateResolver();
-				case "org.thymeleaf.templateresolver.UrlTemplateResolver" -> new UrlTemplateResolver();
-				case String s when s.equalsIgnoreCase("org.thymeleaf.templateresolver.FileTemplateResolver") -> new FileTemplateResolver();
-				default -> new FileTemplateResolver();
-			};
+	protected TemplateEngine getInternalEngine() throws IOException{
+		TemplateEngine local = engine;
+		if (local == null) {
+			synchronized (this) {
+				local = engine;
+				if (local == null) {
+					//初始化模板解析器
+					AbstractConfigurableTemplateResolver templateResolver =  getTemplateResolver();
+					if( getTemplateResolver() == null){
+						String resolver = Docx4jProperties.getProperty("docx4j.thymeleaf.templateResolver","org.thymeleaf.templateresolver.FileTemplateResolver");
+						// JDK 21 switch expression: 4-arm resolver selector becomes one expression.
+						// Unknown values fall back to FileTemplateResolver, matching original else-branch.
+						templateResolver = switch (resolver) {
+							case "org.thymeleaf.templateresolver.ClassLoaderTemplateResolver" -> new ClassLoaderTemplateResolver();
+							case "org.thymeleaf.templateresolver.UrlTemplateResolver" -> new UrlTemplateResolver();
+							case String s when s.equalsIgnoreCase("org.thymeleaf.templateresolver.FileTemplateResolver") -> new FileTemplateResolver();
+							default -> new FileTemplateResolver();
+						};
+					}
+					templateResolver.setCacheable(Docx4jProperties.getProperty("docx4j.thymeleaf.cacheable", true));
+					templateResolver.setCacheablePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.cacheablePatterns", ""))));
+					String cacheTTLMs = Docx4jProperties.getProperty("docx4j.thymeleaf.cacheTTLMs");
+					templateResolver.setCacheTTLMs( (cacheTTLMs == null || cacheTTLMs.trim().isEmpty()) ? null : Long.valueOf(cacheTTLMs));
+					templateResolver.setCharacterEncoding(Docx4jProperties.getProperty("docx4j.thymeleaf.charset","UTF-8"));
+					templateResolver.setCheckExistence(Docx4jProperties.getProperty("docx4j.thymeleaf.checkExistence", false ));
+					templateResolver.setCSSTemplateModePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.newCSSTemplateModePatterns", ""))));
+					templateResolver.setHtmlTemplateModePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.newHtmlTemplateModePatterns", ""))));
+					templateResolver.setJavaScriptTemplateModePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.newJavaScriptTemplateModePatterns", ""))));
+					templateResolver.setName(Docx4jProperties.getProperty("docx4j.thymeleaf.name",templateResolver.getClass().getName()));
+					templateResolver.setNonCacheablePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.nonCacheablePatterns", ""))));
+					templateResolver.setOrder(Integer.valueOf(Docx4jProperties.getProperty("docx4j.thymeleaf.order","1")));
+					templateResolver.setPrefix(Docx4jProperties.getProperty("docx4j.thymeleaf.prefix"));
+					templateResolver.setRawTemplateModePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.newRawTemplateModePatterns", ""))));
+					templateResolver.setResolvablePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.resolvablePatterns", ""))));
+					templateResolver.setSuffix(Docx4jProperties.getProperty("docx4j.thymeleaf.suffix",".tpl"));
+					templateResolver.setTemplateMode(Docx4jProperties.getProperty("docx4j.thymeleaf.templateMode","XHTML"));
+					templateResolver.setTextTemplateModePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.newTextTemplateModePatterns", ""))));
+					templateResolver.setUseDecoupledLogic(Docx4jProperties.getProperty("docx4j.thymeleaf.useDecoupledLogic", false ));
+					templateResolver.setXmlTemplateModePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.newXmlTemplateModePatterns", ""))));
+			        //初始化引擎对象
+					TemplateEngine e = new TemplateEngine();
+					e.setTemplateResolver(templateResolver);
+			        //调用getConfiguration初始化引擎
+					e.getConfiguration();
+					local = e;
+					engine = local;
+				}
+			}
 		}
-		templateResolver.setCacheable(Docx4jProperties.getProperty("docx4j.thymeleaf.cacheable", true));
-		templateResolver.setCacheablePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.cacheablePatterns", ""))));
-		String cacheTTLMs = Docx4jProperties.getProperty("docx4j.thymeleaf.cacheTTLMs");
-		templateResolver.setCacheTTLMs( (cacheTTLMs == null || cacheTTLMs.trim().isEmpty()) ? null : Long.valueOf(cacheTTLMs));
-		templateResolver.setCharacterEncoding(Docx4jProperties.getProperty("docx4j.thymeleaf.charset","UTF-8"));
-		templateResolver.setCheckExistence(Docx4jProperties.getProperty("docx4j.thymeleaf.checkExistence", false ));
-		templateResolver.setCSSTemplateModePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.newCSSTemplateModePatterns", ""))));
-		templateResolver.setHtmlTemplateModePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.newHtmlTemplateModePatterns", ""))));
-		templateResolver.setJavaScriptTemplateModePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.newJavaScriptTemplateModePatterns", ""))));
-		templateResolver.setName(Docx4jProperties.getProperty("docx4j.thymeleaf.name",templateResolver.getClass().getName()));
-		templateResolver.setNonCacheablePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.nonCacheablePatterns", ""))));
-		templateResolver.setOrder(Integer.valueOf(Docx4jProperties.getProperty("docx4j.thymeleaf.order","1")));
-		templateResolver.setPrefix(Docx4jProperties.getProperty("docx4j.thymeleaf.prefix"));
-		templateResolver.setRawTemplateModePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.newRawTemplateModePatterns", ""))));
-		templateResolver.setResolvablePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.resolvablePatterns", ""))));
-		templateResolver.setSuffix(Docx4jProperties.getProperty("docx4j.thymeleaf.suffix",".tpl"));
-		templateResolver.setTemplateMode(Docx4jProperties.getProperty("docx4j.thymeleaf.templateMode","XHTML"));
-		templateResolver.setTextTemplateModePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.newTextTemplateModePatterns", ""))));
-		templateResolver.setUseDecoupledLogic(Docx4jProperties.getProperty("docx4j.thymeleaf.useDecoupledLogic", false ));
-		templateResolver.setXmlTemplateModePatterns(ArrayUtils.asSet(StringUtils.tokenizeToStringArray(Docx4jProperties.getProperty("docx4j.thymeleaf.newXmlTemplateModePatterns", ""))));
-        //初始化引擎对象
-		TemplateEngine engine = new TemplateEngine();
-		engine.setTemplateResolver(templateResolver);
-        //调用getConfiguration初始化引擎
-		engine.getConfiguration();
-		// 设置模板引擎，减少重复初始化消耗
-        this.setEngine(engine);
-        return engine;
+		return local;
 	}
 
 	public AbstractConfigurableTemplateResolver getTemplateResolver() {

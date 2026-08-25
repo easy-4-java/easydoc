@@ -34,7 +34,7 @@ import org.rythmengine.RythmEngine;
  */
 public class WordprocessingMLRythmTemplate extends AbstractStringTemplateWrappingTemplate {
 
-	protected RythmEngine engine;
+	protected volatile RythmEngine engine;
 
 	public WordprocessingMLRythmTemplate() {
 		super();
@@ -56,28 +56,35 @@ public class WordprocessingMLRythmTemplate extends AbstractStringTemplateWrappin
 		this.engine = engine;
 	}
 
-	protected synchronized RythmEngine getInternalEngine() throws IOException{
-		Properties props =  ConfigUtils.filterWithPrefix("docx4j.rythm.", "docx4j.rythm.", Docx4jProperties.getProperties(), false);
+	protected RythmEngine getInternalEngine() throws IOException{
+		RythmEngine local = engine;
+		if (local == null) {
+			synchronized (this) {
+				local = engine;
+				if (local == null) {
+					Properties props =  ConfigUtils.filterWithPrefix("docx4j.rythm.", "docx4j.rythm.", Docx4jProperties.getProperties(), false);
 
-		props.put("engine.mode", Rythm.Mode.valueOf(props.getProperty("engine.mode", "dev")));
-		props.put("log.enabled", false);
-		props.put("feature.smart_escape.enabled", false);
-		props.put("feature.transform.enabled", false);
-		try {
-			props.put("home.template", Rythm.class.getResource(props.getProperty("home.template")).toURI().toURL().getFile());
-		} catch (URISyntaxException e) {
-			// ignore
-			props.put("home.tmp", "/");
+					props.put("engine.mode", Rythm.Mode.valueOf(props.getProperty("engine.mode", "dev")));
+					props.put("log.enabled", false);
+					props.put("feature.smart_escape.enabled", false);
+					props.put("feature.transform.enabled", false);
+					try {
+						props.put("home.template", Rythm.class.getResource(props.getProperty("home.template")).toURI().toURL().getFile());
+					} catch (URISyntaxException e) {
+						// ignore
+						props.put("home.tmp", "/");
+					}
+					props.put("codegen.dynamic_exp.enabled", true);
+					props.put("built_in.code_type", "false");
+					props.put("built_in.transformer", "false");
+					props.put("engine.file_write", "false");
+					props.put("codegen.compact.enabled", "false");
+					local = new RythmEngine(props);
+					engine = local;
+				}
+			}
 		}
-		props.put("codegen.dynamic_exp.enabled", true);
-		props.put("built_in.code_type", "false");
-		props.put("built_in.transformer", "false");
-		props.put("engine.file_write", "false");
-		props.put("codegen.compact.enabled", "false");
-		RythmEngine engine = new RythmEngine(props);
-		// 设置模板引擎，减少重复初始化消耗
-        this.setEngine(engine);
-        return engine;
+		return local;
 	}
 
 	@Override

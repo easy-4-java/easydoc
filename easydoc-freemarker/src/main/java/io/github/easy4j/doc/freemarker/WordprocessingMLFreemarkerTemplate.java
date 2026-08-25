@@ -51,7 +51,7 @@ import freemarker.template.utility.XmlEscape;
 public class WordprocessingMLFreemarkerTemplate extends AbstractStringTemplateWrappingTemplate {
 
 	protected final Logger LOG = LoggerFactory.getLogger(WordprocessingMLFreemarkerTemplate.class);
-	protected Configuration engine;
+	protected volatile Configuration engine;
 	protected Properties freemarkerSettings;
 	protected Map<String, Object> freemarkerVariables;
 	protected String defaultEncoding;
@@ -80,58 +80,66 @@ public class WordprocessingMLFreemarkerTemplate extends AbstractStringTemplateWr
 		this.engine = engine;
 	}
 
-	protected synchronized Configuration getInternalEngine() throws IOException, TemplateException {
+	protected Configuration getInternalEngine() throws IOException, TemplateException {
+		Configuration local = engine;
+		if (local == null) {
+			synchronized (this) {
+				local = engine;
+				if (local == null) {
 
-		try {
-			BeansWrapper beansWrapper = new BeansWrapper(Configuration.VERSION_2_3_23);
-			this.templateModel = beansWrapper.getStaticModels().get(String.class.getName());
-		} catch (TemplateModelException e) {
-			throw new IOException(e.getMessage(),e.getCause());
+					try {
+						BeansWrapper beansWrapper = new BeansWrapper(Configuration.VERSION_2_3_23);
+						this.templateModel = beansWrapper.getStaticModels().get(String.class.getName());
+					} catch (TemplateModelException e) {
+						throw new IOException(e.getMessage(),e.getCause());
+					}
+
+					// 创建 Configuration 实例
+					Configuration config = new Configuration(Configuration.VERSION_2_3_23);
+
+					Properties props = ConfigUtils.filterWithPrefix("docx4j.freemarker.", "docx4j.freemarker.", Docx4jProperties.getProperties(), false);
+
+					// FreeMarker will only accept known keys in its setSettings and
+					// setAllSharedVariables methods.
+					if (!props.isEmpty()) {
+						config.setSettings(props);
+					}
+
+					if (this.freemarkerVariables != null && !this.freemarkerVariables.isEmpty()) {
+						config.setAllSharedVariables(new SimpleHash(this.freemarkerVariables, config.getObjectWrapper()));
+					}
+
+					if (this.defaultEncoding != null) {
+						config.setDefaultEncoding(this.defaultEncoding);
+					}
+
+					List<TemplateLoader> templateLoaders = new LinkedList<TemplateLoader>(this.templateLoaders);
+
+					// Register template loaders that are supposed to kick in early.
+					if (this.preTemplateLoaders != null) {
+						templateLoaders.addAll(this.preTemplateLoaders);
+					}
+
+					postProcessTemplateLoaders(templateLoaders);
+
+					// Register template loaders that are supposed to kick in late.
+					if (this.postTemplateLoaders != null) {
+						templateLoaders.addAll(this.postTemplateLoaders);
+					}
+
+					TemplateLoader loader = getAggregateTemplateLoader(templateLoaders);
+					if (loader != null) {
+						config.setTemplateLoader(loader);
+					}
+					config.setSharedVariable("fmXmlEscape", new XmlEscape());
+					config.setSharedVariable("fmHtmlEscape", new HtmlEscape());
+
+					local = config;
+					engine = local;
+				}
+			}
 		}
-
-		// 创建 Configuration 实例
-		Configuration config = new Configuration(Configuration.VERSION_2_3_23);
-
-		Properties props = ConfigUtils.filterWithPrefix("docx4j.freemarker.", "docx4j.freemarker.", Docx4jProperties.getProperties(), false);
-
-		// FreeMarker will only accept known keys in its setSettings and
-		// setAllSharedVariables methods.
-		if (!props.isEmpty()) {
-			config.setSettings(props);
-		}
-
-		if (this.freemarkerVariables != null && !this.freemarkerVariables.isEmpty()) {
-			config.setAllSharedVariables(new SimpleHash(this.freemarkerVariables, config.getObjectWrapper()));
-		}
-
-		if (this.defaultEncoding != null) {
-			config.setDefaultEncoding(this.defaultEncoding);
-		}
-
-		List<TemplateLoader> templateLoaders = new LinkedList<TemplateLoader>(this.templateLoaders);
-
-		// Register template loaders that are supposed to kick in early.
-		if (this.preTemplateLoaders != null) {
-			templateLoaders.addAll(this.preTemplateLoaders);
-		}
-
-		postProcessTemplateLoaders(templateLoaders);
-
-		// Register template loaders that are supposed to kick in late.
-		if (this.postTemplateLoaders != null) {
-			templateLoaders.addAll(this.postTemplateLoaders);
-		}
-
-		TemplateLoader loader = getAggregateTemplateLoader(templateLoaders);
-		if (loader != null) {
-			config.setTemplateLoader(loader);
-		}
-		config.setSharedVariable("fmXmlEscape", new XmlEscape());
-		config.setSharedVariable("fmHtmlEscape", new HtmlEscape());
-
-		// 设置模板引擎，减少重复初始化消耗
-        this.setEngine(config);
-        return config;
+		return local;
 	}
 
 	/**

@@ -38,6 +38,12 @@ public interface WordprocessingMLTemplate {
 	 * @param variables ：变量
 	 * @return {@link WordprocessingMLPackage} 对象
 	 * @throws Exception ：异常对象
+	 *
+	 * <p>本项目内所有完整管线骨架（{@link AbstractWmlTemplate}、
+	 * {@code AbstractStringTemplateWrappingTemplate}、
+	 * {@code WordprocessingMLHtmlTemplate}、{@code WordprocessingMLJspTemplate}）
+	 * 均覆盖此方法并加入变量替换等后续步骤；此处 default 仅作为最小实现的兜底
+	 * （加载模板或创建空文档），供契约测试与第三方最小实现使用。</p>
 	 */
 	default WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception{
 		// Document loading (required)
@@ -59,6 +65,9 @@ public interface WordprocessingMLTemplate {
 	 * @param variables ：变量
 	 * @return {@link WordprocessingMLPackage} 对象
 	 * @throws Exception ：异常对象
+	 *
+	 * <p>同 {@link #process(File, Map)}：default 仅作为未覆盖者的兜底，完整管线
+	 * 均覆盖此方法。</p>
 	 */
 	default WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception{
 		// Document loading (required)
@@ -80,6 +89,10 @@ public interface WordprocessingMLTemplate {
 	 * @param variables ：变量
 	 * @return {@link WordprocessingMLPackage} 对象
 	 * @throws Exception ：异常对象
+	 *
+	 * <p>最简默认实现：将字符串作为文件路径委托给
+	 * {@link #process(InputStream, Map)}。{@link AbstractWmlTemplate} 唯一继承
+	 * 的 default 即此方法。</p>
 	 */
 	default WordprocessingMLPackage process(String template, Map<String, Object> variables) throws Exception{
 		return this.process(new FileInputStream(template), variables);

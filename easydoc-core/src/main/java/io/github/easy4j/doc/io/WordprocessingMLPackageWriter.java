@@ -42,14 +42,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class WordprocessingMLPackageWriter  {
-	
+
 	protected final Logger LOG = LoggerFactory.getLogger(this.getClass());
 	protected final String PDF_SUFFIX = ".pdf";
 	protected final String DOCX_SUFFIX = ".docx";
 	protected ConversionHyperlinkHandler hyperlinkHandler = OutputConversionHyperlinkHandler.getHyperlinkHandler();
 	protected ConversionHTMLStyleElementHandler styleElementHandler = OutputConversionHTMLStyleElementHandler.getStyleElementHandler();
 	protected ConversionHTMLScriptElementHandler scriptElementHandler = OutputConversionHTMLScriptElementHandler.getScriptElementHandler();
-	
+
 	private static final WordprocessingMLPackageWriter WML_PACKAGE_WRITER = new WordprocessingMLPackageWriter();
 
 	/**
@@ -59,11 +59,11 @@ public class WordprocessingMLPackageWriter  {
 	public static WordprocessingMLPackageWriter getWMLPackageWriter() {
 		return WML_PACKAGE_WRITER;
 	}
-	
+
 	protected WordprocessingMLPackageWriter() {
-		
+
 	}
-	
+
 	/**
 	 * 将 {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} 存为 docx
 	 * @param wmlPackage {@link WordprocessingMLPackage} 对象
@@ -76,7 +76,7 @@ public class WordprocessingMLPackageWriter  {
 		File outFile = new File( Docx4jUtils.getTempPath() + DOCX_SUFFIX );
 		return writeToDocx(wmlPackage, outFile);
 	}
-	
+
 	/**
 	 * 将 {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} 存为 docx
 	 * @param wmlPackage {@link WordprocessingMLPackage} 对象
@@ -90,7 +90,7 @@ public class WordprocessingMLPackageWriter  {
 		Assert.notNull(outPath, " outPath is not specified!");
 		return writeToDocx(wmlPackage, new File(outPath));
 	}
-	
+
 	/**
 	 * 将 {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} 存为 docx
 	 * @param wmlPackage {@link WordprocessingMLPackage} 对象
@@ -100,11 +100,11 @@ public class WordprocessingMLPackageWriter  {
 	 * @throws Docx4JException ： Docx4j异常
 	 */
 	public File writeToDocx(WordprocessingMLPackage wmlPackage, File outFile) throws IOException, Docx4JException {
-		Assert.isTrue( outFile.exists() , " outFile is not founded !");
+		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
 		writeToDocx(wmlPackage, new FileOutputStream(outFile));
 		return outFile;
 	}
-	
+
 	/**
 	 * 将 {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} 存为 docx
 	 * @param wmlPackage {@link WordprocessingMLPackage} 对象
@@ -123,7 +123,7 @@ public class WordprocessingMLPackageWriter  {
 			output.close();
         }
 	}
-	
+
 	/**
 	 * 将 {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} 存为 html
 	 * @param wmlPackage {@link WordprocessingMLPackage} 对象
@@ -136,7 +136,7 @@ public class WordprocessingMLPackageWriter  {
 		File outFile = new File( Docx4jUtils.getTempPath() + PDF_SUFFIX );
 		return writeToHtml(wmlPackage, outFile);
 	}
-	
+
 	/**
 	 * 将 {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} 存为 html
 	 * @param wmlPackage {@link WordprocessingMLPackage} 对象
@@ -150,7 +150,7 @@ public class WordprocessingMLPackageWriter  {
 		Assert.notNull(outPath, " outPath is not specified!");
 		return writeToHtml(wmlPackage, new File(outPath));
 	}
-	
+
 	/**
 	 * 将 {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} 存为 html
 	 * @param wmlPackage {@link WordprocessingMLPackage} 对象
@@ -161,7 +161,10 @@ public class WordprocessingMLPackageWriter  {
 	 */
 	public File writeToHtml(WordprocessingMLPackage wmlPackage,File outFile) throws IOException, Docx4JException {
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
-		Assert.isTrue( outFile.exists() , " outFile is not founded!");
+		// 方法语义是写入目录：先校验是目录，避免下面 outFile.listFiles(...) 返回 null 导致 NPE
+		if (!outFile.isDirectory()) {
+			throw new IllegalArgumentException("outFile must be a directory: " + outFile);
+		}
 		String imageTargetUri = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_IMAGETARGETURI, "images");
 		File[] files = outFile.listFiles(new OutputDirFilterHandler(imageTargetUri));
 		if(files.length != 1){
@@ -182,16 +185,22 @@ public class WordprocessingMLPackageWriter  {
 			htmlSettings.setScriptElementHandler(getScriptElementHandler());
 			htmlSettings.setStyleElementHandler(getStyleElementHandler());
 
+			// DOCX4J_PARAM_04 的值 "docx4j.Convert.Out.HTML.OutputMethodXM" 实际上
+			// 与 docx4j 内部读取的 "docx4j.Convert.Out.HTML.OutputMethodXML" 不匹配
+			// （常量名末尾缺少 "L"），因此此处 setProperty 是无效操作。
+			// 但仍用 try/finally 保护，以防将来常量被修正后产生并发覆盖问题。
+			String prevValue = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_PARAM_04);
 			Docx4jProperties.setProperty(Docx4jConstants.DOCX4J_PARAM_04, true);
-
-			//Docx4J.toHTML(settings, outputStream, flags);
-			//Docx4J.toHTML(wmlPackage, imageDirPath, imageTargetUri, outputStream);
-			Docx4J.toHTML(htmlSettings, output, Docx4J.FLAG_EXPORT_PREFER_XSL);
+			try {
+				Docx4J.toHTML(htmlSettings, output, Docx4J.FLAG_EXPORT_PREFER_XSL);
+			} finally {
+				Docx4jProperties.setProperty(Docx4jConstants.DOCX4J_PARAM_04, prevValue);
+			}
 		}
 
 		return outFile;
 	}
-	
+
 	/**
 	 * 将 {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} 存为 pdf
 	 * @param wmlPackage {@link WordprocessingMLPackage} 对象
@@ -204,7 +213,7 @@ public class WordprocessingMLPackageWriter  {
 		File outFile = new File( Docx4jUtils.getTempPath() + PDF_SUFFIX );
 		return writeToPDF(wmlPackage, outFile);
 	}
-	
+
 	/**
 	 * 将 {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} 存为 pdf
 	 * @param wmlPackage {@link WordprocessingMLPackage} 对象
@@ -218,7 +227,7 @@ public class WordprocessingMLPackageWriter  {
 		Assert.notNull(outPath, " outPath is not specified!");
 		return writeToPDF(wmlPackage, new File(outPath));
 	}
-	
+
 	/**
 	 * 将 {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} 存为 pdf
 	 * @param wmlPackage {@link WordprocessingMLPackage} 对象
@@ -232,7 +241,7 @@ public class WordprocessingMLPackageWriter  {
 		writeToPDF(wmlPackage, new FileOutputStream(outFile));
 		return outFile;
 	}
-	
+
 	/**
 	 * 将 {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} 存为 pdf
 	 * @param wmlPackage {@link WordprocessingMLPackage} 对象
@@ -251,74 +260,48 @@ public class WordprocessingMLPackageWriter  {
 			output.close();
         }
 	}
-	
+
 	/**
 	 * 将 {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} 存为 pdf
+	 * （使用 FO 转换方式）
 	 * @param wmlPackage {@link WordprocessingMLPackage} 对象
 	 * @param output 文件输出流
 	 * @throws IOException ：IO异常
 	 * @throws Docx4JException ： Docx4j异常
 	 */
-	public void writeToPDFWhithFo(WordprocessingMLPackage wmlPackage, OutputStream output) throws IOException, Docx4JException {
+	public void writeToPDFWithFo(WordprocessingMLPackage wmlPackage, OutputStream output) throws IOException, Docx4JException {
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
 		Assert.notNull(output, " output is not specified!");
-        try {
-        	
-			// Font regex (optional)
-			// Set regex if you want to restrict to some defined subset of fonts
-			// Here we have to do this before calling createContent,
-			// since that discovers fonts
-			//String regex = null;
-			
-			// Refresh the values of DOCPROPERTY fields 
+		try {
+			// Refresh the values of DOCPROPERTY fields
 			FieldUpdater updater = new FieldUpdater(wmlPackage);
 			updater.update(true);
-			
-			// .. example of mapping font Times New Roman which doesn't have certain Arabic glyphs
-			// eg Glyph "ي" (0x64a, afii57450) not available in font "TimesNewRomanPS-ItalicMT".
-			// eg Glyph "ج" (0x62c, afii57420) not available in font "TimesNewRomanPS-ItalicMT".
-			// to a font which does
-			PhysicalFonts.get("Arial Unicode MS"); 
-	
+
+			PhysicalFonts.get("Arial Unicode MS");
+
 			// FO exporter setup (required)
-			// .. the FOSettings object
-		    FOSettings foSettings = Docx4J.createFOSettings();
-		    
+			FOSettings foSettings = Docx4J.createFOSettings();
 			foSettings.setWmlPackage(wmlPackage);
-	        foSettings.setApacheFopMime("application/pdf");
-	            
-			// Document format: 
-			// The default implementation of the FORenderer that uses Apache Fop will output
-			// a PDF document if nothing is passed via 
-			// foSettings.setApacheFopMime(apacheFopMime)
-			// apacheFopMime can be any of the output formats defined in org.apache.fop.apps.MimeConstants eg org.apache.fop.apps.MimeConstants.MIME_FOP_IF or
-			// FOSettings.INTERNAL_FO_MIME if you want the fo document as the result.
-			//foSettings.setApacheFopMime(FOSettings.INTERNAL_FO_MIME);
-			
-			// Specify whether PDF export uses XSLT or not to create the FO
-			// (XSLT takes longer, but is more complete).
-			
-			// Don't care what type of exporter you use
+			foSettings.setApacheFopMime("application/pdf");
+
 			Docx4J.toFO(foSettings, output, Docx4J.FLAG_EXPORT_PREFER_XSL);
-			
-			// Prefer the exporter, that uses a xsl transformation
-			// Docx4J.toFO(foSettings, os, Docx4J.FLAG_EXPORT_PREFER_XSL);
-			
-			// Prefer the exporter, that doesn't use a xsl transformation (= uses a visitor)
-			// faster, but not yet at feature parity
-			// Docx4J.toFO(foSettings, os, Docx4J.FLAG_EXPORT_PREFER_NONXSL);
-			   
-			// Clean up, so any ObfuscatedFontPart temp files can be deleted 
-			// if (wordMLPackage.getMainDocumentPart().getFontTablePart()!=null) {
-			// 	wordMLPackage.getMainDocumentPart().getFontTablePart().deleteEmbeddedFontTempFiles();
-			// } 
-			// This would also do it, via finalize() methods
-			updater = null;
-			foSettings = null;
-			wmlPackage = null;
 		} finally {
 			output.close();
-        }
+		}
+	}
+
+	/**
+	 * 将 {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} 存为 pdf
+	 * （使用 FO 转换方式）
+	 * @param wmlPackage {@link WordprocessingMLPackage} 对象
+	 * @param output 文件输出流
+	 * @throws IOException ：IO异常
+	 * @throws Docx4JException ： Docx4j异常
+	 * @deprecated Use {@link #writeToPDFWithFo(WordprocessingMLPackage, OutputStream)} instead (corrected spelling).
+	 */
+	@Deprecated(since = "3.0", forRemoval = true)
+	public void writeToPDFWhithFo(WordprocessingMLPackage wmlPackage, OutputStream output) throws IOException, Docx4JException {
+		writeToPDFWithFo(wmlPackage, output);
 	}
 
 	public ConversionHyperlinkHandler getHyperlinkHandler() {
@@ -344,5 +327,5 @@ public class WordprocessingMLPackageWriter  {
 	public void setScriptElementHandler(ConversionHTMLScriptElementHandler scriptElementHandler) {
 		this.scriptElementHandler = scriptElementHandler;
 	}
-	
+
 }

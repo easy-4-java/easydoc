@@ -39,16 +39,14 @@ public final class DocxTemplates {
 	 *         or {@link WordprocessingMLDocxStAXTemplate} — all wrapped as a {@link WordprocessingMLTemplate}.
 	 */
 	public static WordprocessingMLTemplate create(DocxMode mode) {
-		if (mode == null) {
-			mode = DocxMode.DEFAULT;
-		}
-		switch (mode) {
-			case SAX:
-				return new WordprocessingMLDocxSaxTemplate();
-			case STAX:
-				return new WordprocessingMLDocxStAXTemplate();
-			default:
-				return new WordprocessingMLDocxTemplate();
-		}
+		// 注册制工厂：新增 DocxMode 只需向 FACTORIES 注册，无需改 switch
+		DocxMode resolved = mode == null ? DocxMode.DEFAULT : mode;
+		return FACTORIES.getOrDefault(resolved, FACTORIES.get(DocxMode.DEFAULT)).get();
 	}
+
+	private static final java.util.Map<DocxMode, java.util.function.Supplier<WordprocessingMLTemplate>> FACTORIES =
+			java.util.Map.of(
+					DocxMode.DEFAULT, WordprocessingMLDocxTemplate::new,
+					DocxMode.SAX, WordprocessingMLDocxSaxTemplate::new,
+					DocxMode.STAX, WordprocessingMLDocxStAXTemplate::new);
 }

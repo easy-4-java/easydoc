@@ -138,7 +138,9 @@ class WordprocessingMLPackageWriterTest {
     void writeToDocxRejectsNonExistentFile() throws Exception {
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        assertThrows(IllegalArgumentException.class, () -> {
+        // P0-2 fix: Assert.isTrue(outFile.exists()) removed; writing to a path
+        // whose parent directory does not exist now throws IOException (FileOutputStream)
+        assertThrows(IOException.class, () -> {
             writer.writeToDocx(pkg, new File("/nonexistent/path/file.docx"));
         });
     }
@@ -153,14 +155,13 @@ class WordprocessingMLPackageWriterTest {
 
     @Test
     void writeToDocxNoArgCreatesTempFileAndDelegates() throws Exception {
-        // The no-arg version creates a temp file path and calls writeToDocx(pkg, File).
-        // The temp file won't exist, so the File overload's Assert.isTrue will throw.
-        // This still covers lines 76-78 (the no-arg method body).
+        // P0-2 fix: Assert.isTrue(outFile.exists()) removed; the no-arg version
+        // now creates a temp file and writes successfully.
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        assertThrows(IllegalArgumentException.class, () -> {
-            writer.writeToDocx(pkg);
-        });
+        File result = writer.writeToDocx(pkg);
+        assertNotNull(result);
+        assertTrue(result.exists());
     }
 
     // --- writeToHtml tests ---

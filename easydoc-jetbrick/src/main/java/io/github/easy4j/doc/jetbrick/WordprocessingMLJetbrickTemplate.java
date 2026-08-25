@@ -38,7 +38,7 @@ import jetbrick.template.JetEngine;
 public class WordprocessingMLJetbrickTemplate extends AbstractStringTemplateWrappingTemplate {
 
 	protected final Logger LOG = LoggerFactory.getLogger(WordprocessingMLJetbrickTemplate.class);
-	protected JetEngine engine;
+	protected volatile JetEngine engine;
 
 	public WordprocessingMLJetbrickTemplate() {
 		super();
@@ -60,22 +60,29 @@ public class WordprocessingMLJetbrickTemplate extends AbstractStringTemplateWrap
 		this.engine = engine;
 	}
 
-	protected synchronized JetEngine getInternalEngine() throws IOException{
-		Properties ps = new Properties();
-		ConfigLoader loader = new ConfigLoader();
-		try {
-			LOG.info("Loading config file: {}", JetConfig.DEFAULT_CONFIG_FILE);
-		    loader.load(JetConfig.DEFAULT_CONFIG_FILE);
-		    ps = loader.asProperties();
-		} catch (Exception e) {
-		     // 默认配置文件不存在
-			LOG.warn("No default config file found: {}", JetConfig.DEFAULT_CONFIG_FILE);
-			ps = ConfigUtils.filterWithPrefix("docx4j.jetx.", "docx4j.", Docx4jProperties.getProperties(), true);
+	protected JetEngine getInternalEngine() throws IOException{
+		JetEngine local = engine;
+		if (local == null) {
+			synchronized (this) {
+				local = engine;
+				if (local == null) {
+					Properties ps = new Properties();
+					ConfigLoader loader = new ConfigLoader();
+					try {
+						LOG.info("Loading config file: {}", JetConfig.DEFAULT_CONFIG_FILE);
+					    loader.load(JetConfig.DEFAULT_CONFIG_FILE);
+					    ps = loader.asProperties();
+					} catch (Exception e) {
+					     // 默认配置文件不存在
+						LOG.warn("No default config file found: {}", JetConfig.DEFAULT_CONFIG_FILE);
+						ps = ConfigUtils.filterWithPrefix("docx4j.jetx.", "docx4j.", Docx4jProperties.getProperties(), true);
+					}
+					local = JetEngine.create(ps);
+					engine = local;
+				}
+			}
 		}
-		JetEngine engine = JetEngine.create(ps);
-		// 设置模板引擎，减少重复初始化消耗
-        this.setEngine(engine);
-        return engine;
+		return local;
 	}
 
 	@Override

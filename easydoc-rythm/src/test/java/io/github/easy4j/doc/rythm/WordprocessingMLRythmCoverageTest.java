@@ -42,4 +42,29 @@ class WordprocessingMLRythmCoverageTest {
         RythmEngine second = t.getEngine();
         assertSame(first, second);
     }
+
+    /**
+     * Covers the DCL short-circuit path inside {@code getInternalEngine()}:
+     * after the first call initialized the engine, a second direct call must
+     * skip the {@code synchronized} block and return the same volatile field
+     * (the {@code local != null} branch added by the virtual-thread-friendly
+     * double-checked-locking refactor).
+     */
+    @Test
+    void getInternalEngineTwiceShortCircuitsDcl() throws Exception {
+        WordprocessingMLRythmTemplate t = new WordprocessingMLRythmTemplate();
+        RythmEngine first = t.getInternalEngine();
+        assertNotNull(first);
+        // Second direct call: outer local==null check is false → short-circuit
+        RythmEngine second = t.getInternalEngine();
+        assertSame(first, second);
+    }
+
+    @Test
+    void setEngineStoresAndOverrides() throws Exception {
+        WordprocessingMLRythmTemplate t = new WordprocessingMLRythmTemplate();
+        RythmEngine custom = new RythmEngine();
+        t.setEngine(custom);
+        assertSame(custom, t.getEngine(), "setEngine must make getEngine return the injected instance");
+    }
 }

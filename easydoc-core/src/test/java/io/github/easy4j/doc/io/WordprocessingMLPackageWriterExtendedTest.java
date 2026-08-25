@@ -28,12 +28,11 @@ class WordprocessingMLPackageWriterExtendedTest {
     void writeToDocxWithPackageCreatesFile(@TempDir Path tempDir) throws Exception {
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
-        // The writeToDocx(pkg) overload creates a temp file path but doesn't create the file,
-        // so the File.exists() assertion in writeToDocx(pkg, file) fails.
-        // This is a production bug. Test the assertion path instead.
-        assertThrows(IllegalArgumentException.class, () -> {
-            writer.writeToDocx(pkg);
-        });
+        // P0-2 fix: Assert.isTrue(outFile.exists()) removed; the no-arg version
+        // now creates a temp file and writes successfully.
+        File result = writer.writeToDocx(pkg);
+        assertNotNull(result);
+        assertTrue(result.exists());
     }
 
     @Test
