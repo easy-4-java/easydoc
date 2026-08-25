@@ -22,6 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.commons.lang3.StringUtils;
 import org.docx4j.XmlUtils;
 import org.docx4j.jaxb.Context;
@@ -42,9 +45,10 @@ import org.docx4j.wml.Text;
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WMLPackageUtils {
-	
-	protected static ObjectFactory factory = Context.getWmlObjectFactory();
-	protected static String CONTENT_TYPE = "";
+
+	private static final Logger LOG = LoggerFactory.getLogger(WMLPackageUtils.class);
+
+	private static final ObjectFactory FACTORY = Context.getWmlObjectFactory();
 	
     /**
      * cleanDocumentPart
@@ -191,8 +195,8 @@ public class WMLPackageUtils {
 					theList.remove(j);
 				}
 				// now add a run
-				org.docx4j.wml.R run = factory.createR();
-				org.docx4j.wml.Text t = factory.createText();
+				org.docx4j.wml.R run = FACTORY.createR();
+				org.docx4j.wml.Text t = FACTORY.createText();
 				// if (rpr != null)
 				// run.setRPr(paraRPr2RPr(rpr));
 				t.setValue(value);
@@ -213,25 +217,26 @@ public class WMLPackageUtils {
      * @throws FileNotFoundException 
      * @throws IOException 
      */  
-	public static byte[] imageToByteArray(File file) throws FileNotFoundException, IOException {  
-        InputStream is = new FileInputStream(file );  
-        long length = file.length();  
-        // 不能使用long类型创建数组, 需要用int类型.  
-        if (length > Integer.MAX_VALUE) {  
-            System.out.println("File too large!!");  
-        }  
-        byte[] bytes = new byte[(int)length];  
-        int offset = 0;  
-        int numRead = 0;  
-        while (offset < bytes.length && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {  
-            offset += numRead;  
-        }  
-        // 确认所有的字节都没读取  
-        if (offset < bytes.length) {  
-            System.out.println("Could not completely read file " +file.getName());  
-        }  
-        is.close();  
-        return bytes;  
+	public static byte[] imageToByteArray(File file) throws FileNotFoundException, IOException {
+        long length = file.length();
+        // 不能使用long类型创建数组, 需要用int类型.
+        if (length > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("File too large: " + length);
+        }
+        byte[] bytes = new byte[(int)length];
+        // try-with-resources：读取抛异常时也能保证流被关闭
+        try (InputStream is = new FileInputStream(file)) {
+            int offset = 0;
+            int numRead = 0;
+            while (offset < bytes.length && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+                offset += numRead;
+            }
+            // 确认所有的字节都没读取
+            if (offset < bytes.length) {
+                LOG.debug("Could not completely read file " + file.getName());
+            }
+        }
+        return bytes;
     }  
     
 }

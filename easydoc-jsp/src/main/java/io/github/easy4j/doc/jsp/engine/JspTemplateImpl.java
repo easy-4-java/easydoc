@@ -76,6 +76,14 @@ public class JspTemplateImpl implements JspTemplate {
     }
 
     private void doInterpret(String requestURL,Map<String, Object> variables, OutputStream output) throws IOException, ServletException {
+    	// 把调用方变量注入 request attributes，让 JSP EL（${name} 等）能在容器
+    	// 编译执行 JSP 时解析到值。此前 variables 完全未传给容器，模板里
+    	// 的 EL 表达式永远无法被赋值。
+    	if (variables != null) {
+    		for (Map.Entry<String, Object> entry : variables.entrySet()) {
+    			request.setAttribute(entry.getKey(), entry.getValue());
+    		}
+    	}
     	/**
          * 创建ServletContext对象，用于获取RequestDispatcher对象
          */

@@ -16,8 +16,10 @@
 package io.github.easy4j.doc.utils;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -36,37 +38,34 @@ class ZipFolderHelper {
         this.includeInitialFolder = includeInitialFolder;   
     }   
     
-    public void process(File folderToZip, OutputStream output) throws Exception {   
-    	ZipOutputStream zip = new ZipOutputStream(output);   
-		addFolderToZip("", folderToZip.getPath(), zip);   
-		zip.flush();
+    public void process(File folderToZip, OutputStream output) throws Exception {
+    	// try-with-resources 确保 close() 被调用（写入 zip END 记录），
+    	// 否则产出的压缩包不完整（M-1）
+    	try (ZipOutputStream zip = new ZipOutputStream(output)) {
+			addFolderToZip("", folderToZip.getPath(), zip);
+			zip.flush();
+    	}
     }
     
-    private void addFileToZip(String path, String srcFile, ZipOutputStream zip)  throws Exception {   
-        File folder = new File(srcFile);   
-        if (folder.isDirectory()) {   
-            addFolderToZip(path, srcFile, zip);   
-        } else {   
-            FileInputStream in = null;   
-            try {   
-                byte[] buf = new byte[1024];   
-                int len;   
-                in = new FileInputStream(srcFile);   
-                String zeName = path + File.separator + folder.getName();   
-                if (!includeInitialFolder) {   
-                    int idx = zeName.indexOf(File.separator);   
-                    zeName = zeName.substring(idx + 1);   
-                }   
-                zip.putNextEntry(new ZipEntry(zeName));   
-                while ((len = in.read(buf)) > 0) {   
-                    zip.write(buf, 0, len);   
-                }   
-            } finally {   
-                if (in != null) {   
-                    in.close();   
-                }   
-            }   
-        }   
+    private void addFileToZip(String path, String srcFile, ZipOutputStream zip)  throws Exception {
+        File folder = new File(srcFile);
+        if (folder.isDirectory()) {
+            addFolderToZip(path, srcFile, zip);
+        } else {
+            try (InputStream in = Files.newInputStream(Path.of(srcFile))) {
+                byte[] buf = new byte[1024];
+                int len;
+                String zeName = path + File.separator + folder.getName();
+                if (!includeInitialFolder) {
+                    int idx = zeName.indexOf(File.separator);
+                    zeName = zeName.substring(idx + 1);
+                }
+                zip.putNextEntry(new ZipEntry(zeName));
+                while ((len = in.read(buf)) > 0) {
+                    zip.write(buf, 0, len);
+                }
+            }
+        }
     }   
     
     private void addFolderToZip(String path, String srcFolder,ZipOutputStream zip) throws Exception {   

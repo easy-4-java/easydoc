@@ -92,7 +92,7 @@
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
         <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
-        <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
+        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-nexus-staging-plugin.version>1.7.0</maven-nexus-staging-plugin.version>
         <maven-nexus-yuicompressor-plugin.version>1.1.0</maven-nexus-yuicompressor-plugin.version>
         <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
@@ -318,6 +318,8 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven-javadoc-plugin.version}</version>
                     <configuration>
+                        <!-- 原生 doclint=none：additionalparam 在 javadoc-plugin 3.x 已失效 -->
+                        <doclint>none</doclint>
                         <charset>${project.build.sourceEncoding}</charset>
                         <encoding>${project.build.sourceEncoding}</encoding>
                         <docencoding>${project.build.sourceEncoding}</docencoding>
@@ -430,7 +432,6 @@
             <properties>
                 <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
                 <lombok.version>1.18.46</lombok.version>
-                <additionalparam>-Xdoclint:none -Xlint:unchecked</additionalparam>
                 <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
             
 		<jaxb-namespaceprefixmapper.version>6.1.0</jaxb-namespaceprefixmapper.version></properties>

@@ -25,6 +25,8 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import io.github.easy4j.doc.fonts.ChineseFont;
 import org.docx4j.wml.RFonts;
 import org.docx4j.wml.RPr;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of physical font utils functionality.
@@ -32,6 +34,25 @@ import org.docx4j.wml.RPr;
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class PhysicalFontUtils {
+
+	private static final Logger LOG = LoggerFactory.getLogger(PhysicalFontUtils.class);
+
+	/**
+	 * 仅当目标物理字体在当前系统上可用时才建立映射。docx4j 的
+	 * {@link Mapper#put} 内部是 ConcurrentHashMap，value 为 null 会直接
+	 * NPE——在没有安装微软字体库的 macOS/Linux 上 PhysicalFonts.get 会
+	 * 返回 null。跳过的映射由 IdentityPlusMapper 的 Panose 匹配自动回退。
+	 */
+	private static void putIfAvailable(Mapper fontMapper, String documentFontName, String physicalFontName) {
+		PhysicalFont font = PhysicalFonts.get(physicalFontName);
+		if (font != null) {
+			fontMapper.put(documentFontName, font);
+		} else {
+			LOG.debug("Physical font '{}' is not installed on this system; "
+					+ "skipping mapping for '{}' (IdentityPlusMapper Panose fallback applies)",
+					physicalFontName, documentFontName);
+		}
+	}
 
 	private static Mapper newFontMapper() throws Exception {
 		
@@ -76,22 +97,22 @@ public class PhysicalFontUtils {
 		 * 
 		 */
 		Mapper fontMapper = new IdentityPlusMapper();
-		//进行中文字体兼容处理
-		fontMapper.put("微软雅黑",PhysicalFonts.get("Microsoft Yahei"));
-        fontMapper.put("黑体",PhysicalFonts.get("SimHei"));
-        fontMapper.put("楷体",PhysicalFonts.get("KaiTi"));
-        fontMapper.put("隶书", PhysicalFonts.get("LiSu"));
-        fontMapper.put("宋体",PhysicalFonts.get("SimSun"));
-        fontMapper.put("宋体扩展",PhysicalFonts.get("simsun-extB"));
-        fontMapper.put("新宋体",PhysicalFonts.get("NSimSun"));
-        fontMapper.put("仿宋",PhysicalFonts.get("FangSong"));
-        fontMapper.put("仿宋_GB2312",PhysicalFonts.get("FangSong_GB2312"));
-        fontMapper.put("幼圆",PhysicalFonts.get("YouYuan"));
-        fontMapper.put("华文宋体",PhysicalFonts.get("STSong"));
-        fontMapper.put("华文仿宋", PhysicalFonts.get("STFangsong"));
-        fontMapper.put("华文中宋",PhysicalFonts.get("STZhongsong"));
-        fontMapper.put("华文行楷", PhysicalFonts.get("STXingkai"));
-        
+		//进行中文字体兼容处理（物理字体不存在时跳过，见 putIfAvailable 的说明）
+        putIfAvailable(fontMapper, "微软雅黑", "Microsoft Yahei");
+        putIfAvailable(fontMapper, "黑体", "SimHei");
+        putIfAvailable(fontMapper, "楷体", "KaiTi");
+        putIfAvailable(fontMapper, "隶书", "LiSu");
+        putIfAvailable(fontMapper, "宋体", "SimSun");
+        putIfAvailable(fontMapper, "宋体扩展", "simsun-extB");
+        putIfAvailable(fontMapper, "新宋体", "NSimSun");
+        putIfAvailable(fontMapper, "仿宋", "FangSong");
+        putIfAvailable(fontMapper, "仿宋_GB2312", "FangSong_GB2312");
+        putIfAvailable(fontMapper, "幼圆", "YouYuan");
+        putIfAvailable(fontMapper, "华文宋体", "STSong");
+        putIfAvailable(fontMapper, "华文仿宋", "STFangsong");
+        putIfAvailable(fontMapper, "华文中宋", "STZhongsong");
+        putIfAvailable(fontMapper, "华文行楷", "STXingkai");
+
         return fontMapper;
 	}
 	
@@ -100,12 +121,15 @@ public class PhysicalFontUtils {
 	 */
 	public static void setWmlPackageFonts(WordprocessingMLPackage wmlPackage) throws Docx4JException {
 		try {
-			//字体映射;  
+			//字体映射;
 			Mapper fontMapper = newFontMapper();
 			//设置文档字体库
 			wmlPackage.setFontMapper(fontMapper, true);
 		} catch (Exception e) {
-			throw new Docx4JException(e.getMessage(),e.getCause());
+			// e 作为 cause 传入：原实现 (e.getMessage(), e.getCause()) 在 NPE 等
+			// 无消息异常时会产生既无消息也无 cause 的 Docx4JException，把根因
+			// 全部吞掉，用户只能看到空白堆栈
+			throw new Docx4JException(e.getMessage(), e);
 		}
     }
 	

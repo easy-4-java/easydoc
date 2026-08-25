@@ -72,25 +72,26 @@ public class WordprocessingMLHtmlTemplate implements WordprocessingMLTemplate {
 		return wordMLPackageBuilder.buildWhithDoc(doc, pageSize, landscape, altChunk);
 	}
 	
-	@SuppressWarnings("deprecation")
 	public WordprocessingMLPackage process( InputStream input) throws Exception {
-		WordprocessingMLPackage wordMLPackage = null;
+		// 显式 close 调用方传入的 stream（保留原 finally-close 行为，
+		// 不使用 try-with-resources 因为 stream 是入参而非本地资源）
+		WordprocessingMLPackage wordMLPackage;
 		try {
 			wordMLPackage = wordMLPackageBuilder.buildWhithDoc(docHandler.handle(input), landscape, altChunk);
 		} finally {
-			IOUtils.closeQuietly(input);
+			input.close();
 		}
 		// 返回WordprocessingMLPackage对象
 		return wordMLPackage;
 	}
-	
-	@SuppressWarnings("deprecation")
+
 	public WordprocessingMLPackage process( InputStream input, PageSizePaper pageSize) throws Exception {
-		WordprocessingMLPackage wordMLPackage = null;
+		// 显式 close 调用方传入的 stream（同上语义）
+		WordprocessingMLPackage wordMLPackage;
 		try {
 			wordMLPackage = wordMLPackageBuilder.buildWhithDoc(docHandler.handle(input), pageSize, landscape, altChunk);
 		} finally {
-			IOUtils.closeQuietly(input);
+			input.close();
 		}
 		// 返回WordprocessingMLPackage对象
 		return wordMLPackage;

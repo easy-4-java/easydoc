@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -15,113 +15,23 @@
  */
 package io.github.easy4j.doc;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.Map;
-
-import org.docx4j.Docx4J;
-import org.docx4j.model.datastorage.migration.VariablePrepare;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
-import io.github.easy4j.doc.fonts.FontMapperHolder;
-import io.github.easy4j.doc.handler.VariableReplaceSAXHandler;
-import io.github.easy4j.doc.utils.WMLPackageUtils;
-
 /**
- * Implementation of wordprocessing m l docx sax template functionality.
+ * 该模板负责对WordprocessingMLPackage进行普通变量替换和复杂变量替换并返回处理后的WordprocessingMLPackage对象
+ * 备注：该工具只能解决固定模板的word生成（来自：https://blog.csdn.net/qq_35598240/article/details/84439929）
+ *
+ * <p>Refactored to thin facade over
+ * {@link AbstractWmlTemplate} + a {@link VariableReplacer.Sax}
+ * strategy. The JDK 21 transparent fallback to StAX lives in the record;
+ * the public API is preserved verbatim.
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
-public class WordprocessingMLDocxSaxTemplate implements WordprocessingMLTemplate {
-	
-	/**
-	 * 变量占位符开始位，默认：${
-	 */
-	protected String placeholderStart = "${";
-	/**
-	 * 变量占位符结束位，默认：}
-	 */
-	protected String placeholderEnd = "}";
-	
-	/**
-	 * @param template ：模板文件
-	 * @param variables ：变量
-	 * @return {@link WordprocessingMLPackage} 对象
-	 * @throws Exception ：异常对象
-	 */
+public class WordprocessingMLDocxSaxTemplate extends AbstractWmlTemplate {
+
+	private final VariableReplacer.Sax replacer = new VariableReplacer.Sax();
+
 	@Override
-	public WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception{
-		// Document loading (required)
-		WordprocessingMLPackage wordMLPackage;
-		if (template == null || !template.exists() || !template.isFile() ) {
-			// Create a docx
-			System.out.println("No imput path passed, creating dummy document");
-			wordMLPackage = WordprocessingMLPackage.createPackage();
-			SampleDocument.createContent(wordMLPackage.getMainDocumentPart());	
-		} else {
-			System.out.println("Loading file from " + template.getAbsolutePath());
-			wordMLPackage = Docx4J.load(template);
-		}
-		if (null != variables && !variables.isEmpty()) {
-        	// 替换变量并输出Word文档 
-        	MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();
-        	// 将${}里的内容结构层次替换为一层
-        	VariablePrepare.prepare(wordMLPackage);
-        	WMLPackageUtils.cleanDocumentPart(documentPart);
-        	// 替换变量
-        	documentPart.pipe( new VariableReplaceSAXHandler( this.getPlaceholderStart() , this.getPlaceholderEnd(), variables) );
-         }
-        // 返回WordprocessingMLPackage对象
-		return FontMapperHolder.useFontMapper(wordMLPackage);
+	protected VariableReplacer replacer() {
+		return replacer;
 	}
-	
-	/**
-	 * 变量替换方式实现（只能解决固定模板的word生成）
-	 * @param template ：模板内容
-	 * @param variables ：变量
-	 * @return {@link WordprocessingMLPackage} 对象
-	 * @throws Exception ：异常对象
-	 */
-	@Override
-	public WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception {
-		// Document loading (required)
-		WordprocessingMLPackage wordMLPackage;
-		if (template == null) {
-			// Create a docx
-			System.out.println("No imput path passed, creating dummy document");
-			wordMLPackage = WordprocessingMLPackage.createPackage();
-			SampleDocument.createContent(wordMLPackage.getMainDocumentPart());	
-		} else {
-			System.out.println("Loading file from InputStream");
-			wordMLPackage = Docx4J.load(template);
-		}
-        if (null != variables && !variables.isEmpty()) {
-        	// 替换变量并输出Word文档 
-        	MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();
-        	// 将${}里的内容结构层次替换为一层
-        	VariablePrepare.prepare(wordMLPackage);
-        	WMLPackageUtils.cleanDocumentPart(documentPart);
-        	// 替换变量
-        	documentPart.pipe( new VariableReplaceSAXHandler( this.getPlaceholderStart() , this.getPlaceholderEnd(), variables) );
-         }
-        // 返回WordprocessingMLPackage对象
-		return FontMapperHolder.useFontMapper(wordMLPackage);
-	}
-	
-	public String getPlaceholderStart() {
-		return placeholderStart;
-	}
-
-	public void setPlaceholderStart(String placeholderStart) {
-		this.placeholderStart = placeholderStart;
-	}
-
-	public String getPlaceholderEnd() {
-		return placeholderEnd;
-	}
-
-	public void setPlaceholderEnd(String placeholderEnd) {
-		this.placeholderEnd = placeholderEnd;
-	}
-	
 }

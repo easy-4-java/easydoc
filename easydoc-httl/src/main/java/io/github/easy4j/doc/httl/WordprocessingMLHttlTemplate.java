@@ -18,18 +18,13 @@ package io.github.easy4j.doc.httl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.docx4j.Docx4jProperties;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import io.github.easy4j.doc.Docx4jConstants;
 import io.github.easy4j.doc.WordprocessingMLTemplate;
-import io.github.easy4j.doc.utils.ConfigUtils;
 import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
 
 import httl.Engine;
@@ -37,30 +32,38 @@ import httl.Engine;
 /**
  * Implementation of wordprocessing m l httl template functionality.
  *
+ * <p><b>Note:</b> HTTL upstream is unmaintained (last release: 2014, version 1.0.12).
+ * Functional and test-covered, but new projects should prefer Freemarker / Thymeleaf / Velocity.</p>
+ *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @deprecated since 2.0 — upstream HTTL is unmaintained (last release: 2014).
+ *     New projects should use Freemarker, Thymeleaf, or Velocity instead.
  */
+@Deprecated(since = "2.0")
 public class WordprocessingMLHttlTemplate implements WordprocessingMLTemplate {
-	
-	protected Engine engine;
+
+	private final EngineFactory factory = new EngineFactory();
+	private final Renderer renderer = new Renderer();
+	protected volatile Engine engine;
 	protected WordprocessingMLHtmlTemplate mlHtmlTemplate;
 
 	public WordprocessingMLHttlTemplate() {
 		this(false, false);
 	}
-	
+
 	public WordprocessingMLHttlTemplate(boolean landscape, boolean altChunk) {
-		this.mlHtmlTemplate = new WordprocessingMLHtmlTemplate(landscape, altChunk) ;
+		this.mlHtmlTemplate = new WordprocessingMLHtmlTemplate(landscape, altChunk);
 	}
-	
+
 	public WordprocessingMLHttlTemplate(WordprocessingMLHtmlTemplate template) {
 		this.mlHtmlTemplate = template;
 	}
-	
+
 	@Override
 	public WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception {
 		return this.process(FileUtils.readFileToString(template, StandardCharsets.UTF_8), variables);
 	}
-	
+
 	@Override
 	public WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception {
 		return this.process(IOUtils.toString(template, StandardCharsets.UTF_8), variables);
@@ -75,16 +78,10 @@ public class WordprocessingMLHttlTemplate implements WordprocessingMLTemplate {
 	 */
 	@Override
 	public WordprocessingMLPackage process(String template, Map<String, Object> variables) throws Exception {
-		// 创建模板输出内容接收对象
-		StringWriter output = new StringWriter();
-		// 使用Httl模板引擎渲染模板
-		getEngine().getTemplate(template).render(variables, output);
-		//获取模板渲染后的结果
-		String html = output.toString();
-		//使用HtmlTemplate进行渲染
+		String html = renderer.render(template, variables, getEngine());
 		return mlHtmlTemplate.process(html, variables);
 	}
-	
+
 	public Engine getEngine() throws IOException {
 		return engine == null ? getInternalEngine() : engine;
 	}
@@ -92,20 +89,9 @@ public class WordprocessingMLHttlTemplate implements WordprocessingMLTemplate {
 	public void setEngine(Engine engine) {
 		this.engine = engine;
 	}
-	
-	protected synchronized Engine getInternalEngine() throws IOException{
-		
-		Properties props = ConfigUtils.filterWithPrefix("docx4j.httl.", "docx4j.httl.", Docx4jProperties.getProperties(), false);
-        //props.setProperty("filter", "null");
-        //props.setProperty("logger", "null");
-		props.setProperty("template.directory", props.getProperty("template.directory"));
-		props.setProperty("template.suffix", props.getProperty("template.suffix",".httl"));
-		props.setProperty("input.encoding", props.getProperty("input.encoding", Docx4jConstants.DEFAULT_CHARSETNAME));
-		props.setProperty("output.encoding", props.getProperty("output.encoding", Docx4jConstants.DEFAULT_CHARSETNAME));
-		Engine engine = Engine.getEngine(props);
-		// 设置模板引擎，减少重复初始化消耗
-        this.setEngine(engine);
-        return engine;
+
+	protected Engine getInternalEngine() throws IOException {
+		return factory.get();
 	}
 
 }

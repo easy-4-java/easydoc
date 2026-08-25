@@ -18,39 +18,43 @@ package io.github.easy4j.doc.webit;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.docx4j.Docx4jProperties;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import io.github.easy4j.doc.WordprocessingMLTemplate;
 import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
 
-import webit.script.CFG;
 import webit.script.Engine;
 
 /**
  * Implementation of wordprocessing m l webit template functionality.
  *
+ * <p><b>Note:</b> Webit Script upstream is unmaintained.
+ * Functional and test-covered, but new projects should prefer Freemarker / Thymeleaf / Velocity.</p>
+ *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @deprecated since 2.0 — upstream Webit Script is unmaintained.
+ *     New projects should use Freemarker, Thymeleaf, or Velocity instead.
  */
+@Deprecated(since = "2.0")
 public class WordprocessingMLWebitTemplate implements WordprocessingMLTemplate {
-	
-	protected Engine engine;
+
+	private final EngineFactory factory = new EngineFactory();
+	private final Renderer renderer = new Renderer();
+	protected volatile Engine engine;
 	protected WordprocessingMLHtmlTemplate mlHtmlTemplate;
-	
+
 	public WordprocessingMLWebitTemplate() {
 		this(false, false);
 	}
-	
+
 	public WordprocessingMLWebitTemplate(boolean landscape, boolean altChunk) {
-		this.mlHtmlTemplate = new WordprocessingMLHtmlTemplate(landscape, altChunk) ;
+		this.mlHtmlTemplate = new WordprocessingMLHtmlTemplate(landscape, altChunk);
 	}
-	
+
 	public WordprocessingMLWebitTemplate(WordprocessingMLHtmlTemplate template) {
 		this.mlHtmlTemplate = template;
 	}
@@ -59,7 +63,7 @@ public class WordprocessingMLWebitTemplate implements WordprocessingMLTemplate {
 	public WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception {
 		return this.process(FileUtils.readFileToString(template, StandardCharsets.UTF_8), variables);
 	}
-	
+
 	@Override
 	public WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception {
 		return this.process(IOUtils.toString(template, StandardCharsets.UTF_8), variables);
@@ -74,16 +78,10 @@ public class WordprocessingMLWebitTemplate implements WordprocessingMLTemplate {
 	 */
 	@Override
 	public WordprocessingMLPackage process(String template, Map<String, Object> variables) throws Exception {
-		//创建模板输出内容接收对象
-		StringWriter output = new StringWriter();
-		//使用Webit模板引擎渲染模板
-		getEngine().getTemplate(template).merge(variables, output);
-		//获取模板渲染后的结果
-		String html = output.toString();
-		//使用HtmlTemplate进行渲染
+		String html = renderer.render(template, variables, getEngine());
 		return mlHtmlTemplate.process(html, variables);
 	}
-	
+
 	public Engine getEngine() throws IOException {
 		return engine == null ? getInternalEngine() : engine;
 	}
@@ -92,30 +90,8 @@ public class WordprocessingMLWebitTemplate implements WordprocessingMLTemplate {
 		this.engine = engine;
 	}
 
-	protected synchronized Engine getInternalEngine() throws IOException{
-		
-		Map<String, Object> ps = new HashMap<String, Object>();
-		ps.put(CFG.APPEND_LOST_SUFFIX, Docx4jProperties.getProperty("docx4j.webit.engine.appendLostSuffix", false));
-		ps.put(CFG.INIT_TEMPLATES, Docx4jProperties.getProperty("docx4j.webit.engine.initTemplates"));
-		//ps.put(CFG.FILTER, input_charset);
-		ps.put(CFG.LOADER, Docx4jProperties.getProperty("docx4j.webit.engine.resourceLoader","webit.script.loaders.impl.ClasspathLoader"));
-        ps.put(CFG.LOADER_ENCODING, Docx4jProperties.getProperty("docx4j.webit.loader.encoding", Engine.UTF_8) );
-        ps.put(CFG.LOADER_ROOT, Docx4jProperties.getProperty("docx4j.webit.loader.root") );
-        ps.put(CFG.LOGGER, Docx4jProperties.getProperty("docx4j.webit.engine.logger", "webit.script.loggers.impl.NOPLogger"));
-		ps.put(CFG.LOOSE_VAR, Docx4jProperties.getProperty("docx4j.webit.engine.looseVar", false));
-		ps.put(CFG.OUT_ENCODING, Docx4jProperties.getProperty("docx4j.webit.engine.encoding", Engine.UTF_8));
-		//ps.put(CFG.RESOLVERS, input_charset);
-		//ps.put(CFG.SECURITY_LIST, Docx4jProperties.getProperty("docx4j.webit.nativeSecurity.list"));
-        //ps.put(CFG.SERVLET_CONTEXT, output_charset );
-        ps.put(CFG.SHARE_ROOT, Docx4jProperties.getProperty("docx4j.webit.engine.shareRootData", true));
-        ps.put(CFG.SUFFIX, Docx4jProperties.getProperty("docx4j.webit.engine.suffix", ".wit"));
-        ps.put(CFG.TEXT_FACTORY, Docx4jProperties.getProperty("docx4j.webit.engine.textStatementFactory", CFG.SIMPLE_TEXT_FACTORY));
-        ps.put(CFG.TRIM_CODE_LINE, Docx4jProperties.getProperty("docx4j.webit.engine.trimCodeBlockBlankLine",true));
-        ps.put(CFG.VARS, Docx4jProperties.getProperty("docx4j.webit.engine.vars"));
-        
-        Engine engine = Engine.create("", ps);
-        // 设置模板引擎，减少重复初始化消耗
-        this.setEngine(engine);
-        return engine;
+	protected Engine getInternalEngine() throws IOException {
+		return factory.get();
 	}
+
 }

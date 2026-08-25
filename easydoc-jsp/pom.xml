@@ -22,6 +22,14 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
+		<!-- PDFBox (transitive via docx4j-ImportXHTML) needs commons-logging at runtime;
+		     jcl-over-slf4j is excluded from docx4j-core, so we must declare it explicitly. -->
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>${commons-logging.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	
 </project>
