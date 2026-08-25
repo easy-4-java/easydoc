@@ -123,7 +123,8 @@ class WordprocessingMLHtmlTemplateProcessOverloadsTest {
 	}
 
 	@Test
-	@Disabled("XHTMLImporterImpl creates malformed file:// URI when resolving against classpath-derived URL on macOS")
+	// file: URL 由 XHTMLDocumentHandler.handle(URL) 的本地协议分支处理
+	// （jsoup 的 URL 重载仅支持 http/https）
 	void processUrlWithLandscapeFlag() throws Exception {
 		Object pkg = new WordprocessingMLHtmlTemplate(true, false)
 				.process(reportHtml().toURI().toURL());

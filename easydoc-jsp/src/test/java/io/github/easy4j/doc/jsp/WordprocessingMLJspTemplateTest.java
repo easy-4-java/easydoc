@@ -15,19 +15,76 @@
  */
 package io.github.easy4j.doc.jsp;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.jupiter.api.Disabled;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.jupiter.api.Test;
 
 class WordprocessingMLJspTemplateTest {
+
+	/** HTML the "container" renders for the JSP; contains an easydoc placeholder. */
+	private static final String JSP_RENDERED_HTML =
+			"<html><body><p>Hello ${name}</p></body></html>";
+
+	/**
+	 * Mock {@link HttpServletRequest} whose {@code getRequestDispatcher} returns a
+	 * fake {@link RequestDispatcher} that renders the JSP "template" — resolving
+	 * the {@code ${name}} EL against the request attribute that
+	 * {@code render(Map)} sets from the caller's variables — and writes the
+	 * resulting HTML into the response's writer (simulating a servlet container
+	 * executing the JSP).
+	 */
+	private static HttpServletRequest mockRequestWithDispatcher() {
+		// request attributes 的真实存储：render() 用 setAttribute 注入变量，
+		// mock dispatcher 用 getAttribute 读取（模拟容器 JSP EL 求值）
+		Map<String, Object> attributes = new HashMap<>();
+		return (HttpServletRequest) Proxy.newProxyInstance(
+				WordprocessingMLJspTemplate.class.getClassLoader(),
+				new Class<?>[] { HttpServletRequest.class },
+				(proxy, method, args) -> {
+					switch (method.getName()) {
+						case "getRequestDispatcher":
+							return Proxy.newProxyInstance(
+									WordprocessingMLJspTemplate.class.getClassLoader(),
+									new Class<?>[] { RequestDispatcher.class },
+									(dispatcherProxy, dispatcherMethod, dispatcherArgs) -> {
+										if (dispatcherMethod.getName().equals("include")) {
+											// include(request, response): response 是
+											// HttpServletResponseWrapper，getWriter() 写
+											// 进 StringWriter；name 取 request attribute
+											HttpServletResponse response =
+													(HttpServletResponse) dispatcherArgs[1];
+											Object name = attributes.get("name");
+											String html = name == null
+													? JSP_RENDERED_HTML
+													: "<html><body><p>Hello " + name + "</p></body></html>";
+											response.getWriter().write(html);
+											return null;
+										}
+										return null;
+									});
+						case "setAttribute":
+							attributes.put((String) args[0], args[1]);
+							return null;
+						case "getAttribute":
+							return attributes.get((String) args[0]);
+						default:
+							return null;
+					}
+				});
+	}
 
 	private static HttpServletRequest mockRequest() {
 		return (HttpServletRequest) Proxy.newProxyInstance(
@@ -72,14 +129,38 @@ class WordprocessingMLJspTemplateTest {
 		assertSame(requestURL, urlField.get(template));
 	}
 
-	/**
-	 * The full process() path delegates to {@code WordprocessingMLHtmlTemplate},
-	 * which transitively touches the docx4j JAXB/MOXy bridge that fails on
-	 * docx4j 11.5.14. Disabled until the MOXy migration in easydoc-core lands.
-	 */
 	@Test
-	@Disabled("requires MOXy migration — WordprocessingMLHtmlTemplate.process ultimately calls load(File)")
-	void processStringWithNullHttpContextIsDisabled() {
-		// intentionally empty — kept as a guard for the moment the MOXy fix lands.
+	void processRendersJspOutputToDocx() throws Exception {
+		// 全路径：mock 容器渲染 JSP → 捕获 HTML → 变量替换 → docx。
+		// 这是 JSP 渲染路径的真实功能性覆盖（替代此前被禁的空测试）。
+		HttpServletRequest request = mockRequestWithDispatcher();
+		HttpServletResponse response = mockResponse();
+		WordprocessingMLJspTemplate template = new WordprocessingMLJspTemplate(
+				request, response, "/WEB-INF/views/hello.jsp", "/frontStage/hello.jsp");
+
+		Map<String, Object> vars = new HashMap<>();
+		vars.put("name", "jsp-world");
+
+		WordprocessingMLPackage pkg = template.process("ignored-template-arg", vars);
+		assertNotNull(pkg, "JSP render must produce a WordprocessingMLPackage");
+
+		String xml = pkg.getMainDocumentPart().getXML();
+		assertTrue(xml.contains("jsp-world"),
+				"${name} must be substituted with the variable value in the rendered docx");
+		assertTrue(xml.contains("Hello"),
+				"the JSP-rendered HTML content must survive the conversion to docx");
+	}
+
+	@Test
+	void renderCapturesJspOutput() throws Exception {
+		// 验证 render() 单独捕获的 HTML 就是 mock 容器写入的内容（不含 docx 转换）
+		HttpServletRequest request = mockRequestWithDispatcher();
+		HttpServletResponse response = mockResponse();
+		WordprocessingMLJspTemplate template = new WordprocessingMLJspTemplate(
+				request, response, "/WEB-INF/views/hello.jsp", "/frontStage/hello.jsp");
+
+		String html = template.render(new HashMap<>());
+		assertEquals(JSP_RENDERED_HTML, html,
+				"render() must capture exactly what the container wrote to the response");
 	}
 }
