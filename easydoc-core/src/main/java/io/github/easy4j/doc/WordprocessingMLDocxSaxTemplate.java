@@ -20,7 +20,7 @@ package io.github.easy4j.doc;
  * 备注：该工具只能解决固定模板的word生成（来自：https://blog.csdn.net/qq_35598240/article/details/84439929）
  *
  * <p>JDK 21 sealed-types refactor: thin facade over
- * {@link AbstractWmlTemplate} + a {@link AbstractWmlTemplate.VariableReplacer.Sax}
+ * {@link AbstractWmlTemplate} + a {@link VariableReplacer.Sax}
  * strategy. The JDK 21 transparent fallback to StAX lives in the record;
  * the public API is preserved verbatim.
  *
@@ -28,10 +28,10 @@ package io.github.easy4j.doc;
  */
 public class WordprocessingMLDocxSaxTemplate extends AbstractWmlTemplate {
 
-	private final AbstractWmlTemplate.VariableReplacer.Sax replacer = new AbstractWmlTemplate.VariableReplacer.Sax();
+	private final VariableReplacer.Sax replacer = new VariableReplacer.Sax();
 
 	@Override
-	protected AbstractWmlTemplate.VariableReplacer replacer() {
+	protected VariableReplacer replacer() {
 		return replacer;
 	}
 }

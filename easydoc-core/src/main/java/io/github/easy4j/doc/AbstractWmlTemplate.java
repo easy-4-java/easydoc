@@ -28,18 +28,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.easy4j.doc.fonts.FontMapperHolder;
-import io.github.easy4j.doc.handler.VariableReplaceSAXHandler;
-import io.github.easy4j.doc.handler.VariableReplaceSaTXHandler;
 import io.github.easy4j.doc.utils.WMLPackageUtils;
 
 /**
  * Skeleton for all {@link WordprocessingMLTemplate} implementations in this
- * package. JDK 21 sealed-types refactor: the three historical subclasses
+ * package. The three historical subclasses
  * ({@link WordprocessingMLDocxTemplate},
  * {@link WordprocessingMLDocxSaxTemplate},
  * {@link WordprocessingMLDocxStAXTemplate}) differ only in the variable
- * replacement stage; that stage is now modeled as a sealed
- * {@link VariableReplacer} with three record implementations
+ * replacement stage; that stage is modeled as a public {@link VariableReplacer}
+ * SPI with three built-in implementations
  * ({@link VariableReplacer.Default}, {@link VariableReplacer.StAX},
  * {@link VariableReplacer.Sax}).
  *
@@ -52,11 +50,13 @@ import io.github.easy4j.doc.utils.WMLPackageUtils;
  *   FontMapperHolder.useFontMapper // 5. attach user-supplied font mapper
  * </pre>
  *
- * <p>Subclasses only need to provide the right {@link VariableReplacer};
- * the JDK 21 SAX-to-StAX transparent fallback is implemented once at the
- * base level via a double-checked-locking volatile field on the
- * {@link VariableReplacer.Sax} record (matching the previous fallback in
- * {@code WordprocessingMLDocxSaxTemplate}).
+ * <p>Subclasses provide a built-in {@link VariableReplacer} via
+ * {@link #replacer()}; callers may override the strategy at runtime via
+ * {@link #setReplacer(VariableReplacer)} for custom expression languages
+ * (MVEL, SpEL, etc.). The JDK 21 SAX-to-StAX transparent fallback is
+ * implemented once at the base level via a double-checked-locking volatile
+ * field on the {@link VariableReplacer.Sax} class (matching the previous
+ * fallback in {@code WordprocessingMLDocxSaxTemplate}).
  */
 abstract class AbstractWmlTemplate implements WordprocessingMLTemplate {
 
@@ -71,10 +71,35 @@ abstract class AbstractWmlTemplate implements WordprocessingMLTemplate {
 	/** Concrete subclass picks the variable-replacement strategy. */
 	protected abstract VariableReplacer replacer();
 
+	/**
+	 * Optional custom {@link VariableReplacer} injected by the caller.
+	 * When non-null, this takes precedence over the built-in {@link #replacer()}.
+	 */
+	protected volatile VariableReplacer customReplacer = null;
+
+	/**
+	 * Set a custom {@link VariableReplacer} to override the built-in strategy.
+	 * Pass {@code null} to revert to the built-in strategy provided by the
+	 * concrete subclass.
+	 *
+	 * @param replacer the custom replacer, or {@code null} to use the default
+	 */
+	public void setReplacer(VariableReplacer replacer) {
+		this.customReplacer = replacer;
+	}
+
+	/**
+	 * Returns the effective replacer: the custom one if set, otherwise the
+	 * built-in strategy from {@link #replacer()}.
+	 */
+	protected VariableReplacer currentReplacer() {
+		return customReplacer != null ? customReplacer : replacer();
+	}
+
 	@Override
 	public WordprocessingMLPackage process(File template, Map<String, Object> variables) throws Exception {
 		// Replacer-level JDK 21 fallback (Sax strategy triggers its own checkJdk21OrFallback()).
-		replacer().beforeProcess(this);
+		currentReplacer().beforeProcess(this);
 		WordprocessingMLPackage pkg = loadOrCreate(template);
 		if (nonEmpty(variables)) {
 			apply(pkg, variables);
@@ -84,7 +109,7 @@ abstract class AbstractWmlTemplate implements WordprocessingMLTemplate {
 
 	@Override
 	public WordprocessingMLPackage process(InputStream template, Map<String, Object> variables) throws Exception {
-		replacer().beforeProcess(this);
+		currentReplacer().beforeProcess(this);
 		WordprocessingMLPackage pkg = loadOrCreate(template);
 		if (nonEmpty(variables)) {
 			apply(pkg, variables);
@@ -121,7 +146,7 @@ abstract class AbstractWmlTemplate implements WordprocessingMLTemplate {
 		// Marshal/unwrap round-trip so JAXB elements are normalized.
 		WMLPackageUtils.cleanDocumentPart(documentPart);
 		// Strategy-specific variable substitution.
-		replacer().apply(documentPart, this, variables);
+		currentReplacer().apply(documentPart, this, variables);
 	}
 
 	private static boolean nonEmpty(Map<String, Object> variables) {
@@ -163,97 +188,4 @@ abstract class AbstractWmlTemplate implements WordprocessingMLTemplate {
 		this.placeholderEnd = placeholderEnd;
 	}
 
-	/**
-	 * Sealed family of variable-replacement strategies. Each implementation
-	 * knows how to apply a placeholder substitution to a loaded
-	 * {@link MainDocumentPart}. JDK 21 sealed types model the closed set of
-	 * three historical engines (DEFAULT, SAX, STAX) without subclass explosion.
-	 *
-	 * <p>{@code beforeProcess(template)} is invoked before
-	 * {@code Docx4J.load} so that strategies can short-circuit to a fallback
-	 * (e.g. {@link Sax} detecting JDK 21 and delegating to {@link StAX}).
-	 */
-	sealed interface VariableReplacer
-			permits VariableReplacer.Default, VariableReplacer.Sax, VariableReplacer.StAX {
-
-		/** Strategy-specific pre-flight hook (e.g. JDK 21 fallback trigger). */
-		default void beforeProcess(AbstractWmlTemplate template) { /* no-op */ }
-
-		/** Apply the variable substitution to {@code documentPart}. */
-		void apply(MainDocumentPart documentPart, AbstractWmlTemplate template,
-				Map<String, Object> variables) throws Exception;
-
-		/** Docx4j's {@code variableReplace} path — pure String substitution. */
-		record Default() implements VariableReplacer {
-			@Override
-			public void apply(MainDocumentPart documentPart, AbstractWmlTemplate template,
-					Map<String, Object> variables) throws Exception {
-				documentPart.variableReplace(template.getStaticData(variables));
-			}
-		}
-
-		/** StAX streaming pipeline with OGNL expression evaluation. */
-		record StAX() implements VariableReplacer {
-			@Override
-			public void apply(MainDocumentPart documentPart, AbstractWmlTemplate template,
-					Map<String, Object> variables) throws Exception {
-				documentPart.pipe(new VariableReplaceSaTXHandler(
-						template.getPlaceholderStart(),
-						template.getPlaceholderEnd(),
-						variables));
-			}
-		}
-
-		/**
-		 * SAX pipeline. On JDK 21+ the underlying docx4j SAXHandler is broken
-		 * (Transformer does not invoke SAXSource's setContentHandler), so this
-		 * record transparently falls back to a {@link StAX} instance via
-		 * double-checked-locking on a volatile field. Fallback is logged once
-		 * per template instance — preserves the historical
-		 * {@code WordprocessingMLDocxSaxTemplate} behavior.
-		 */
-		final class Sax implements VariableReplacer {
-			// volatile + single-flight: beforeProcess() may be invoked from many
-			// virtual threads concurrently; the flag must be published safely
-			// and set exactly once.
-			private volatile boolean jdk21FallbackTriggered = false;
-
-			@Override
-			public void beforeProcess(AbstractWmlTemplate template) {
-				int major = Runtime.version().feature();
-				if (major >= 21 && !jdk21FallbackTriggered) {
-					jdk21FallbackTriggered = true;
-					LoggerFactory.getLogger(AbstractWmlTemplate.class).warn(
-							"WordprocessingMLDocxSaxTemplate is incompatible with JDK {} "
-									+ "(docx4j 17.0.3 SAXHandler limitation: Transformer doesn't "
-									+ "invoke SAXSource.setContentHandler). Falling back "
-									+ "transparently to WordprocessingMLDocxStAXTemplate; "
-									+ "consider switching DocxTemplates.create(DocxMode.SAX) to "
-									+ "DocxMode.STAX explicitly.",
-							major);
-				}
-			}
-
-			@Override
-			public void apply(MainDocumentPart documentPart, AbstractWmlTemplate template,
-					Map<String, Object> variables) throws Exception {
-				if (jdk21FallbackTriggered) {
-					// JDK 21 fallback: reuse the same VariableReplaceSaTXHandler that
-					// the StAX strategy uses, instead of routing through
-					// WordprocessingMLDocxStAXTemplate (which would re-run the
-					// load + VariablePrepare stages we already executed).
-					documentPart.pipe(new VariableReplaceSaTXHandler(
-							template.getPlaceholderStart(),
-							template.getPlaceholderEnd(),
-							variables));
-					return;
-				}
-				// Real SAX path on JDK < 21.
-				documentPart.pipe(new VariableReplaceSAXHandler(
-						template.getPlaceholderStart(),
-						template.getPlaceholderEnd(),
-						variables));
-			}
-		}
-	}
 }

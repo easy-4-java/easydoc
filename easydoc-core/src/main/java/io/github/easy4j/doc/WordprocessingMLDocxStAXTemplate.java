@@ -20,17 +20,17 @@ package io.github.easy4j.doc;
  * 备注：该工具只能解决固定模板的word生成（来自：https://blog.csdn.net/qq_35598240/article/details/84439929）
  *
  * <p>JDK 21 sealed-types refactor: thin facade over
- * {@link AbstractWmlTemplate} + a {@link AbstractWmlTemplate.VariableReplacer.StAX}
+ * {@link AbstractWmlTemplate} + a {@link VariableReplacer.StAX}
  * strategy. Public API preserved verbatim.
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WordprocessingMLDocxStAXTemplate extends AbstractWmlTemplate {
 
-	private final AbstractWmlTemplate.VariableReplacer.StAX replacer = new AbstractWmlTemplate.VariableReplacer.StAX();
+	private final VariableReplacer.StAX replacer = new VariableReplacer.StAX();
 
 	@Override
-	protected AbstractWmlTemplate.VariableReplacer replacer() {
+	protected VariableReplacer replacer() {
 		return replacer;
 	}
 }

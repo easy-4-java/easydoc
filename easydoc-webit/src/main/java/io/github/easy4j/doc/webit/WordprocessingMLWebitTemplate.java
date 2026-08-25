@@ -16,15 +16,11 @@
 package io.github.easy4j.doc.webit;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.Map;
 
-import org.docx4j.Docx4jProperties;
 import io.github.easy4j.doc.xhtml.AbstractStringTemplateWrappingTemplate;
 import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
 
-import webit.script.CFG;
 import webit.script.Engine;
 
 /**
@@ -33,6 +29,8 @@ import webit.script.Engine;
  */
 public class WordprocessingMLWebitTemplate extends AbstractStringTemplateWrappingTemplate {
 
+	private final EngineFactory factory = new EngineFactory();
+	private final Renderer renderer = new Renderer();
 	protected volatile Engine engine;
 
 	public WordprocessingMLWebitTemplate() {
@@ -55,39 +53,12 @@ public class WordprocessingMLWebitTemplate extends AbstractStringTemplateWrappin
 		this.engine = engine;
 	}
 
-	protected Engine getInternalEngine() throws IOException{
-		Engine local = engine;
-		if (local == null) {
-			synchronized (this) {
-				local = engine;
-				if (local == null) {
-					Map<String, Object> ps = new HashMap<String, Object>();
-					ps.put(CFG.APPEND_LOST_SUFFIX, Docx4jProperties.getProperty("docx4j.webit.engine.appendLostSuffix", false));
-					ps.put(CFG.INIT_TEMPLATES, Docx4jProperties.getProperty("docx4j.webit.engine.initTemplates"));
-					ps.put(CFG.LOADER, Docx4jProperties.getProperty("docx4j.webit.engine.resourceLoader","webit.script.loaders.impl.ClasspathLoader"));
-			        ps.put(CFG.LOADER_ENCODING, Docx4jProperties.getProperty("docx4j.webit.loader.encoding", Engine.UTF_8) );
-			        ps.put(CFG.LOADER_ROOT, Docx4jProperties.getProperty("docx4j.webit.loader.root") );
-			        ps.put(CFG.LOGGER, Docx4jProperties.getProperty("docx4j.webit.engine.logger", "webit.script.loggers.impl.NOPLogger"));
-					ps.put(CFG.LOOSE_VAR, Docx4jProperties.getProperty("docx4j.webit.engine.looseVar", false));
-					ps.put(CFG.OUT_ENCODING, Docx4jProperties.getProperty("docx4j.webit.engine.encoding", Engine.UTF_8));
-			        ps.put(CFG.SHARE_ROOT, Docx4jProperties.getProperty("docx4j.webit.engine.shareRootData", true));
-			        ps.put(CFG.SUFFIX, Docx4jProperties.getProperty("docx4j.webit.engine.suffix", ".wit"));
-			        ps.put(CFG.TEXT_FACTORY, Docx4jProperties.getProperty("docx4j.webit.engine.textStatementFactory", CFG.SIMPLE_TEXT_FACTORY));
-			        ps.put(CFG.TRIM_CODE_LINE, Docx4jProperties.getProperty("docx4j.webit.engine.trimCodeBlockBlankLine",true));
-			        ps.put(CFG.VARS, Docx4jProperties.getProperty("docx4j.webit.engine.vars"));
-
-					local = Engine.create("", ps);
-					engine = local;
-				}
-			}
-		}
-		return local;
+	protected Engine getInternalEngine() throws IOException {
+		return factory.get();
 	}
 
 	@Override
 	protected String render(String template, Map<String, Object> variables) throws Exception {
-		StringWriter output = new StringWriter();
-		getEngine().getTemplate(template).merge(variables, output);
-		return output.toString();
+		return renderer.render(template, variables, getEngine());
 	}
 }

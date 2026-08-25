@@ -22,10 +22,10 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 
 import java.nio.file.Files;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -41,8 +41,8 @@ import org.slf4j.LoggerFactory;
  * {@link RequestDispatcher#include(HttpServletRequest, HttpServletResponse)} on a
  * servlet-path such as {@code /WEB-INF/views/foo.jsp}. The original hand-rolled
  * JSP engine (~15 files) was replaced by Apache Tomcat's Jasper; the runtime
- * is responsible for compiling and executing the JSP (Tomcat 9.x is required
- * because this module still uses {@code javax.servlet}, not Jakarta EE).
+	 * is responsible for compiling and executing the JSP (Tomcat 10.1.x is required
+	 * because this module uses {@code jakarta.servlet}, the Jakarta EE 10 namespace).
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */

@@ -11,8 +11,10 @@ import freemarker.template.Configuration;
 import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Additional tests to push JaCoCo line coverage of
@@ -48,6 +50,7 @@ class WordprocessingMLFreemarkerCoverageTest {
 
     // ---- setters round-trip ----
 
+    @SuppressWarnings("deprecation")
     @Test
     void setFreemarkerSettingsAcceptsProperties() {
         WordprocessingMLFreemarkerTemplate t = new WordprocessingMLFreemarkerTemplate();
@@ -56,12 +59,14 @@ class WordprocessingMLFreemarkerCoverageTest {
         // No assertion needed — exercising the setter is sufficient for coverage.
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     void setFreemarkerVariablesAcceptsMap() {
         WordprocessingMLFreemarkerTemplate t = new WordprocessingMLFreemarkerTemplate();
         t.setFreemarkerVariables(Map.of("key", "value"));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     void setDefaultEncodingAcceptsString() {
         WordprocessingMLFreemarkerTemplate t = new WordprocessingMLFreemarkerTemplate();
@@ -70,6 +75,7 @@ class WordprocessingMLFreemarkerCoverageTest {
 
     // ---- getInternalEngine paths: freemarkerVariables non-empty, defaultEncoding set ----
 
+    @SuppressWarnings("deprecation")
     @Test
     void getInternalEngineWithVariablesAndEncoding() throws Exception {
         WordprocessingMLFreemarkerTemplate t = new WordprocessingMLFreemarkerTemplate();
@@ -82,6 +88,7 @@ class WordprocessingMLFreemarkerCoverageTest {
 
     // ---- postTemplateLoaders path ----
 
+    @SuppressWarnings("deprecation")
     @Test
     void getInternalEngineWithPostTemplateLoaders() throws Exception {
         WordprocessingMLFreemarkerTemplate t = new WordprocessingMLFreemarkerTemplate();
@@ -94,6 +101,7 @@ class WordprocessingMLFreemarkerCoverageTest {
 
     // ---- getAggregateTemplateLoader: switch with 0 loaders ----
 
+    @SuppressWarnings("deprecation")
     @Test
     void getAggregateTemplateLoaderWithEmptyListReturnsNull() {
         WordprocessingMLFreemarkerTemplate t = new WordprocessingMLFreemarkerTemplate();
@@ -106,6 +114,7 @@ class WordprocessingMLFreemarkerCoverageTest {
 
     // ---- getAggregateTemplateLoader: switch with multiple loaders ----
 
+    @SuppressWarnings("deprecation")
     @Test
     void getAggregateTemplateLoaderWithMultipleLoadersReturnsMultiLoader() {
         WordprocessingMLFreemarkerTemplate t = new WordprocessingMLFreemarkerTemplate();
@@ -115,7 +124,37 @@ class WordprocessingMLFreemarkerCoverageTest {
         assertNotNull(result);
     }
 
-    private static void assertEquals(String expected, String actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
+    /**
+     * Exercises the EngineFactory DCL short-circuit: consecutive calls to
+     * {@code factory.get()} must return the same instance without re-entering
+     * the synchronized block.
+     */
+    @Test
+    void engineFactoryReturnsSameInstanceOnConsecutiveCalls() throws Exception {
+        EngineFactory factory = new EngineFactory(null, null, null, null, null);
+        Configuration first = factory.get();
+        assertNotNull(first);
+        Configuration second = factory.get();
+        assertSame(first, second, "EngineFactory.get() must return the same cached instance");
+    }
+
+    /**
+     * Exercises the Renderer statelessness guarantee: rendering the same
+     * template with the same variables twice through the same Renderer
+     * instance must produce identical results.
+     */
+    @Test
+    void rendererProducesIdenticalResultsForSameInputs() throws Exception {
+        Renderer renderer = new Renderer(null);
+        Configuration engine = new Configuration(Configuration.VERSION_2_3_23);
+        // Use StringTemplateLoader so we don't need a file system path
+        StringTemplateLoader loader = new StringTemplateLoader();
+        loader.putTemplate("hello.ftl", "Hello ${name}");
+        engine.setTemplateLoader(loader);
+        Map<String, Object> vars = new HashMap<>(Map.of("name", "world"));
+        String first = renderer.render("hello.ftl", vars, engine);
+        assertNotNull(first);
+        String second = renderer.render("hello.ftl", vars, engine);
+        assertEquals(first, second, "Renderer must be stateless: same inputs produce same output");
     }
 }

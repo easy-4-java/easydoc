@@ -16,33 +16,21 @@
 package io.github.easy4j.doc.freemarker;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.docx4j.Docx4jProperties;
-import io.github.easy4j.doc.utils.ConfigUtils;
 import io.github.easy4j.doc.xhtml.AbstractStringTemplateWrappingTemplate;
 import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import freemarker.cache.ClassTemplateLoader;
-import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
-import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
-import freemarker.template.SimpleHash;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
-import freemarker.template.TemplateModelException;
-import freemarker.template.utility.HtmlEscape;
-import freemarker.template.utility.XmlEscape;
 
 /**
  * 该模板仅负责使用Freemarker模板引擎将指定模板生成HTML并将HTML转换成XHTML后，作为模板生成WordprocessingMLPackage对象
@@ -52,12 +40,22 @@ public class WordprocessingMLFreemarkerTemplate extends AbstractStringTemplateWr
 
 	protected final Logger LOG = LoggerFactory.getLogger(WordprocessingMLFreemarkerTemplate.class);
 	protected volatile Configuration engine;
+	protected volatile EngineFactory factory;
+	protected volatile Renderer renderer;
+
+	@Deprecated
 	protected Properties freemarkerSettings;
+	@Deprecated
 	protected Map<String, Object> freemarkerVariables;
+	@Deprecated
 	protected String defaultEncoding;
+	@Deprecated
 	protected final List<TemplateLoader> templateLoaders = new ArrayList<TemplateLoader>();
+	@Deprecated
 	protected List<TemplateLoader> preTemplateLoaders;
+	@Deprecated
 	protected List<TemplateLoader> postTemplateLoaders;
+	@Deprecated
 	protected TemplateModel templateModel;
 
 	public WordprocessingMLFreemarkerTemplate() {
@@ -81,65 +79,24 @@ public class WordprocessingMLFreemarkerTemplate extends AbstractStringTemplateWr
 	}
 
 	protected Configuration getInternalEngine() throws IOException, TemplateException {
-		Configuration local = engine;
-		if (local == null) {
+		EngineFactory f = factory;
+		if (f == null) {
 			synchronized (this) {
-				local = engine;
-				if (local == null) {
-
-					try {
-						BeansWrapper beansWrapper = new BeansWrapper(Configuration.VERSION_2_3_23);
-						this.templateModel = beansWrapper.getStaticModels().get(String.class.getName());
-					} catch (TemplateModelException e) {
-						throw new IOException(e.getMessage(),e.getCause());
-					}
-
-					// 创建 Configuration 实例
-					Configuration config = new Configuration(Configuration.VERSION_2_3_23);
-
-					Properties props = ConfigUtils.filterWithPrefix("docx4j.freemarker.", "docx4j.freemarker.", Docx4jProperties.getProperties(), false);
-
-					// FreeMarker will only accept known keys in its setSettings and
-					// setAllSharedVariables methods.
-					if (!props.isEmpty()) {
-						config.setSettings(props);
-					}
-
-					if (this.freemarkerVariables != null && !this.freemarkerVariables.isEmpty()) {
-						config.setAllSharedVariables(new SimpleHash(this.freemarkerVariables, config.getObjectWrapper()));
-					}
-
-					if (this.defaultEncoding != null) {
-						config.setDefaultEncoding(this.defaultEncoding);
-					}
-
-					List<TemplateLoader> templateLoaders = new LinkedList<TemplateLoader>(this.templateLoaders);
-
-					// Register template loaders that are supposed to kick in early.
-					if (this.preTemplateLoaders != null) {
-						templateLoaders.addAll(this.preTemplateLoaders);
-					}
-
-					postProcessTemplateLoaders(templateLoaders);
-
-					// Register template loaders that are supposed to kick in late.
-					if (this.postTemplateLoaders != null) {
-						templateLoaders.addAll(this.postTemplateLoaders);
-					}
-
-					TemplateLoader loader = getAggregateTemplateLoader(templateLoaders);
-					if (loader != null) {
-						config.setTemplateLoader(loader);
-					}
-					config.setSharedVariable("fmXmlEscape", new XmlEscape());
-					config.setSharedVariable("fmHtmlEscape", new HtmlEscape());
-
-					local = config;
-					engine = local;
+				f = factory;
+				if (f == null) {
+					f = new EngineFactory(freemarkerSettings, freemarkerVariables, defaultEncoding, preTemplateLoaders, postTemplateLoaders);
+					factory = f;
+					renderer = new Renderer(null);
 				}
 			}
 		}
-		return local;
+		Configuration cfg = f.get();
+		// Update renderer with the templateModel produced by the factory
+		Renderer r = renderer;
+		if (r == null || f.getTemplateModel() != null) {
+			renderer = new Renderer(f.getTemplateModel());
+		}
+		return cfg;
 	}
 
 	/**
@@ -148,19 +105,24 @@ public class WordprocessingMLFreemarkerTemplate extends AbstractStringTemplateWr
 	 * MultiTemplateLoader needs to be created.
 	 * @param templateLoaders the final List of TemplateLoader instances
 	 * @return the aggregate TemplateLoader
+	 * @deprecated use {@link EngineFactory} instead
 	 */
+	@Deprecated
 	protected TemplateLoader getAggregateTemplateLoader(List<TemplateLoader> templateLoaders) {
-		int loaderCount = templateLoaders.size();
-		switch (loaderCount) {
-			case 0:
-				LOG.info("No FreeMarker TemplateLoaders specified");
-				return null;
-			case 1:
-				return templateLoaders.get(0);
-			default:
-				TemplateLoader[] loaders = templateLoaders.toArray(new TemplateLoader[loaderCount]);
-				return new MultiTemplateLoader(loaders);
-		}
+		return EngineFactory.getAggregateTemplateLoader(templateLoaders);
+	}
+
+	/**
+	 * To be overridden by subclasses that want to register custom
+	 * TemplateLoader instances after this factory created its default
+	 * template loaders.
+	 * @param templateLoaders the current List of TemplateLoader instances,
+	 * to be modified by a subclass
+	 * @deprecated use {@link EngineFactory} instead
+	 */
+	@Deprecated
+	protected void postProcessTemplateLoaders(List<TemplateLoader> templateLoaders) {
+		EngineFactory.postProcessTemplateLoaders(templateLoaders);
 	}
 
 	/**
@@ -168,9 +130,12 @@ public class WordprocessingMLFreemarkerTemplate extends AbstractStringTemplateWr
 	 * passed to FreeMarker's {@code Configuration.setSettings} method.
 	 * @param settings properties
 	 * @see freemarker.template.Configuration#setSettings
+	 * @deprecated configure via {@link EngineFactory} instead
 	 */
+	@Deprecated
 	public void setFreemarkerSettings(Properties settings) {
 		this.freemarkerSettings = settings;
+		this.factory = null;
 	}
 
 	/**
@@ -178,9 +143,12 @@ public class WordprocessingMLFreemarkerTemplate extends AbstractStringTemplateWr
 	 * to FreeMarker's {@code Configuration.setAllSharedVariables()} method.
 	 * @param variables   variables
 	 * @see freemarker.template.Configuration#setAllSharedVariables
+	 * @deprecated configure via {@link EngineFactory} instead
 	 */
+	@Deprecated
 	public void setFreemarkerVariables(Map<String, Object> variables) {
 		this.freemarkerVariables = variables;
+		this.factory = null;
 	}
 
 	/**
@@ -190,9 +158,12 @@ public class WordprocessingMLFreemarkerTemplate extends AbstractStringTemplateWr
 	 * for the rendering process (for example, on Spring's FreeMarkerView).
 	 * @param defaultEncoding Default Encoding
 	 * @see freemarker.template.Configuration#setDefaultEncoding
+	 * @deprecated configure via {@link EngineFactory} instead
 	 */
+	@Deprecated
 	public void setDefaultEncoding(String defaultEncoding) {
 		this.defaultEncoding = defaultEncoding;
+		this.factory = null;
 	}
 
 	/**
@@ -206,9 +177,12 @@ public class WordprocessingMLFreemarkerTemplate extends AbstractStringTemplateWr
 	 * @param preTemplateLoaders the Array of TemplateLoader instances,
 	 * to be modified by a subclass
 	 * @see #postProcessTemplateLoaders
+	 * @deprecated configure via {@link EngineFactory} instead
 	 */
+	@Deprecated
 	public void setPreTemplateLoaders(TemplateLoader... preTemplateLoaders) {
 		this.preTemplateLoaders = Arrays.asList(preTemplateLoaders);
+		this.factory = null;
 	}
 
 	/**
@@ -222,35 +196,21 @@ public class WordprocessingMLFreemarkerTemplate extends AbstractStringTemplateWr
 	 * @param postTemplateLoaders the Array of TemplateLoader instances,
 	 * to be modified by a subclass
 	 * @see #postProcessTemplateLoaders
+	 * @deprecated configure via {@link EngineFactory} instead
 	 */
+	@Deprecated
 	public void setPostTemplateLoaders(TemplateLoader... postTemplateLoaders) {
 		this.postTemplateLoaders = Arrays.asList(postTemplateLoaders);
-	}
-
-	/**
-	 * To be overridden by subclasses that want to register custom
-	 * TemplateLoader instances after this factory created its default
-	 * template loaders.
-	 * <p>Called by {@code createConfiguration()}. Note that specified
-	 * "postTemplateLoaders" will be registered <i>after</i> any loaders
-	 * registered by this callback; as a consequence, they are <i>not</i>
-	 * included in the given List.
-	 * @param templateLoaders the current List of TemplateLoader instances,
-	 * to be modified by a subclass
-	 * @see #setPostTemplateLoaders
-	 */
-	protected void postProcessTemplateLoaders(List<TemplateLoader> templateLoaders) {
-		templateLoaders.add(new ClassTemplateLoader(WordprocessingMLFreemarkerTemplate.class, ""));
-		LOG.info("ClassTemplateLoader for WordprocessingMLFreemarkerTemplate added to FreeMarker configuration");
+		this.factory = null;
 	}
 
 	@Override
 	protected String render(String template, Map<String, Object> variables) throws Exception {
-		// 防御性拷贝：不再向调用方的 Map 写入 "String" 键（原实现污染调用方数据）
-		Map<String, Object> renderVars = new HashMap<String, Object>(variables);
-		renderVars.put("String", this.templateModel);
-		StringWriter output = new StringWriter();
-		getEngine().getTemplate(template).process(renderVars, output);
-		return output.toString();
+		Renderer r = renderer;
+		if (r == null) {
+			r = new Renderer(templateModel);
+			renderer = r;
+		}
+		return r.render(template, variables, getEngine());
 	}
 }

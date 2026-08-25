@@ -19,13 +19,12 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>${servlet-api.version}</version>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>${jakarta.servlet-api.version}</version>
 		</dependency>
-		<!-- Tomcat 9.x Jasper JSP engine (replaces the hand-rolled easydoc-jsp engine).
-		     Tomcat 10+ ships Jakarta-namespace APIs which conflict with the javax.servlet
-		     surface of this module; staying on 9.0.x keeps the namespace compatible. -->
+		<!-- Tomcat 10.1.x Jasper JSP engine (replaces the hand-rolled easydoc-jsp engine).
+		     Tomcat 10.1 uses the Jakarta EE 10 (jakarta.servlet) namespace. -->
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-jasper</artifactId>

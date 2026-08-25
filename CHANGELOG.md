@@ -22,6 +22,19 @@ Maven 4 构建基线、安全加固与一系列正确性修复。相对 1.0.x（
   禁止直接依赖（enforcer `bannedDependencies` 护栏，误用时构建即失败并给出迁移说明）。
 - `javax.servlet-api` / `tomcat-jasper` 移出根 dependencyManagement，由使用模块自持版本。
 
+### 架构演进（EngineFactory + Renderer 分离 / VariableReplacer SPI / JSP Jakarta）
+
+- **easydoc-jsp 迁移 Jakarta EE**：javax.servlet → jakarta.servlet（jakarta.servlet-api 6.0.0），
+  Tomcat 9 Jasper → 10.1.54（Jakarta EE 10 命名空间）。Spring Boot 3 / Jakarta EE 用户可直接使用。
+- **VariableReplacer 开放为公共 SPI**：`io.github.easy4j.doc.VariableReplacer`（非密封接口）替代原
+  AbstractWmlTemplate 内嵌 sealed 类型；`AbstractWmlTemplate.setReplacer(VariableReplacer)` 允许注入
+  自定义替换策略（MVEL / SpEL 等）；内置 Default / Sax / StAX 三策略保留为接口嵌套实现。
+- **引擎生命周期与渲染分离（8 引擎）**：每模块新增不可变 `EngineFactory`（volatile + DCL 懒加载引擎）
+  与无状态 `Renderer`（渲染逻辑与状态解耦）；模板类保留全部 public API（3 构造器 /
+  getEngine / setEngine / getInternalEngine / render）作为委托门面。freemarker / thymeleaf 的配置
+  setter 保留为 @Deprecated（设值后使 factory 失效重建）。虚拟线程下无 synchronized 方法 / 无
+  carrier-thread pinning。
+
 ### JDK 21 特性
 
 - **sealed + record**：三模板（DEFAULT/SAX/STAX）收敛到 `AbstractWmlTemplate` 骨架 +

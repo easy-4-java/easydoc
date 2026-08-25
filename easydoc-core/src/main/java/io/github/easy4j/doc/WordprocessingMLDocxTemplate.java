@@ -20,17 +20,17 @@ package io.github.easy4j.doc;
  * 备注：该工具只能解决固定模板的word生成（来自：https://blog.csdn.net/qq_35598240/article/details/84439929）
  *
  * <p>JDK 21 sealed-types refactor: this class is now a thin facade over
- * {@link AbstractWmlTemplate} + a {@link AbstractWmlTemplate.VariableReplacer.Default}
+ * {@link AbstractWmlTemplate} + a {@link VariableReplacer.Default}
  * strategy. All historical public API is preserved verbatim.
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WordprocessingMLDocxTemplate extends AbstractWmlTemplate {
 
-	private final AbstractWmlTemplate.VariableReplacer replacer = new AbstractWmlTemplate.VariableReplacer.Default();
+	private final VariableReplacer replacer = new VariableReplacer.Default();
 
 	@Override
-	protected AbstractWmlTemplate.VariableReplacer replacer() {
+	protected VariableReplacer replacer() {
 		return replacer;
 	}
 }

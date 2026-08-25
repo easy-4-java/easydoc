@@ -16,13 +16,8 @@
 package io.github.easy4j.doc.httl;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Map;
-import java.util.Properties;
 
-import org.docx4j.Docx4jProperties;
-import io.github.easy4j.doc.Docx4jConstants;
-import io.github.easy4j.doc.utils.ConfigUtils;
 import io.github.easy4j.doc.xhtml.AbstractStringTemplateWrappingTemplate;
 import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
 
@@ -34,6 +29,8 @@ import httl.Engine;
  */
 public class WordprocessingMLHttlTemplate extends AbstractStringTemplateWrappingTemplate {
 
+	private final EngineFactory factory = new EngineFactory();
+	private final Renderer renderer = new Renderer();
 	protected volatile Engine engine;
 
 	public WordprocessingMLHttlTemplate() {
@@ -56,29 +53,12 @@ public class WordprocessingMLHttlTemplate extends AbstractStringTemplateWrapping
 		this.engine = engine;
 	}
 
-	protected Engine getInternalEngine() throws IOException{
-		Engine local = engine;
-		if (local == null) {
-			synchronized (this) {
-				local = engine;
-				if (local == null) {
-					Properties props = ConfigUtils.filterWithPrefix("docx4j.httl.", "docx4j.httl.", Docx4jProperties.getProperties(), false);
-					props.setProperty("template.directory", props.getProperty("template.directory"));
-					props.setProperty("template.suffix", props.getProperty("template.suffix",".httl"));
-					props.setProperty("input.encoding", props.getProperty("input.encoding", Docx4jConstants.DEFAULT_CHARSETNAME));
-					props.setProperty("output.encoding", props.getProperty("output.encoding", Docx4jConstants.DEFAULT_CHARSETNAME));
-					local = Engine.getEngine(props);
-					engine = local;
-				}
-			}
-		}
-		return local;
+	protected Engine getInternalEngine() throws IOException {
+		return factory.get();
 	}
 
 	@Override
 	protected String render(String template, Map<String, Object> variables) throws Exception {
-		StringWriter output = new StringWriter();
-		getEngine().getTemplate(template).render(variables, output);
-		return output.toString();
+		return renderer.render(template, variables, getEngine());
 	}
 }

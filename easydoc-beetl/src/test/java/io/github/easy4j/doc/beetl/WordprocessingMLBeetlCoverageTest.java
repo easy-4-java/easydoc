@@ -2,6 +2,7 @@ package io.github.easy4j.doc.beetl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
@@ -161,5 +162,40 @@ class WordprocessingMLBeetlCoverageTest {
             Docx4jProperties.setProperty("docx4j.beetl.statementStart", "<%");
             Docx4jProperties.setProperty("docx4j.beetl.statementEnd", "%>");
         }
+    }
+
+    /**
+     * Exercises the EngineFactory DCL short-circuit: consecutive calls to
+     * {@code factory.get()} must return the same instance without re-entering
+     * the synchronized block.
+     */
+    @Test
+    @Order(10)
+    @DisplayName("EngineFactory.get() returns same cached instance on consecutive calls")
+    void engineFactoryReturnsSameInstanceOnConsecutiveCalls() throws Exception {
+        EngineFactory factory = new EngineFactory();
+        GroupTemplate first = factory.get();
+        assertNotNull(first);
+        GroupTemplate second = factory.get();
+        assertSame(first, second, "EngineFactory.get() must return the same cached instance");
+    }
+
+    /**
+     * Exercises the Renderer statelessness guarantee: rendering the same
+     * template with the same variables twice through the same Renderer
+     * instance must produce identical results.
+     */
+    @Test
+    @Order(11)
+    @DisplayName("Renderer produces identical results for same inputs")
+    void rendererProducesIdenticalResultsForSameInputs() throws Exception {
+        Renderer renderer = new Renderer();
+        WordprocessingMLBeetlTemplate tpl = new WordprocessingMLBeetlTemplate();
+        GroupTemplate engine = tpl.getEngine();
+        Map<String, Object> vars = Map.of("name", "world");
+        String first = renderer.render("/tpl/hello.btl", vars, engine);
+        assertNotNull(first);
+        String second = renderer.render("/tpl/hello.btl", vars, engine);
+        assertEquals(first, second, "Renderer must be stateless: same inputs produce same output");
     }
 }

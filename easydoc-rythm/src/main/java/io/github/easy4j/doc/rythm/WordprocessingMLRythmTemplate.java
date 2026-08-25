@@ -16,16 +16,11 @@
 package io.github.easy4j.doc.rythm;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.net.URISyntaxException;
 import java.util.Map;
-import java.util.Properties;
 
-import org.docx4j.Docx4jProperties;
-import io.github.easy4j.doc.utils.ConfigUtils;
 import io.github.easy4j.doc.xhtml.AbstractStringTemplateWrappingTemplate;
 import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
-import org.rythmengine.Rythm;
+
 import org.rythmengine.RythmEngine;
 
 /**
@@ -34,6 +29,8 @@ import org.rythmengine.RythmEngine;
  */
 public class WordprocessingMLRythmTemplate extends AbstractStringTemplateWrappingTemplate {
 
+	private final EngineFactory factory = new EngineFactory();
+	private final Renderer renderer = new Renderer();
 	protected volatile RythmEngine engine;
 
 	public WordprocessingMLRythmTemplate() {
@@ -56,41 +53,12 @@ public class WordprocessingMLRythmTemplate extends AbstractStringTemplateWrappin
 		this.engine = engine;
 	}
 
-	protected RythmEngine getInternalEngine() throws IOException{
-		RythmEngine local = engine;
-		if (local == null) {
-			synchronized (this) {
-				local = engine;
-				if (local == null) {
-					Properties props =  ConfigUtils.filterWithPrefix("docx4j.rythm.", "docx4j.rythm.", Docx4jProperties.getProperties(), false);
-
-					props.put("engine.mode", Rythm.Mode.valueOf(props.getProperty("engine.mode", "dev")));
-					props.put("log.enabled", false);
-					props.put("feature.smart_escape.enabled", false);
-					props.put("feature.transform.enabled", false);
-					try {
-						props.put("home.template", Rythm.class.getResource(props.getProperty("home.template")).toURI().toURL().getFile());
-					} catch (URISyntaxException e) {
-						// ignore
-						props.put("home.tmp", "/");
-					}
-					props.put("codegen.dynamic_exp.enabled", true);
-					props.put("built_in.code_type", "false");
-					props.put("built_in.transformer", "false");
-					props.put("engine.file_write", "false");
-					props.put("codegen.compact.enabled", "false");
-					local = new RythmEngine(props);
-					engine = local;
-				}
-			}
-		}
-		return local;
+	protected RythmEngine getInternalEngine() throws IOException {
+		return factory.get();
 	}
 
 	@Override
 	protected String render(String template, Map<String, Object> variables) throws Exception {
-		StringWriter output = new StringWriter();
-		getEngine().getTemplate(template , variables).render(output);
-		return output.toString();
+		return renderer.render(template, variables, getEngine());
 	}
 }

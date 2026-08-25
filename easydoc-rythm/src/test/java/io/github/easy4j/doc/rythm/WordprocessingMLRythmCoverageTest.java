@@ -4,6 +4,9 @@ import io.github.easy4j.doc.xhtml.WordprocessingMLHtmlTemplate;
 import org.junit.jupiter.api.Test;
 import org.rythmengine.RythmEngine;
 
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
@@ -66,5 +69,35 @@ class WordprocessingMLRythmCoverageTest {
         RythmEngine custom = new RythmEngine();
         t.setEngine(custom);
         assertSame(custom, t.getEngine(), "setEngine must make getEngine return the injected instance");
+    }
+
+    /**
+     * Exercises the EngineFactory DCL short-circuit: consecutive calls to
+     * {@code factory.get()} must return the same instance without re-entering
+     * the synchronized block.
+     */
+    @Test
+    void engineFactoryReturnsSameInstanceOnConsecutiveCalls() throws Exception {
+        EngineFactory factory = new EngineFactory();
+        RythmEngine first = factory.get();
+        assertNotNull(first);
+        RythmEngine second = factory.get();
+        assertSame(first, second, "EngineFactory.get() must return the same cached instance");
+    }
+
+    /**
+     * Exercises the Renderer statelessness guarantee: rendering the same
+     * template with the same variables twice through the same Renderer
+     * instance must produce identical results.
+     */
+    @Test
+    void rendererProducesIdenticalResultsForSameInputs() throws Exception {
+        Renderer renderer = new Renderer();
+        RythmEngine engine = new EngineFactory().get();
+        Map<String, Object> vars = Map.of("name", "world");
+        String first = renderer.render("/tpl/hello.tpl", vars, engine);
+        assertNotNull(first);
+        String second = renderer.render("/tpl/hello.tpl", vars, engine);
+        assertEquals(first, second, "Renderer must be stateless: same inputs produce same output");
     }
 }
