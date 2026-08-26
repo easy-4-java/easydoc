@@ -1064,14 +1064,39 @@
                     <!-- Central Publishing（Sonatype Central Portal 发布插件，自动发布） -->
                     <plugin>
                         <groupId>org.sonatype.central</groupId>
+                        <!-- Maven 4 默认绑定 maven-deploy-plugin 到 deploy phase；
+                             禁用之，避免 deploy 落 distributionManagement（aliyun） -->
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-deploy-plugin</artifactId>
+                            <configuration>
+                                <skip>true</skip>
+                            </configuration>
+                        </plugin>
+
                         <artifactId>central-publishing-maven-plugin</artifactId>
                         <version>${maven-central-publishing-plugin.version}</version>
+                        <!-- Maven 4 不触发 extension 挂钩，需显式绑定 publish goal；
+                             excludeArtifacts 排除 Maven 4 的 consumer.pom（Central 无法
+                             关联其坐标会导致 Deployment FAILED） -->
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>central</publishingServerId>
                             <autoPublish>true</autoPublish>
                             <waitUntil>published</waitUntil>
+                            <excludeArtifacts>
+                                <excludeArtifact>*-consumer.pom*</excludeArtifact>
+                            </excludeArtifacts>
                         </configuration>
+                        <executions>
+                            <execution>
+                                <id>publish-to-central</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>publish</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
