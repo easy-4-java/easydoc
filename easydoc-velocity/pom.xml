@@ -35,26 +35,12 @@
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-engine-scripting</artifactId>
 		</dependency>
-		<!-- Source: https://mvnrepository.com/artifact/org.apache.velocity/velocity-tools -->
-		<!-- Velocity 工具集：提供日期、数字、字符串等常用工具 -->
-		<!-- 显式排除 struts-core/struts-taglib/struts-tiles，避免引入过时的 Struts 1.x -->
+		<!-- Source: https://mvnrepository.com/artifact/org.apache.velocity.tools/velocity-tools-generic -->
+		<!-- Velocity 工具集（3.x 起拆分为 velocity-tools-generic）：提供日期、数字、字符串等常用工具 -->
+		<!-- 3.1 已修复 CVE-2020-13936；generic 模块不再依赖 Struts 1.x，无需 struts 排除 -->
 		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity-tools</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>struts-core</artifactId>
-					<groupId>org.apache.struts</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>struts-taglib</artifactId>
-					<groupId>org.apache.struts</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>struts-tiles</artifactId>
-					<groupId>org.apache.struts</groupId>
-				</exclusion>
-			</exclusions>
+			<groupId>org.apache.velocity.tools</groupId>
+			<artifactId>velocity-tools-generic</artifactId>
 		</dependency>
 
 	</dependencies>

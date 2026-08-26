@@ -72,16 +72,16 @@
         <javax.mail-api.version>1.6.2</javax.mail-api.version>
         <jaxb-impl.version>2.3.9</jaxb-impl.version>
         <jetbrick.version>2.1.10</jetbrick.version>
-        <jsoup.version>1.15.1</jsoup.version>
+        <jsoup.version>1.16.1</jsoup.version>
         <junit-jupiter.version>5.11.4</junit-jupiter.version>
         <junit.version>4.13.2</junit.version>
-        <ognl.version>3.2.13</ognl.version>
+        <ognl.version>3.4.2</ognl.version>
         <persistence.version>2.7.6</persistence.version>
         <rythm.version>1.3.0</rythm.version>
         <servlet-api.version>3.0.1</servlet-api.version>
         <slf4j.version>2.0.18</slf4j.version>
         <thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
-        <velocity-tools.version>2.0</velocity-tools.version>
+        <velocity-tools.version>3.1</velocity-tools.version>
         <velocity.version>2.2</velocity.version>
         <webit-script.version>1.5.2</webit-script.version>
         <!-- Maven Plugin versions -->
@@ -972,27 +972,13 @@
                 <artifactId>velocity-engine-scripting</artifactId>
                 <version>${velocity.version}</version>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-tools -->
-            <!-- Velocity 工具集：提供日期、数字、日期等常用工具 -->
-            <!-- 显式排除 struts-core/struts-taglib/struts-tiles，避免引入过时的 Struts 1.x -->
+            <!-- https://mvnrepository.com/artifact/org.apache.velocity.tools/velocity-tools-generic -->
+            <!-- Velocity 工具集（3.x 起拆分为 velocity-tools-generic）：提供日期、数字等常用工具 -->
+            <!-- 3.1 已修复 CVE-2020-13936；generic 模块不再依赖 Struts 1.x，无需 struts 排除 -->
             <dependency>
-                <groupId>org.apache.velocity</groupId>
-                <artifactId>velocity-tools</artifactId>
+                <groupId>org.apache.velocity.tools</groupId>
+                <artifactId>velocity-tools-generic</artifactId>
                 <version>${velocity-tools.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>struts-core</artifactId>
-                        <groupId>org.apache.struts</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>struts-taglib</artifactId>
-                        <groupId>org.apache.struts</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>struts-tiles</artifactId>
-                        <groupId>org.apache.struts</groupId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <!-- Source: https://mvnrepository.com/artifact/com.github.zqq90.webit-script/webit-script -->
             <!-- Webit-Script 模板引擎：轻量级模板引擎 -->
