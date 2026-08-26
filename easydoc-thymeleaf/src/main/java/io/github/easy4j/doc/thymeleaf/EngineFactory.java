@@ -62,10 +62,10 @@ public final class EngineFactory {
                     if (resolver == null) {
                         String resolverClassName = Docx4jProperties.getProperty("docx4j.thymeleaf.templateResolver", "org.thymeleaf.templateresolver.FileTemplateResolver");
                         // JDK 21 switch expression: 4-arm resolver selector becomes one expression.
-                        // Unknown values fall back to FileTemplateResolver, matching original else-branch.
+                        // All arms use equalsIgnoreCase to match the pre-refactor if/else behavior.
                         resolver = switch (resolverClassName) {
-                            case "org.thymeleaf.templateresolver.ClassLoaderTemplateResolver" -> new ClassLoaderTemplateResolver();
-                            case "org.thymeleaf.templateresolver.UrlTemplateResolver" -> new UrlTemplateResolver();
+                            case String s when s.equalsIgnoreCase("org.thymeleaf.templateresolver.ClassLoaderTemplateResolver") -> new ClassLoaderTemplateResolver();
+                            case String s when s.equalsIgnoreCase("org.thymeleaf.templateresolver.UrlTemplateResolver") -> new UrlTemplateResolver();
                             case String s when s.equalsIgnoreCase("org.thymeleaf.templateresolver.FileTemplateResolver") -> new FileTemplateResolver();
                             default -> new FileTemplateResolver();
                         };
