@@ -2,6 +2,7 @@ package io.github.easy4j.doc.easy;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Map;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -21,8 +22,8 @@ public final class DocxReaderBuilder<T> {
 
 	public DocxReaderBuilder(File templateFile, Class<T> model, DocxReadListener<T> listener) {
 		this.templateFile = templateFile;
-		this.model = model;
-		this.listener = listener;
+		this.model = Objects.requireNonNull(model, "model must not be null");
+		this.listener = Objects.requireNonNull(listener, "listener must not be null");
 	}
 
 	/**

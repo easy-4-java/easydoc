@@ -1,6 +1,7 @@
 package io.github.easy4j.doc.easy;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 
@@ -17,6 +18,25 @@ class EasyDocxTest {
 				"write(path, model) must return a builder");
 		assertNotNull(EasyDocx.write(new File("src/test/resources/tpl/template.docx"), Model.class),
 				"write(file, model) must return a builder");
+	}
+
+	@Test
+	void writeRejectsNullModel() {
+		assertThrows(NullPointerException.class,
+				() -> EasyDocx.write("src/test/resources/tpl/template.docx", null),
+				"null model must be rejected");
+	}
+
+	@Test
+	void readRejectsNullModelOrListener() {
+		DocxReadListener<Model> l = (data, values) -> {
+		};
+		assertThrows(NullPointerException.class,
+				() -> EasyDocx.read("src/test/resources/tpl/template.docx", null, l),
+				"null model must be rejected");
+		assertThrows(NullPointerException.class,
+				() -> EasyDocx.read("src/test/resources/tpl/template.docx", Model.class, null),
+				"null listener must be rejected");
 	}
 
 	@Test
