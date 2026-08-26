@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.github.easy4j</groupId>
 		<artifactId>easydoc</artifactId>
-		<version>3.0.x.20260630-SNAPSHOT</version>
+		<!-- Maven 4 (POM 4.1.0)：parent version 由 reactor 自动解析，无需显式版本 -->
 	</parent>
 
 	<artifactId>easydoc-webit</artifactId>

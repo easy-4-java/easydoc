@@ -6,7 +6,7 @@
     <artifactId>easydoc</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/easy-4-java/${project.artifactId}</url>
-    <version>3.0.x.20260630-SNAPSHOT</version>
+    <version>${revision}</version>
     <description>Building doc documents based on xhtml templates using docx4j</description>
     <packaging>pom</packaging>
 
@@ -44,6 +44,8 @@
 
     <properties>
         <!-- ═══ 第一段: 基础属性（自然排序）═══ -->
+        <!-- CI-friendly 版本单一来源：发布/发版只改此一处，Maven 4 构建产物自动扁平化 -->
+        <revision>3.0.x.20260630-SNAPSHOT</revision>
         <java.version>21</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.version>4.0.0-rc-5</maven.version>
