@@ -38,6 +38,12 @@
 		    <artifactId>docx4j-ImportXHTML-core</artifactId>
 		</dependency>
 
+		<!-- flexmark：Markdown → HTML（GFM 表格/代码块扩展） -->
+		<dependency>
+		    <groupId>com.vladsch.flexmark</groupId>
+		    <artifactId>flexmark-all</artifactId>
+		</dependency>
+
 		<!-- ======== Test ======== -->
 		<!-- EclipseLink（test scope，MOXy JAXB 实现的运行时依赖，XHTML 转换测试用） -->
 		<dependency>
