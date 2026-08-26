@@ -65,14 +65,14 @@
         <docx4j-openxml.version>${docx4j.version}</docx4j-openxml.version>
         <docx4j-xhtmlrenderer.version>3.0.0</docx4j-xhtmlrenderer.version>
         <docx4j.version>8.3.15</docx4j.version>
-        <freemarker.version>2.3.29</freemarker.version>
+        <freemarker.version>2.3.34</freemarker.version>
         <httl.version>1.0.12</httl.version>
-        <jackson.version>2.17.2</jackson.version>
+        <jackson-bom.version>2.18.9</jackson-bom.version>
         <javax-activation.version>1.1.1</javax-activation.version>
         <javax.mail-api.version>1.6.2</javax.mail-api.version>
         <jaxb-impl.version>2.3.9</jaxb-impl.version>
         <jetbrick.version>2.1.10</jetbrick.version>
-        <jsoup.version>1.13.1</jsoup.version>
+        <jsoup.version>1.15.1</jsoup.version>
         <junit-jupiter.version>5.11.4</junit-jupiter.version>
         <junit.version>4.13.2</junit.version>
         <ognl.version>3.2.13</ognl.version>
@@ -603,6 +603,16 @@
     <!-- 依赖版本统一管理（dependencyManagement） -->
     <dependencyManagement>
         <dependencies>
+            <!-- ======== BOM ======== -->
+            <!-- Source: https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom -->
+            <!-- Jackson BOM：统一管理所有 Jackson 组件版本 -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- ======== Test ======== -->
             <!-- Source: https://mvnrepository.com/artifact/junit/junit -->
             <!-- For Junit -->
