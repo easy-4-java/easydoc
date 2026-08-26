@@ -237,7 +237,7 @@ public class WordprocessingMLPackageWriter  {
 	 * @throws Docx4JException ： Docx4j异常
 	 */
 	public File writeToPDF(WordprocessingMLPackage wmlPackage,File outFile) throws IOException, Docx4JException {
-		Assert.isTrue( outFile.exists() , " outFile is not founded !");
+		// 不要求目标文件预先存在（与 writeToDocx/writeToHtml 对齐）；FileOutputStream 负责创建
 		writeToPDF(wmlPackage, new FileOutputStream(outFile));
 		return outFile;
 	}
