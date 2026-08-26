@@ -6,9 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -253,10 +255,12 @@ class WordprocessingMLPackageWriterTest {
 
     @Test
     void writeToPDFNoArgDelegatesToFileVersion() throws Exception {
-        // Covers lines 208-210
+        // P0-2 fix: Assert.isTrue(outFile.exists()) removed; the no-arg version now
+        // creates the temp file on demand, then exporting the empty package fails
+        // deterministically in Docx4J.toPDF
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(Docx4JException.class, () -> {
             writer.writeToPDF(pkg);
         });
     }
@@ -279,20 +283,22 @@ class WordprocessingMLPackageWriterTest {
 
     @Test
     void writeToPDFStringPathDelegatesToFileVersion() throws Exception {
-        // Covers lines 222-224
+        // String path delegates to the File overload; a missing parent directory surfaces
+        // as FileNotFoundException from FileOutputStream (Assert.isTrue removed)
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(FileNotFoundException.class, () -> {
             writer.writeToPDF(pkg, "/nonexistent/path");
         });
     }
 
     @Test
     void writeToPDFFileRejectsNonExistentFile() throws Exception {
-        // Covers line 236
+        // Target file is created on demand; a missing parent directory fails with
+        // FileNotFoundException from FileOutputStream (Assert.isTrue removed)
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(FileNotFoundException.class, () -> {
             writer.writeToPDF(pkg, new File("/nonexistent/path/file.pdf"));
         });
     }

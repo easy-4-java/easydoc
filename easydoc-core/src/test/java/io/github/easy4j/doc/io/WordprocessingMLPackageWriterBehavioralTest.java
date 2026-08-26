@@ -4,10 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -135,9 +137,10 @@ class WordprocessingMLPackageWriterBehavioralTest {
     void writeToPDFNoArg() throws Exception {
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        // No-arg creates temp file path, delegates to File overload
-        // The temp file won't exist, so Assert.isTrue throws
-        assertThrows(IllegalArgumentException.class, () -> {
+        // No-arg creates temp path and delegates to the File overload; the file is created
+        // on demand (FileOutputStream), then exporting the empty package fails
+        // deterministically in Docx4J.toPDF ("MainDocumentPart empty")
+        assertThrows(Docx4JException.class, () -> {
             writer.writeToPDF(pkg);
         });
     }
@@ -186,10 +189,12 @@ class WordprocessingMLPackageWriterBehavioralTest {
     }
 
     @Test
-    @DisplayName("writeToPDF rejects non-existent file")
+    @DisplayName("writeToPDF throws FileNotFoundException when parent directory is missing")
     void writeToPDFRejectsNonExistentFile() {
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
-        assertThrows(IllegalArgumentException.class, () -> {
+        // Target is not required to pre-exist (FileOutputStream creates it); only a missing
+        // parent directory fails — with FileNotFoundException, not IllegalArgumentException
+        assertThrows(FileNotFoundException.class, () -> {
             writer.writeToPDF(WordprocessingMLPackage.createPackage(), new File("/no/such/file.pdf"));
         });
     }
