@@ -196,6 +196,19 @@ EasyDocx.write("template.docx", Contract.class)
         .process(java.util.Map.of("partyName", "ACME"));
 ```
 
+### Markdown ↔ docx
+
+```java
+import io.github.easy4j.doc.xhtml.markdown.EasyMarkdown;
+
+// Markdown → docx（快速转换，复用 HTML 管线）
+org.docx4j.openpackaging.packages.WordprocessingMLPackage doc =
+        EasyMarkdown.markdownToDocx("# 标题\n\n**加粗** 内容");
+
+// docx → Markdown
+String md = EasyMarkdown.docxToMarkdown(doc);
+```
+
 ## 7. Configuration
 
 The core library is template-driven and requires no configuration file. Engine adapters may accept engine-specific settings programmatically:
