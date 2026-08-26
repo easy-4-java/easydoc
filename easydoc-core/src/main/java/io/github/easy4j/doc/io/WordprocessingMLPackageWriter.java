@@ -106,7 +106,6 @@ public class WordprocessingMLPackageWriter  {
 	 * @throws Docx4JException ： Docx4j异常
 	 */
 	public File writeToDocx(WordprocessingMLPackage wmlPackage, File outFile) throws IOException, Docx4JException {
-		Assert.isTrue( outFile.exists() , " outFile is not founded !");
 		writeToDocx(wmlPackage, new FileOutputStream(outFile));
 		return outFile;
 	}
@@ -165,7 +164,6 @@ public class WordprocessingMLPackageWriter  {
 	 */
 	public File writeToHtml(WordprocessingMLPackage wmlPackage,File outFile) throws IOException, Docx4JException {
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
-		Assert.isTrue( outFile.exists() , " outFile is not founded !");
 		OutputStream output = null;
         try {
         	String imageTargetUri = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_IMAGETARGETURI, "images");
@@ -238,7 +236,6 @@ public class WordprocessingMLPackageWriter  {
 	 * @throws Docx4JException ： Docx4j异常
 	 */
 	public File writeToPDF(WordprocessingMLPackage wmlPackage,File outFile) throws IOException, Docx4JException {
-		Assert.isTrue( outFile.exists() , " outFile is not founded !");
 		writeToPDF(wmlPackage, new FileOutputStream(outFile));
 		return outFile;
 	}

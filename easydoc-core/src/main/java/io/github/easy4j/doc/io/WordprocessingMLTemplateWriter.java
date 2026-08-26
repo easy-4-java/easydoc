@@ -79,22 +79,11 @@ public class WordprocessingMLTemplateWriter {
 		writeToStream(wmlPackage, new FileOutputStream(outFile));
 	}
 	
-	public static void writeToStream(WordprocessingMLPackage wmlPackage,OutputStream output) throws IOException, Docx4JException {
+	public static void writeToStream(WordprocessingMLPackage wmlPackage, OutputStream output) throws IOException, Docx4JException {
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
 		Assert.notNull(output, " output is not specified!");
-		InputStream input = null;
-		try {
-			//Document对象
-			MainDocumentPart document = wmlPackage.getMainDocumentPart();	
-			//Document XML
-			String documentXML = XmlUtils.marshaltoString(wmlPackage);
-			//转成字节输入流
-			input = IOUtils.toBufferedInputStream(new ByteArrayInputStream(documentXML.getBytes()));
-			//输出模板
-			IOUtils.copy(input, output);
-		} finally {
-			IOUtils.closeQuietly(input);
-		}
+		// .docx 是 ZIP 容器：保存整个包而不是把 XML 文本写入文件（与 1.0.x/3.0.x 对齐）
+		wmlPackage.save(output);
 	}
 	
 	public void writeToWriter(WordprocessingMLPackage wmlPackage,Writer output) throws IOException, Docx4JException {
