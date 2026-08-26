@@ -85,4 +85,58 @@ public final class EasyMarkdown {
 		Docx4J.toHTML(htmlSettings, out, Docx4J.FLAG_EXPORT_PREFER_XSL);
 		return MarkdownConverter.htmlToMarkdown(out.toString("UTF-8"));
 	}
+
+	// ==================== 结构化路径（OOXML 直读，高保真 95%+） ====================
+	// 与上方 HTML 路径（约 70% 保真）并存：本组重载经 DocxToMarkdownConverter /
+	// DocxStructureExtractor 直接解析 OOXML 语义（标题层级、有序/无序列表、内联格式、
+	// 表格、图片）。null 策略差异有意为之：旧 docxToMarkdown 系列 null 返回空串（宽松），
+	// 新结构化系列 null 抛 NPE（requireNonNull 边界严格校验，尽早暴露调用方缺陷）。
+
+	/**
+	 * 结构化 docx 文件 → Markdown（OOXML 直读，高保真；对照 HTML 路径 {@link #docxToMarkdown(File)}）。
+	 * null 输入抛 NPE；文件不存在抛 IOException。
+	 */
+	public static String docxToStructuredMarkdown(File docx) throws Exception {
+		return DocxToMarkdownConverter.convert(docx);
+	}
+
+	/**
+	 * 结构化 docx 输入流 → Markdown（流由底层负责关闭，勿重复关闭）。
+	 * null 输入抛 NPE；损坏包抛 IOException。
+	 */
+	public static String docxToStructuredMarkdown(InputStream in) throws Exception {
+		return DocxToMarkdownConverter.convert(in);
+	}
+
+	/**
+	 * 已加载结构化 docx 包 → Markdown（OOXML 直读，高保真）。
+	 * null 输入抛 NPE。
+	 */
+	public static String docxToStructuredMarkdown(WordprocessingMLPackage pkg) throws Exception {
+		return DocxToMarkdownConverter.convert(pkg);
+	}
+
+	/**
+	 * 结构化 docx 文件 → {@link DocxDocument} POJO 树（供智能体/调用方深度遍历块元素与行内片段）。
+	 * null 输入抛 NPE；文件不存在抛 IOException。
+	 */
+	public static DocxDocument docxToStructured(File docx) throws Exception {
+		return DocxStructureExtractor.extract(docx);
+	}
+
+	/**
+	 * 结构化 docx 输入流 → {@link DocxDocument} POJO 树（流由底层负责关闭，勿重复关闭）。
+	 * null 输入抛 NPE；损坏包抛 IOException。
+	 */
+	public static DocxDocument docxToStructured(InputStream in) throws Exception {
+		return DocxStructureExtractor.extract(in);
+	}
+
+	/**
+	 * 已加载结构化 docx 包 → {@link DocxDocument} POJO 树。
+	 * null 输入抛 NPE。
+	 */
+	public static DocxDocument docxToStructured(WordprocessingMLPackage pkg) throws Exception {
+		return DocxStructureExtractor.extract(pkg);
+	}
 }
