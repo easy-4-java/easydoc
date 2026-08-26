@@ -113,6 +113,13 @@ class EasyMarkdownStructuredTest {
 		assertThrows(IOException.class, () -> in.read(),
 				"facade must not double-wrap: extractor owns and closes the caller's stream");
 
+		InputStream docStream = new FileInputStream(file);
+		DocxDocument docFromStream = EasyMarkdown.docxToStructured(docStream);
+		assertEquals("标题", ((DocxHeading) docFromStream.getElements().get(0)).getText(),
+				"document-tree stream overload must parse the same content");
+		assertThrows(IOException.class, () -> docStream.read(),
+				"docxToStructured(InputStream) also delegates stream ownership to the extractor");
+
 		String mdFromPkg = EasyMarkdown.docxToStructuredMarkdown(EasyMarkdown.markdownToDocx(MARKDOWN));
 		assertEquals(MARKDOWN, mdFromPkg, "package overload must match file/stream fidelity");
 	}
