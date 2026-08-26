@@ -5,7 +5,7 @@
     <artifactId>easydoc</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/easy-4-java/${project.artifactId}</url>
-    <version>1.0.x.20260630-SNAPSHOT</version>
+    <version>${revision}</version>
     <description>Building doc documents based on xhtml templates using docx4j</description>
     <packaging>pom</packaging>
 
@@ -45,6 +45,8 @@
         <!-- ═══ 第一段: 基础属性（自然排序）═══ -->
         <java.version>1.8</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
+        <!-- CI-friendly 版本单一来源，Maven 3 需 flatten 插件，发布用 -Drevision 覆盖 -->
+        <revision>1.0.x.20260630-SNAPSHOT</revision>
         <maven.version>3.9.16</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -352,6 +354,34 @@
             </plugins>
         </pluginManagement>
         <plugins>
+
+            <!-- https://mvnrepository.com/artifact/org.codehaus.mojo/flatten-maven-plugin -->
+            <plugin>
+                <!-- CI-friendly 版本插件：Maven 3 下将 ${revision} 解析后写入安装/部署的 pom.xml -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.8.0</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
             <plugin>
