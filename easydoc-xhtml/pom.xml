@@ -50,6 +50,21 @@
 		    <groupId>org.docx4j</groupId>
 		    <artifactId>docx4j-ImportXHTML</artifactId>
 		</dependency>
+
+		<!-- ======== Markdown 解析 ======== -->
+		<!-- flexmark：Markdown → HTML（GFM 表格/代码块扩展） -->
+		<dependency>
+		    <groupId>com.vladsch.flexmark</groupId>
+		    <artifactId>flexmark-all</artifactId>
+		</dependency>
+
+		<!-- ======== 日志桥接 ======== -->
+		<!-- jcl-over-slf4j：ImportXHTML 转换路径中 pdfbox 依赖 commons-logging 接口，
+		     docx4j-ImportXHTML 已排除 commons-logging 并约定由本桥接提供 -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
 		<!-- ======== Test ======== -->
 		<!-- EclipseLink ORM：测试中用于 MOXy JAXB 运行时验证 -->
 		<dependency>

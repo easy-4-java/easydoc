@@ -65,6 +65,8 @@
         <docx4j-openxml.version>${docx4j.version}</docx4j-openxml.version>
         <docx4j-xhtmlrenderer.version>3.0.0</docx4j-xhtmlrenderer.version>
         <docx4j.version>8.3.15</docx4j.version>
+        <!-- Markdown 解析（MD→HTML 渲染，Java 8 兼容；0.64.x 起为 Java 11 字节码，故固定 0.62.2） -->
+        <flexmark.version>0.62.2</flexmark.version>
         <freemarker.version>2.3.34</freemarker.version>
         <httl.version>1.0.12</httl.version>
         <jackson-bom.version>2.18.9</jackson-bom.version>
@@ -712,6 +714,14 @@
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/org.slf4j/jcl-over-slf4j -->
+            <!-- JCL→SLF4J 桥接：docx4j-ImportXHTML 将 pdfbox 的 commons-logging 排除并约定由本构件替代
+                 （根 pom 排除了 docx4j-core 自带的 jcl-over-slf4j，故需显式引入） -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
             <!-- ======== Commons ======== -->
             <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
             <!-- For Commons BeanUtils：JavaBean 属性拷贝与操作 -->
@@ -741,6 +751,14 @@
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
                 <version>${jsoup.version}</version>
+            </dependency>
+            <!-- ======== Markdown 解析 ======== -->
+            <!-- Source: https://mvnrepository.com/artifact/com.vladsch.flexmark/flexmark-all -->
+            <!-- flexmark 聚合构件（Markdown → HTML，含 GFM 表格/删除线/自动链接扩展，easydoc-xhtml 使用） -->
+            <dependency>
+                <groupId>com.vladsch.flexmark</groupId>
+                <artifactId>flexmark-all</artifactId>
+                <version>${flexmark.version}</version>
             </dependency>
             <!-- ======== Docx4j（Word 文档处理核心框架）======== -->
             <!-- Source: https://mvnrepository.com/artifact/org.docx4j/docx4j-core -->
