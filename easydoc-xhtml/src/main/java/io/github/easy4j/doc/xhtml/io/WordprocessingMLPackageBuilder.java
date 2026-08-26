@@ -40,6 +40,9 @@ import org.jsoup.nodes.Document;
  */
 public class WordprocessingMLPackageBuilder {
 
+	private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(WordprocessingMLPackageBuilder.class);
+
+
 	protected DocumentHandler docHandler = XHTMLDocumentHandler.getDocumentHandler();
 	
 	private static final WordprocessingMLPackageBuilder WML_PACKAGE_BUILDER = new WordprocessingMLPackageBuilder();
@@ -75,7 +78,7 @@ public class WordprocessingMLPackageBuilder {
 			PhysicalFontUtils.setDefaultFont(wmlPackage, fontName);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.warn("Failed to set fonts", e);
 		}
         //返回WordprocessingMLPackage对象
       	return this;

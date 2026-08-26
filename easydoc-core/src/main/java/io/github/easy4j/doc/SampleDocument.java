@@ -13,6 +13,8 @@ import javax.xml.bind.JAXBException;
 
 import org.docx4j.XmlUtils;
 import org.docx4j.fonts.PhysicalFont;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.docx4j.fonts.PhysicalFonts;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 
@@ -20,6 +22,8 @@ import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
  *  document has been passed.
  */
 public class SampleDocument {
+
+	private static final Logger LOG = LoggerFactory.getLogger(SampleDocument.class);
     
 	public static void createContent(MainDocumentPart wordDocumentPart ) {
 		/*
@@ -63,8 +67,10 @@ public class SampleDocument {
 			    }
 			    
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Throwable e) {
+			// 捕获 Throwable（含 AssertionError）：macOS 上 FOP 字体解析
+			// 会对特定系统字体抛 AssertionError，不能让其中断文档生成
+			LOG.warn("Failed to create sample document content", e);
 		}    		    
 		
 	}
