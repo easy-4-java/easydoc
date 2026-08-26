@@ -47,6 +47,12 @@
 		    <artifactId>docx4j-ImportXHTML-core</artifactId>
 		</dependency>
 
+		<!-- flexmark：Markdown → HTML（GFM 表格/代码块扩展） -->
+		<dependency>
+		    <groupId>com.vladsch.flexmark</groupId>
+		    <artifactId>flexmark-all</artifactId>
+		</dependency>
+
 		<!-- ======== Test ======== -->
 
 		<!-- eclipselink：JPA 实现，测试环境用于 docx4j MOXy JAXB 兼容验证 -->

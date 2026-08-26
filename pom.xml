@@ -79,6 +79,8 @@
         <commons-io.version>2.22.0</commons-io.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <commons-logging.version>1.3.5</commons-logging.version>
+        <!-- Markdown 解析（MD→HTML 渲染，Java 8 兼容） -->
+        <flexmark.version>0.64.8</flexmark.version>
         <jackson-bom.version>2.22.1</jackson-bom.version>
         <javax.mail-api.version>1.6.2</javax.mail-api.version>
         <jsoup.version>1.16.1</jsoup.version>
@@ -746,6 +748,17 @@
                 <artifactId>jsoup</artifactId>
                 <version>${jsoup.version}</version>
             </dependency>
+
+            <!-- ======== Markdown 解析 ======== -->
+
+            <!-- https://mvnrepository.com/artifact/com.vladsch.flexmark/flexmark-all -->
+            <!-- flexmark 聚合构件（Markdown → HTML，含 GFM 表格/删除线/自动链接扩展，easydoc-xhtml 使用） -->
+            <dependency>
+                <groupId>com.vladsch.flexmark</groupId>
+                <artifactId>flexmark-all</artifactId>
+                <version>${flexmark.version}</version>
+            </dependency>
+
             <!-- ======== Docx4j 全家桶（11.5.14） ======== -->
 
             <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-core -->
