@@ -177,6 +177,34 @@ class DocxStructureExtractorTest {
 		return ndp;
 	}
 
+	/** 指定单层 numFmt 的编号定义（abstractNum=3 → num=给定 id），用于非 BULLET/DECIMAL 样式。 */
+	private static NumberingDefinitionsPart singleLvlNumbering(int numId, NumberFormat fmt)
+			throws Exception {
+		NumberingDefinitionsPart ndp = new NumberingDefinitionsPart();
+		org.docx4j.wml.Numbering numbering = new org.docx4j.wml.Numbering();
+
+		org.docx4j.wml.Numbering.AbstractNum abs = new org.docx4j.wml.Numbering.AbstractNum();
+		abs.setAbstractNumId(BigInteger.valueOf(3));
+		Lvl lvl = new Lvl();
+		lvl.setIlvl(BigInteger.ZERO);
+		NumFmt numFmt = new NumFmt();
+		numFmt.setVal(fmt);
+		lvl.setNumFmt(numFmt);
+		abs.getLvl().add(lvl);
+		numbering.getAbstractNum().add(abs);
+
+		org.docx4j.wml.Numbering.Num num = new org.docx4j.wml.Numbering.Num();
+		num.setNumId(BigInteger.valueOf(numId));
+		org.docx4j.wml.Numbering.Num.AbstractNumId absId =
+				new org.docx4j.wml.Numbering.Num.AbstractNumId();
+		absId.setVal(BigInteger.valueOf(3));
+		num.setAbstractNumId(absId);
+		numbering.getNum().add(num);
+
+		ndp.setJaxbElement(numbering);
+		return ndp;
+	}
+
 	private static void linkExternalRelationshipsPartIfMissing(WordprocessingMLPackage pkg) throws Exception {
 		if (pkg.getMainDocumentPart().getRelationshipsPart() == null) {
 			pkg.getMainDocumentPart().setRelationships(
@@ -408,6 +436,24 @@ class DocxStructureExtractorTest {
 	}
 
 	@Test
+	void lowerRomanNumFmtRendersOrdered() throws Exception {
+		// 控制裁定：Markdown 只有一种有序列表语法，可解析的非 BULLET numFmt
+		// （LOWER_ROMAN/i-ii-iii 等）一律渲染有序，不降级为无序。
+		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+		pkg.getMainDocumentPart().addTargetPart(singleLvlNumbering(12, NumberFormat.LOWER_ROMAN));
+		P a = paragraph("壹");
+		numPr(a, 12, 0);
+		P b = paragraph("贰");
+		numPr(b, 12, 0);
+		add(body(pkg), a);
+		add(body(pkg), b);
+
+		DocxDocument doc = DocxStructureExtractor.extract(pkg);
+		assertTrue(listAt(doc, 0).isOrdered(),
+				"resolvable non-BULLET numFmt (LOWER_ROMAN) renders ordered");
+	}
+
+	@Test
 	void missingNumberingPartDegradesToBullet() throws Exception {
 		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
 		P a = paragraph("降级一");
@@ -465,8 +511,11 @@ class DocxStructureExtractorTest {
 		assertEquals(3, doc.getElements().size());
 		assertFalse(listAt(doc, 0).isOrdered());
 		assertEquals(java.util.Arrays.asList("悬空", "悬空二"), listAt(doc, 0).getItems());
-		assertFalse(listAt(doc, 1).isOrdered(), "lvl mismatch + missing numFmt -> bullet");
-		assertEquals(java.util.Arrays.asList("无格式", "无格式二"), listAt(doc, 1).getItems());
+		assertEquals("paragraph", doc.getElements().get(1).getElementType(),
+				"interlude paragraph emits in document order between the two list runs");
+		assertEquals("过渡", ((DocxParagraph) doc.getElements().get(1)).getSpans().get(0).getText());
+		assertFalse(listAt(doc, 2).isOrdered(), "lvl mismatch + missing numFmt -> bullet");
+		assertEquals(java.util.Arrays.asList("无格式", "无格式二"), listAt(doc, 2).getItems());
 	}
 
 	/**

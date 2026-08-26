@@ -56,11 +56,12 @@ import org.slf4j.LoggerFactory;
  * 按 ilvl 分桶，run 结束时按 ilvl 升序各输出一个 {@link DocxList}
  * （ilvl 0 的在前、indent=ilvl，实现"嵌套通过缩进表达"的扁平模型）；
  * 深浅层级交替时同一 ilvl 桶内的项仍合并为一个 {@link DocxList}；
- * 有序/无序由 numbering part 中对应 lvl 的 numFmt 是否为 BULLET 决定；
- * numbering part 整体缺失、numId 未映射（悬空）、lvl 或 numFmt 缺失时一律降级为无序并 LOG.debug。
- * 夹在两次列表 run 之间的普通段落：关闭当前 run 但自身暂存不落地，待下一次列表 run
- * 落地后追加到其后（保证相邻列表 run 在元素序列中连续）；期间若出现标题/表格等
- * 其它块级元素则立即释放暂存段落以保持文档顺序。</li>
+ * 有序/无序由 numbering part 中对应 lvl 的 numFmt 决定：凡可解析且非 BULLET
+ * （DECIMAL、LOWER_ROMAN、lowerLetter 等全部枚举值）一律视为有序 —— Markdown 只有一种
+ * 有序列表语法，把 i/ii/iii 等样式降级为无序会损失更多保真度；仅当编号定义不可解析时
+ * （numbering part 整体缺失、numId 未映射（悬空）、lvl 或 numFmt 缺失）才降级为无序并
+ * LOG.debug。夹在两次列表 run 之间的普通段落按文档顺序落地：关闭当前 run 并输出自身，
+ * 下一次列表 run 另起新段。</li>
  * <li>表格：OOXML 无真实表头语义，采用"首行作表头"约定，其余行为数据行；
  * 单元格取全部后代文本（嵌套表格内文字一并扁平化，单元格内换行与 Tab 折叠为空格）。</li>
  * <li>图片：w:drawing → a:blip r:embed → BinaryPart 字节内联为 data URI；
@@ -125,7 +126,7 @@ public final class DocxStructureExtractor {
 				LOG.warn("Skipping malformed element: {}", ex.getMessage());
 			}
 		}
-		ctx.finishDocument();
+		ctx.flushPendingList();
 
 		org.docx4j.docProps.core.CoreProperties props = corePropertiesOf(pkg);
 		return new DocxDocument(titleOf(pkg), props == null ? null : literalOf(props.getCreator()),
@@ -157,7 +158,6 @@ public final class DocxStructureExtractor {
 			handleParagraph((P) childValue, ctx);
 		} else if (childValue instanceof Tbl) {
 			ctx.flushPendingList();
-			ctx.releaseInterludes();
 			HeadersAndRows table = parseTable((Tbl) childValue);
 			if (table != null) {
 				ctx.elements.add(new DocxTable(table.headers, table.rows));
@@ -196,7 +196,6 @@ public final class DocxStructureExtractor {
 
 		if (headingLevel >= 0) {
 			ctx.flushPendingList();
-			ctx.releaseInterludes();
 			ctx.elements.add(new DocxHeading(headingLevel, plainText(pc.spans), firstLink(pc.spans)));
 			appendImages(pc.images, ctx);
 			return;
@@ -215,17 +214,9 @@ public final class DocxStructureExtractor {
 		if (!visible && pc.images.isEmpty()) {
 			return; // 空段落（含纯 Tab/换行）整体跳过
 		}
-		if (visible && ctx.isListRunOpen()) {
-			// 夹在列表 run 之间的普通段落：先关闭当前 run，自身暂存到下一次 run 落地之后，
-			// 保证相邻两个列表 run 在元素序列中连续（见类注释"扁平合并规则"）。
-			ctx.flushPendingList();
-			ctx.holdInterlude(new DocxParagraph(pc.spans));
-		} else {
-			ctx.flushPendingList();
-			ctx.releaseInterludes();
-			if (visible) {
-				ctx.elements.add(new DocxParagraph(pc.spans));
-			}
+		ctx.flushPendingList();
+		if (visible) {
+			ctx.elements.add(new DocxParagraph(pc.spans));
 		}
 		appendImages(pc.images, ctx);
 	}
@@ -646,8 +637,7 @@ public final class DocxStructureExtractor {
 
 	/**
 	 * 单次抽取的上下文：关系索引、numbering 解析器、待渲染元素以及当前打开的列表 run
-	 * （扁平合并规则见类注释）。同时承载延迟输出的列表内图片，以及夹在两次列表 run
-	 * 之间的普通段落暂存区（落地时机同样见类注释）。
+	 * （扁平合并规则见类注释）。同时承载延迟输出的列表内图片。
 	 */
 	private static final class ParseContext {
 
@@ -669,9 +659,6 @@ public final class DocxStructureExtractor {
 		/** 当前 run 中出现的最大图片集合（跨层级的顺序保持）。 */
 		private final List<DocxImage> deferredImages = new ArrayList<DocxImage>();
 
-		/** 夹在两次列表 run 之间的普通段落暂存区：下一次 run 落地后追加，保相邻列表连续。 */
-		private final List<DocxElement> interludeBlocks = new ArrayList<DocxElement>();
-
 		void attach(MainDocumentPart main) {
 			if (main == null) {
 				return;
@@ -689,11 +676,6 @@ public final class DocxStructureExtractor {
 				LOG.debug("Content types unavailable: {}", ex.getMessage());
 			}
 			numbering = NumberingResolver.of(main.getNumberingDefinitionsPart());
-		}
-
-		/** 是否存在未落地的列表 run（打开的 numId 或非空分桶）。 */
-		boolean isListRunOpen() {
-			return openNumId != null || !buckets.isEmpty();
 		}
 
 		/** 关闭当前列表 run 并按 ilvl 升序落地各分桶，随后追加 run 内延迟图片。 */
@@ -718,25 +700,6 @@ public final class DocxStructureExtractor {
 				elements.add(image);
 			}
 			deferredImages.clear();
-		}
-
-		/** 暂存一个夹在两次列表 run 之间的普通段落。 */
-		void holdInterlude(DocxElement element) {
-			interludeBlocks.add(element);
-		}
-
-		/** 立即落地暂存的夹层段落（标题/表格等其它块级元素到达或文档结束时调用），保持文档顺序。 */
-		void releaseInterludes() {
-			for (DocxElement element : interludeBlocks) {
-				elements.add(element);
-			}
-			interludeBlocks.clear();
-		}
-
-		/** 文档收尾：落盘最后的列表 run（含延迟图片），再追加所有仍被暂存的夹层段落。 */
-		void finishDocument() {
-			flushPendingList();
-			releaseInterludes();
 		}
 
 		void openOrReuseList(BigInteger numId, int ilvl) {
@@ -874,7 +837,10 @@ public final class DocxStructureExtractor {
 			}
 		}
 
-		/** 该 numId/ilvl 是否有序；任何断链（映射缺失、lvl 缺失、numFmt 缺失）返回 false。 */
+		/**
+		 * 该 numId/ilvl 是否有序：凡可解析的非 BULLET numFmt（DECIMAL、LOWER_ROMAN、
+		 * lowerLetter 等）一律有序；断链（映射缺失、lvl 缺失、numFmt 缺失）降级返回 false。
+		 */
 		boolean isOrdered(BigInteger numId, int ilvl) {
 			if (numToAbstract == null || abstractLevels == null || numToAbstract.isEmpty()) {
 				logDegradedOnce(numId);
