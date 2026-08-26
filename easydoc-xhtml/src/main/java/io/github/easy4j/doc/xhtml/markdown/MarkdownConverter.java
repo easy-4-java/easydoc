@@ -35,4 +35,29 @@ public final class MarkdownConverter {
 		Node document = PARSER.parse(markdown);
 		return RENDERER.render(document);
 	}
+
+	/** HTML → Markdown（简化映射：标题/段落/粗斜体/列表/表格/代码块）。 */
+	public static String htmlToMarkdown(String html) {
+		if (html == null) {
+			return "";
+		}
+		String out = html
+				.replaceAll("(?i)<h1[^>]*>", "\n# ")
+				.replaceAll("(?i)</h1>", "\n")
+				.replaceAll("(?i)<h2[^>]*>", "\n## ")
+				.replaceAll("(?i)</h2>", "\n")
+				.replaceAll("(?i)<h3[^>]*>", "\n### ")
+				.replaceAll("(?i)</h3>", "\n")
+				.replaceAll("(?i)<strong>", "**").replaceAll("(?i)</strong>", "**")
+				.replaceAll("(?i)<em>", "*").replaceAll("(?i)</em>", "*")
+				.replaceAll("(?i)<li>", "- ").replaceAll("(?i)</li>", "\n")
+				.replaceAll("(?i)<p[^>]*>", "\n").replaceAll("(?i)</p>", "\n")
+				.replaceAll("(?i)<td[^>]*>", " | ").replaceAll("(?i)</td>", "")
+				.replaceAll("(?i)</tr>", "\n")
+				.replaceAll("(?i)<pre[^>]*>", "\n```\n").replaceAll("(?i)</pre>", "\n```\n")
+				.replaceAll("(?i)</?table[^>]*>", "\n")
+				.replaceAll("(?i)</?thead[^>]*>|</?tbody[^>]*>|</?tr[^>]*>", "\n")
+				.replaceAll("(?i)<[^>]+>", ""); // 残余标签
+		return out.replaceAll("\\n{3,}", "\n\n").trim();
+	}
 }

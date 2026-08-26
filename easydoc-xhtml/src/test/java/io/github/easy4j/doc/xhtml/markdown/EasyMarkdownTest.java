@@ -23,4 +23,12 @@ class EasyMarkdownTest {
 		assertNotNull(EasyMarkdown.markdownToDocx(null), "null markdown yields a package");
 		assertNotNull(EasyMarkdown.markdownToDocx(""), "empty markdown yields a package");
 	}
+
+	@Test
+	void docxToMarkdownConvertsHeadingAndBold() throws Exception {
+		WordprocessingMLPackage pkg = EasyMarkdown.markdownToDocx("# 标题\n\n**加粗** 内容");
+		String md = EasyMarkdown.docxToMarkdown(pkg);
+		assertTrue(md.contains("标题"), "heading text must appear in markdown output");
+		assertTrue(md.contains("加粗"), "text must appear in markdown output");
+	}
 }
