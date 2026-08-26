@@ -27,7 +27,7 @@ import io.github.easy4j.doc.xhtml.handler.DocumentHandler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Document.OutputSettings;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 
 /**
  * Implementation of x h t m l document handler functionality.
@@ -168,19 +168,19 @@ public class XHTMLDocumentHandler implements DocumentHandler {
 	public static void main(String[] args) {
 		String baseUri = "http://www.baidu.com";
 		String html = "<a href=\"http://www.baidu.com/gaoji/preferences.html\"name=\"tj_setting\">搜索设置</a>";
-		String doc = Jsoup.clean(html, baseUri, Whitelist.none());
+		String doc = Jsoup.clean(html, baseUri, Safelist.none());
 		System.out.println(doc);
 		System.out.println("*******");
-		doc = Jsoup.clean(html, baseUri, Whitelist.simpleText());
+		doc = Jsoup.clean(html, baseUri, Safelist.simpleText());
 		System.out.println(doc);
 		System.out.println("*******");
-		doc = Jsoup.clean(html, baseUri, Whitelist.basic());
+		doc = Jsoup.clean(html, baseUri, Safelist.basic());
 		System.out.println(doc);
 		System.out.println("*******");
-		doc = Jsoup.clean(html, baseUri, Whitelist.basicWithImages());
+		doc = Jsoup.clean(html, baseUri, Safelist.basicWithImages());
 		System.out.println(doc);
 		System.out.println("*******");
-		doc = Jsoup.clean(html, baseUri, Whitelist.relaxed());
+		doc = Jsoup.clean(html, baseUri, Safelist.relaxed());
 		System.out.println(doc);
 
 	}

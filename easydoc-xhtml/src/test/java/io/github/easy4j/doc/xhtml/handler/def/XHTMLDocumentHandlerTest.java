@@ -14,7 +14,7 @@ import io.github.easy4j.doc.xhtml.handler.DocumentHandler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Document.OutputSettings;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
