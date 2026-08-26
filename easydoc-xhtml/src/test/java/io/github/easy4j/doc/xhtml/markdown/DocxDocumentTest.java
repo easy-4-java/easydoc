@@ -30,8 +30,8 @@ class DocxDocumentTest {
 	}
 
 	@Test
-	void headingLevelsOneToNineRenderMatchingHashes() {
-		for (int level = 1; level <= 9; level++) {
+	void headingLevelsOneToSixRenderMatchingHashes() {
+		for (int level = 1; level <= 6; level++) {
 			assertEquals(hashes(level) + " 层级" + level, new DocxHeading(level, "层级" + level).toMarkdown(),
 					"heading level " + level + " must render " + level + " hashes");
 		}
@@ -40,7 +40,10 @@ class DocxDocumentTest {
 	@Test
 	void headingOutOfRangeLevelsAreClampedToValidHashes() {
 		assertEquals("# 负层级", new DocxHeading(-3, "负层级").toMarkdown());
-		assertEquals(hashes(9) + " 深层级", new DocxHeading(12, "深层级").toMarkdown());
+		// CommonMark ATX 标题仅支持 1-6 级，Heading 7-9 等更深层级钳为 6 个井号
+		assertEquals(hashes(6) + " 七级样式", new DocxHeading(7, "七级样式").toMarkdown());
+		assertEquals(hashes(6) + " 九级样式", new DocxHeading(9, "九级样式").toMarkdown());
+		assertEquals(hashes(6) + " 深层级", new DocxHeading(12, "深层级").toMarkdown());
 	}
 
 	@Test
