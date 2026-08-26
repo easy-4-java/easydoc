@@ -1062,17 +1062,18 @@
 
                     <!-- https://central.sonatype.com/publish/publish-portal-maven/ -->
                     <!-- Central Publishing（Sonatype Central Portal 发布插件，自动发布） -->
-                    <plugin>
-                        <groupId>org.sonatype.central</groupId>
-                        <!-- Maven 4 默认绑定 maven-deploy-plugin 到 deploy phase；
-                             禁用之，避免 deploy 落 distributionManagement（aliyun） -->
-                        <plugin>
+                                        <!-- Maven 4 默认绑定 maven-deploy-plugin 到 deploy phase；
+                         禁用之，避免 deploy 落 distributionManagement（aliyun）而非 Central Portal -->
+<plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-deploy-plugin</artifactId>
                             <configuration>
                                 <skip>true</skip>
                             </configuration>
                         </plugin>
+
+<plugin>
+                        <groupId>org.sonatype.central</groupId>
 
                         <artifactId>central-publishing-maven-plugin</artifactId>
                         <version>${maven-central-publishing-plugin.version}</version>
