@@ -20,7 +20,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.docx4j.Docx4J;
 import org.docx4j.Docx4jProperties;
 import org.docx4j.convert.out.ConversionHTMLScriptElementHandler;
@@ -122,8 +121,8 @@ public class WordprocessingMLPackageWriter  {
 		Assert.notNull(output, " output is not specified!");
         try {
         	wmlPackage.save(output , Docx4J.FLAG_SAVE_ZIP_FILE );//保存到 docx 文件
-		} finally{
-			IOUtils.closeQuietly(output);
+		} finally {
+			output.close();
         }
 	}
 	
@@ -164,39 +163,37 @@ public class WordprocessingMLPackageWriter  {
 	 */
 	public File writeToHtml(WordprocessingMLPackage wmlPackage,File outFile) throws IOException, Docx4JException {
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
-		OutputStream output = null;
-        try {
-        	String imageTargetUri = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_IMAGETARGETURI, "images");
-        	File[] files = outFile.listFiles(new OutputDirFilterHandler(imageTargetUri));
-        	if(files.length != 1){
-        		File imageDir = new File(outFile,imageTargetUri);
-        		imageDir.setWritable(true);
-        		imageDir.setReadable(true);
-        		imageDir.mkdir();
-        	}
-        	//创建文件输出流
-        	output = new FileOutputStream(outFile);	
-        	//创建Html输出设置
-            HTMLSettings htmlSettings = Docx4J.createHTMLSettings();  
-            htmlSettings.setImageDirPath(outFile.getParent());  
-            htmlSettings.setImageTargetUri(imageTargetUri);  
-            htmlSettings.setWmlPackage(wmlPackage);
-          
-            //d
-            htmlSettings.setHyperlinkHandler(getHyperlinkHandler());
-            htmlSettings.setScriptElementHandler(getScriptElementHandler());
-            htmlSettings.setStyleElementHandler(getStyleElementHandler());
-            
-            Docx4jProperties.setProperty(Docx4jConstants.DOCX4J_PARAM_04, true);  
+		// 方法语义是写入目录：先校验是目录，避免 outFile.listFiles(...) 返回 null 导致 NPE
+		if (!outFile.isDirectory()) {
+			throw new IllegalArgumentException("outFile must be a directory: " + outFile);
+		}
+		String imageTargetUri = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_IMAGETARGETURI, "images");
+		File[] files = outFile.listFiles(new OutputDirFilterHandler(imageTargetUri));
+		if (files.length != 1) {
+			File imageDir = new File(outFile, imageTargetUri);
+			imageDir.setWritable(true);
+			imageDir.setReadable(true);
+			imageDir.mkdir();
+		}
+		// 本地资源用 try-with-resources 保证 close + 自动 flush（与 1.0.x/3.0.x 对齐）
+		try (OutputStream output = new FileOutputStream(outFile)) {
+			//创建Html输出设置
+			HTMLSettings htmlSettings = Docx4J.createHTMLSettings();
+			htmlSettings.setImageDirPath(outFile.getParent());
+			htmlSettings.setImageTargetUri(imageTargetUri);
+			htmlSettings.setWmlPackage(wmlPackage);
 
-            //Docx4J.toHTML(settings, outputStream, flags);
-            //Docx4J.toHTML(wmlPackage, imageDirPath, imageTargetUri, outputStream);
-            Docx4J.toHTML(htmlSettings, output, Docx4J.FLAG_EXPORT_PREFER_XSL);  
-            
-		} finally{
-			IOUtils.closeQuietly(output);
-        }
-		
+			htmlSettings.setHyperlinkHandler(getHyperlinkHandler());
+			htmlSettings.setScriptElementHandler(getScriptElementHandler());
+			htmlSettings.setStyleElementHandler(getStyleElementHandler());
+
+			Docx4jProperties.setProperty(Docx4jConstants.DOCX4J_PARAM_04, true);
+
+			//Docx4J.toHTML(settings, outputStream, flags);
+			//Docx4J.toHTML(wmlPackage, imageDirPath, imageTargetUri, outputStream);
+			Docx4J.toHTML(htmlSettings, output, Docx4J.FLAG_EXPORT_PREFER_XSL);
+		}
+
 		return outFile;
 	}
 	
@@ -253,8 +250,8 @@ public class WordprocessingMLPackageWriter  {
         try {
 			Docx4J.toPDF(wmlPackage, output); //保存到 pdf 文件
 			output.flush();
-		} finally{
-			IOUtils.closeQuietly(output);
+		} finally {
+			output.close();
         }
 	}
 	
@@ -322,8 +319,8 @@ public class WordprocessingMLPackageWriter  {
 			updater = null;
 			foSettings = null;
 			wmlPackage = null;
-		} finally{
-			IOUtils.closeQuietly(output);
+		} finally {
+			output.close();
         }
 	}
 

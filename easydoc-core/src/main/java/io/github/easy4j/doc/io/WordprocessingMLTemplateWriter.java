@@ -27,7 +27,6 @@ import java.nio.charset.Charset;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.docx4j.Docx4jProperties;
-import org.docx4j.XmlUtils;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
@@ -71,8 +70,8 @@ public class WordprocessingMLTemplateWriter {
 	}
 	
 	public String writeToString(WordprocessingMLPackage wmlPackage) throws IOException, Docx4JException {
-		MainDocumentPart document = wmlPackage.getMainDocumentPart();		
-		return XmlUtils.marshaltoString(wmlPackage);
+		MainDocumentPart document = wmlPackage.getMainDocumentPart();
+		return document.getXML();
 	}
 	
 	public static void writeToFile(WordprocessingMLPackage wmlPackage,File outFile) throws IOException, Docx4JException {
@@ -94,7 +93,7 @@ public class WordprocessingMLTemplateWriter {
 			//Document对象
 			MainDocumentPart document = wmlPackage.getMainDocumentPart();	
 			//Document XML
-			String documentXML = XmlUtils.marshaltoString(wmlPackage.getPackage());
+			String documentXML = document.getXML();
 			//转成字节输入流
 			input = IOUtils.toBufferedInputStream(new ByteArrayInputStream(documentXML.getBytes()));
 			//获取模板输出编码格式
