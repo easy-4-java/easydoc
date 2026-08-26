@@ -15,16 +15,21 @@
 	
 	<dependencies>
 	
+		<!-- ======== Servlet ======== -->
+		<!-- Servlet API：Web 容器接口，provided scope 由运行时容器提供 -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
     	
+		<!-- ======== Commons ======== -->
+		<!-- Commons Lang3：字符串、对象等通用工具类 -->
     	<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
+		<!-- Commons IO：文件与流操作工具类 -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -32,13 +37,13 @@
 		
 		<!-- ###################### Docx4j ###################### -->
 
-		<!-- JAXB API for JDK 9+ -->
+		<!-- JAXB API：Java XML 绑定 API，JDK 9+ 已移除此包，需显式引入 -->
 		<dependency>
 		    <groupId>javax.xml.bind</groupId>
 		    <artifactId>jaxb-api</artifactId>
 		</dependency>
 
-		<!-- Docx4j Core -->
+		<!-- Docx4j Core：OPC 包解析、XML 绑定、文档对象模型 -->
 		<dependency>
 		    <groupId>org.docx4j</groupId>
 		    <artifactId>docx4j-core</artifactId>
@@ -53,18 +58,22 @@
 	    <!-- Docx4j JAXB MOXy -->
 	
 	    <!-- jaxb.properties files specifying that docx4j should use the EclipseLink MOXy (JAXB) runtime -->
+	    <!-- MOXy JAXB 运行时：docx4j 默认使用的 XML 绑定实现 -->
 	    <dependency>
 	      	<groupId>org.docx4j</groupId>
 	      	<artifactId>docx4j-JAXB-MOXy</artifactId>
 	    </dependency>
+	    <!-- EclipseLink ASM：MOXy 运行时所需的字节码操作库 -->
 	    <dependency>
 	      	<groupId>org.eclipse.persistence</groupId>
 	      	<artifactId>org.eclipse.persistence.asm</artifactId>
 	    </dependency>
+	    <!-- EclipseLink Core：MOXy 运行时所需的核心模块 -->
 	    <dependency>
 	     	<groupId>org.eclipse.persistence</groupId>
 	      	<artifactId>org.eclipse.persistence.core</artifactId>
 	    </dependency>
+	    <!-- EclipseLink MOXy：JAXB 注解驱动的 XML/JSON 绑定实现 -->
 	    <dependency>
 	      	<groupId>org.eclipse.persistence</groupId>
 	      	<artifactId>org.eclipse.persistence.moxy</artifactId>
@@ -76,7 +85,9 @@
 	        <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
 	    </dependency> -->
 	    
+	    <!-- ======== 模板引擎（Template Engines）======== -->
 	    <!-- https://mvnrepository.com/artifact/ognl/ognl -->
+	    <!-- OGNL 表达式语言：用于模板中的动态属性访问 -->
 		<dependency>
 		    <groupId>ognl</groupId>
 		    <artifactId>ognl</artifactId>

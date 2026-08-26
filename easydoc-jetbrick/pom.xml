@@ -9,16 +9,21 @@
 	</parent>
 	
 	<artifactId>easydoc-jetbrick</artifactId>
+	<!-- Jetbrick 模板引擎集成模块：将 Jetbrick 作为模板引擎生成 Word 文档 -->
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<!-- ======== Easydoc 核心 ======== -->
+		<!-- easydoc-xhtml：XHTML 模板文档生成模块 -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-xhtml</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- ======== 模板引擎 ======== -->
 		<!-- https://mvnrepository.com/artifact/com.github.subchen/jetbrick-template -->
+		<!-- Jetbrick 模板引擎：类 Velocity 语法，支持强类型和宏 -->
 		<dependency>
 			<groupId>com.github.subchen</groupId>
 			<artifactId>jetbrick-template</artifactId>

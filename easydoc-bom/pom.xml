@@ -9,63 +9,78 @@
 	</parent>
 	<artifactId>easydoc-bom</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
+	<!-- BOM（Bill of Materials）：统一管理所有 easydoc 模块版本，供外部项目引用 -->
 	<packaging>pom</packaging>
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- ======== 核心模块 ======== -->
+			<!-- easydoc-core：基于 docx4j 的 Word 文档生成核心 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- ======== XHTML 模块 ======== -->
+			<!-- easydoc-xhtml：基于 XHTML 模板的文档生成 -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>easydoc-xhtml</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<!-- ======== 模板引擎集成模块 ======== -->
+			<!-- easydoc-beetl：Beetl 模板引擎集成 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-beetl</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- easydoc-freemarker：FreeMarker 模板引擎集成 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-freemarker</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- easydoc-httl：HTTL 模板引擎集成 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-httl</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- easydoc-jetbrick：Jetbrick 模板引擎集成 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-jetbrick</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- easydoc-jsp：JSP 模板引擎集成 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-jsp</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- easydoc-rythm：Rythm 模板引擎集成 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-rythm</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- easydoc-thymeleaf：Thymeleaf 模板引擎集成 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-thymeleaf</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- easydoc-velocity：Apache Velocity 模板引擎集成 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-velocity</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- easydoc-webit：Webit-Script 模板引擎集成 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-webit</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>easydoc-xhtml</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>

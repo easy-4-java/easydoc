@@ -9,15 +9,20 @@
 	</parent>
 	
 	<artifactId>easydoc-jsp</artifactId>
+	<!-- JSP 模板引擎集成模块：将 JSP 作为模板引擎生成 Word 文档 -->
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>jar</packaging>
 	
 	<dependencies>
+		<!-- ======== Easydoc 核心 ======== -->
+		<!-- easydoc-xhtml：XHTML 模板文档生成模块 -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-xhtml</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- ======== Servlet ======== -->
+		<!-- Servlet API：JSP 运行时依赖的 Web 容器接口 -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>

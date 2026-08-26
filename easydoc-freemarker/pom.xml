@@ -9,17 +9,22 @@
 	</parent>
 	
 	<artifactId>easydoc-freemarker</artifactId>
+	<!-- FreeMarker 模板引擎集成模块：将 FreeMarker 作为模板引擎生成 Word 文档 -->
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>jar</packaging>
 
 
 	<dependencies>
+		<!-- ======== Easydoc 核心 ======== -->
+		<!-- easydoc-xhtml：XHTML 模板文档生成模块 -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-xhtml</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- ======== 模板引擎 ======== -->
 		<!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
+		<!-- FreeMarker 模板引擎：通用模板引擎，广泛用于 Web 视图渲染 -->
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>

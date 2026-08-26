@@ -9,16 +9,21 @@
 	</parent>
 	
 	<artifactId>easydoc-thymeleaf</artifactId>
+	<!-- Thymeleaf 模板引擎集成模块：将 Thymeleaf 作为模板引擎生成 Word 文档 -->
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<!-- ======== Easydoc 核心 ======== -->
+		<!-- easydoc-xhtml：XHTML 模板文档生成模块 -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-xhtml</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- ======== 模板引擎 ======== -->
 		<!-- https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf -->
+		<!-- Thymeleaf 模板引擎：自然模板引擎，支持 HTML 原型预览 -->
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
 			<artifactId>thymeleaf</artifactId>

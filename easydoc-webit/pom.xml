@@ -9,19 +9,25 @@
 	</parent>
 
 	<artifactId>easydoc-webit</artifactId>
+	<!-- Webit-Script 模板引擎集成模块：将 Webit-Script 作为模板引擎生成 Word 文档 -->
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<!-- ======== Easydoc 核心 ======== -->
+		<!-- easydoc-xhtml：XHTML 模板文档生成模块 -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-xhtml</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- ======== 模板引擎 ======== -->
+		<!-- Source: https://mvnrepository.com/artifact/com.github.zqq90.webit-script/webit-script -->
+		<!-- Webit-Script 模板引擎：轻量级模板引擎 -->
 		<dependency>
 			<groupId>com.github.zqq90.webit-script</groupId>
 			<artifactId>webit-script</artifactId>
 		</dependency>
 	</dependencies>
-
+	
 </project>

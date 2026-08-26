@@ -15,34 +15,43 @@
 	
 	<dependencies>
 	
+		<!-- ======== Servlet ======== -->
+		<!-- Servlet API：Web 容器接口，provided scope 由运行时容器提供 -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
     	
+		<!-- ======== Easydoc 核心 ======== -->
+		<!-- easydoc-core：本项目核心模块，提供文档生成基础能力 -->
     	<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		
-		<!-- ###################### HTML、CSS 解析工具包###################### -->
+		<!-- ###################### HTML、CSS 解析工具包 ###################### -->
 		
+		<!-- Jsoup：HTML 解析与操作库，用于 XHTML 内容预处理 -->
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 		</dependency>
 		
- 		<!-- Docx4j ImportXHTML -->
+		<!-- ======== Docx4j XHTML 导入 ======== -->
+ 		<!-- xhtmlrenderer：基于 Flying Saucer 的 XHTML/CSS 渲染引擎 -->
 		<dependency>
 		    <groupId>org.docx4j</groupId>
 		    <artifactId>xhtmlrenderer</artifactId>
 		</dependency>
+		<!-- docx4j-ImportXHTML：将 XHTML 内容转换为 Word 文档段落 -->
 		<dependency>
 		    <groupId>org.docx4j</groupId>
 		    <artifactId>docx4j-ImportXHTML</artifactId>
 		</dependency>
+		<!-- ======== Test ======== -->
+		<!-- EclipseLink ORM：测试中用于 MOXy JAXB 运行时验证 -->
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>eclipselink</artifactId>

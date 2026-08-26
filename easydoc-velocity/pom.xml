@@ -10,23 +10,34 @@
 	</parent>
 
 	<artifactId>easydoc-velocity</artifactId>
+	<!-- Apache Velocity 模板引擎集成模块：将 Velocity 作为模板引擎生成 Word 文档 -->
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<!-- ======== Easydoc 核心 ======== -->
+		<!-- easydoc-xhtml：XHTML 模板文档生成模块 -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-xhtml</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- ======== 模板引擎 ======== -->
+		<!-- Source: https://mvnrepository.com/artifact/org.apache.velocity/velocity-engine-core -->
+		<!-- Apache Velocity 引擎核心：经典模板引擎 -->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-engine-core</artifactId>
 		</dependency>
+		<!-- Source: https://mvnrepository.com/artifact/org.apache.velocity/velocity-engine-scripting -->
+		<!-- Velocity JSR-223 脚本引擎适配 -->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-engine-scripting</artifactId>
 		</dependency>
+		<!-- Source: https://mvnrepository.com/artifact/org.apache.velocity/velocity-tools -->
+		<!-- Velocity 工具集：提供日期、数字、字符串等常用工具 -->
+		<!-- 显式排除 struts-core/struts-taglib/struts-tiles，避免引入过时的 Struts 1.x -->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-tools</artifactId>
