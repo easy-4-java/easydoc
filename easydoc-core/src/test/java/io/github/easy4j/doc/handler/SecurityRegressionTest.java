@@ -12,6 +12,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.helpers.DefaultHandler;
 
+import ognl.Ognl;
+import ognl.OgnlContext;
+
 import io.github.easy4j.doc.ognl.DefaultMemberAccess;
 
 /**
@@ -37,7 +40,7 @@ class SecurityRegressionTest {
     @DisplayName("DefaultMemberAccess(false,false,false) blocks private field access")
     void defaultMemberAccessBlocksPrivateField() throws Exception {
         DefaultMemberAccess access = new DefaultMemberAccess(false, false, false);
-        Map<String, Object> ctx = new HashMap<>();
+        OgnlContext ctx = (OgnlContext) Ognl.createDefaultContext(new TestBean());
 
         // Private field should NOT be accessible
         Field priv = TestBean.class.getDeclaredField("secret");
@@ -49,7 +52,7 @@ class SecurityRegressionTest {
     @DisplayName("DefaultMemberAccess(false,false,false) blocks protected field access")
     void defaultMemberAccessBlocksProtectedField() throws Exception {
         DefaultMemberAccess access = new DefaultMemberAccess(false, false, false);
-        Map<String, Object> ctx = new HashMap<>();
+        OgnlContext ctx = (OgnlContext) Ognl.createDefaultContext(new TestBean());
 
         Field prot = TestBean.class.getDeclaredField("protectedField");
         assertFalse(access.isAccessible(ctx, new TestBean(), prot, "protectedField"),
@@ -60,7 +63,7 @@ class SecurityRegressionTest {
     @DisplayName("DefaultMemberAccess(false,false,false) allows public field access")
     void defaultMemberAccessAllowsPublicField() throws Exception {
         DefaultMemberAccess access = new DefaultMemberAccess(false, false, false);
-        Map<String, Object> ctx = new HashMap<>();
+        OgnlContext ctx = (OgnlContext) Ognl.createDefaultContext(new TestBean());
 
         Field pub = TestBean.class.getDeclaredField("publicField");
         assertTrue(access.isAccessible(ctx, new TestBean(), pub, "publicField"),
@@ -71,7 +74,7 @@ class SecurityRegressionTest {
     @DisplayName("DefaultMemberAccess(false,false,false) blocks package-private field access")
     void defaultMemberAccessBlocksPackagePrivateField() throws Exception {
         DefaultMemberAccess access = new DefaultMemberAccess(false, false, false);
-        Map<String, Object> ctx = new HashMap<>();
+        OgnlContext ctx = (OgnlContext) Ognl.createDefaultContext(new TestBean());
 
         Field pkg = TestBean.class.getDeclaredField("packageField");
         assertFalse(access.isAccessible(ctx, new TestBean(), pkg, "packageField"),
@@ -82,7 +85,7 @@ class SecurityRegressionTest {
     @DisplayName("DefaultMemberAccess setup() does not make private field accessible when all-false")
     void setupDoesNotMakePrivateAccessible() throws Exception {
         DefaultMemberAccess access = new DefaultMemberAccess(false, false, false);
-        Map<String, Object> ctx = new HashMap<>();
+        OgnlContext ctx = (OgnlContext) Ognl.createDefaultContext(new TestBean());
 
         Field priv = TestBean.class.getDeclaredField("secret");
         Object state = access.setup(ctx, new TestBean(), priv, "secret");
@@ -94,7 +97,7 @@ class SecurityRegressionTest {
     @DisplayName("DefaultMemberAccess setup() makes public field accessible")
     void setupMakesPublicAccessible() throws Exception {
         DefaultMemberAccess access = new DefaultMemberAccess(false, false, false);
-        Map<String, Object> ctx = new HashMap<>();
+        OgnlContext ctx = (OgnlContext) Ognl.createDefaultContext(new TestBean());
 
         Field pub = TestBean.class.getDeclaredField("publicField");
         Object state = access.setup(ctx, new TestBean(), pub, "publicField");

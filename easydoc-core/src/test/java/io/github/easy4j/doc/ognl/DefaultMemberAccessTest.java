@@ -22,10 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+
+import ognl.Ognl;
+import ognl.OgnlContext;
 
 class DefaultMemberAccessTest {
 
@@ -62,28 +63,28 @@ class DefaultMemberAccessTest {
 	@Test
 	void isAccessiblePublicFieldAlwaysTrue() throws Exception {
 		Field pub = Bean.class.getDeclaredField("pub");
-		Map<String, Object> ctx = new HashMap<>();
+		OgnlContext ctx = (OgnlContext) Ognl.createDefaultContext(new Bean());
 		assertTrue(new DefaultMemberAccess(false).isAccessible(ctx, new Bean(), pub, "pub"));
 	}
 
 	@Test
 	void isAccessiblePrivateFieldFalseByDefault() throws Exception {
 		Field priv = Bean.class.getDeclaredField("priv");
-		Map<String, Object> ctx = new HashMap<>();
+		OgnlContext ctx = (OgnlContext) Ognl.createDefaultContext(new Bean());
 		assertFalse(new DefaultMemberAccess(false).isAccessible(ctx, new Bean(), priv, "priv"));
 	}
 
 	@Test
 	void isAccessiblePrivateFieldTrueWhenAllowAll() throws Exception {
 		Field priv = Bean.class.getDeclaredField("priv");
-		Map<String, Object> ctx = new HashMap<>();
+		OgnlContext ctx = (OgnlContext) Ognl.createDefaultContext(new Bean());
 		assertTrue(new DefaultMemberAccess(true).isAccessible(ctx, new Bean(), priv, "priv"));
 	}
 
 	@Test
 	void setupOnPublicFieldCapturesState() throws Exception {
 		Field pub = Bean.class.getDeclaredField("pub");
-		Map<String, Object> ctx = new HashMap<>();
+		OgnlContext ctx = (OgnlContext) Ognl.createDefaultContext(new Bean());
 		// The implementation always calls setAccessible(true) and stores the prior
 		// accessibility state, so a public field whose isAccessible() is false initially
 		// returns Boolean.TRUE (the captured prior state).
@@ -94,7 +95,7 @@ class DefaultMemberAccessTest {
 	@Test
 	void setupOnAccessiblePrivateFieldReturnsBoolean() throws Exception {
 		Field priv = Bean.class.getDeclaredField("priv");
-		Map<String, Object> ctx = new HashMap<>();
+		OgnlContext ctx = (OgnlContext) Ognl.createDefaultContext(new Bean());
 		Object state = new DefaultMemberAccess(true).setup(ctx, new Bean(), priv, "priv");
 		assertSame(Boolean.TRUE, state);
 	}
@@ -102,14 +103,14 @@ class DefaultMemberAccessTest {
 	@Test
 	void setupOnInaccessiblePrivateFieldReturnsNull() throws Exception {
 		Field priv = Bean.class.getDeclaredField("priv");
-		Map<String, Object> ctx = new HashMap<>();
+		OgnlContext ctx = (OgnlContext) Ognl.createDefaultContext(new Bean());
 		assertNull(new DefaultMemberAccess(false).setup(ctx, new Bean(), priv, "priv"));
 	}
 
 	@Test
 	void restoreNullIsNoop() throws Exception {
 		Field priv = Bean.class.getDeclaredField("priv");
-		Map<String, Object> ctx = new HashMap<>();
+		OgnlContext ctx = (OgnlContext) Ognl.createDefaultContext(new Bean());
 		// Should not throw.
 		new DefaultMemberAccess(true).restore(ctx, new Bean(), priv, "priv", null);
 	}
@@ -117,7 +118,7 @@ class DefaultMemberAccessTest {
 	@Test
 	void restoreBooleanResetsState() throws Exception {
 		Field priv = Bean.class.getDeclaredField("priv");
-		Map<String, Object> ctx = new HashMap<>();
+		OgnlContext ctx = (OgnlContext) Ognl.createDefaultContext(new Bean());
 		boolean initialAccessible = priv.isAccessible();
 		Object state = new DefaultMemberAccess(true).setup(ctx, new Bean(), priv, "priv");
 		assertSame(Boolean.TRUE, state);

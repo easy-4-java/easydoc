@@ -32,25 +32,11 @@
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-engine-scripting</artifactId>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-tools -->
-		<!-- Velocity Tools（Web 工具集，排除过时的 Struts 依赖） -->
+		<!-- https://mvnrepository.com/artifact/org.apache.velocity.tools/velocity-tools-generic -->
+		<!-- Velocity Tools Generic（3.x 通用工具集，含 DateTool；不再依赖 Struts，无需排除） -->
 		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity-tools</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>struts-core</artifactId>
-					<groupId>org.apache.struts</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>struts-taglib</artifactId>
-					<groupId>org.apache.struts</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>struts-tiles</artifactId>
-					<groupId>org.apache.struts</groupId>
-				</exclusion>
-			</exclusions>
+			<groupId>org.apache.velocity.tools</groupId>
+			<artifactId>velocity-tools-generic</artifactId>
 		</dependency>
 
 	</dependencies>
