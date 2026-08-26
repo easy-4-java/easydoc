@@ -601,20 +601,21 @@
     </distributionManagement>
 
 
-    <modules>
-        <module>easydoc-beetl</module>
-        <module>easydoc-bom</module>
-        <module>easydoc-core</module>
-        <module>easydoc-freemarker</module>
-        <module>easydoc-httl</module>
-        <module>easydoc-jetbrick</module>
-        <module>easydoc-jsp</module>
-        <module>easydoc-rythm</module>
-        <module>easydoc-thymeleaf</module>
-        <module>easydoc-velocity</module>
-        <module>easydoc-webit</module>
-        <module>easydoc-xhtml</module>
-    </modules>
+    <!-- Maven 4 (POM 4.1.0) 聚合标签：modules 已改名为 subprojects，子项用 subproject -->
+    <subprojects>
+        <subproject>easydoc-beetl</subproject>
+        <subproject>easydoc-bom</subproject>
+        <subproject>easydoc-core</subproject>
+        <subproject>easydoc-freemarker</subproject>
+        <subproject>easydoc-httl</subproject>
+        <subproject>easydoc-jetbrick</subproject>
+        <subproject>easydoc-jsp</subproject>
+        <subproject>easydoc-rythm</subproject>
+        <subproject>easydoc-thymeleaf</subproject>
+        <subproject>easydoc-velocity</subproject>
+        <subproject>easydoc-webit</subproject>
+        <subproject>easydoc-xhtml</subproject>
+    </subprojects>
 
 
     <build>
