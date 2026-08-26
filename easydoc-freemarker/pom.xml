@@ -14,12 +14,14 @@
 
 
 	<dependencies>
+		<!-- easydoc-xhtml 模块（XHTML 模板处理核心） -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-xhtml</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
+		<!-- FreeMarker 模板引擎（通用模板引擎，支持 FTL 语法） -->
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>

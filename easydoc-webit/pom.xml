@@ -13,11 +13,14 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<!-- easydoc-xhtml 模块（XHTML 模板处理核心） -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-xhtml</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.github.zqq90.webit-script/webit-script -->
+		<!-- Webit Script 模板引擎（轻量级 Java 模板引擎） -->
 		<dependency>
 			<groupId>com.github.zqq90.webit-script</groupId>
 			<artifactId>webit-script</artifactId>

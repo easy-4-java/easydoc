@@ -13,11 +13,13 @@
 	<packaging>jar</packaging>
 	
 	<dependencies>
+		<!-- easydoc-xhtml 模块（XHTML 模板处理核心） -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-xhtml</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- Jakarta Servlet API 6.0（Tomcat 10.1 的 servlet 接口，provided scope 由容器提供） -->
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
 			<artifactId>jakarta.servlet-api</artifactId>
@@ -25,6 +27,8 @@
 		</dependency>
 		<!-- Tomcat 10.1.x Jasper JSP engine (replaces the hand-rolled easydoc-jsp engine).
 		     Tomcat 10.1 uses the Jakarta EE 10 (jakarta.servlet) namespace. -->
+		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper -->
+		<!-- Tomcat Jasper（JSP 编译与运行引擎，将 JSP 模板编译为 Servlet） -->
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-jasper</artifactId>

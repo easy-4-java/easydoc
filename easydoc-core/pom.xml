@@ -14,31 +14,33 @@
 	<packaging>jar</packaging>
 	
 	<dependencies>
-	
-    	
+
+		<!-- ======== Apache Commons ======== -->
+		<!-- Commons Lang3（字符串、Object、枚举等通用工具类） -->
     	<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
+		<!-- Commons IO（IO 流工具类，文件复制/过滤等） -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 		</dependency>
-		
-		<!-- ###################### Docx4j ###################### -->
-		
-		<!-- Docx4j Core -->
+
+		<!-- ======== Docx4j ======== -->
+
+		<!-- Docx4j Core（Word/Excel/PPT 的 OOXML 读写引擎） -->
 		<dependency>
 		    <groupId>org.docx4j</groupId>
 		    <artifactId>docx4j-core</artifactId>
 		</dependency>
-		
+
 		<!-- Docx4j JAXB Internal
 	    <dependency>
 	        <groupId>org.docx4j</groupId>
 	        <artifactId>docx4j-JAXB-Internal</artifactId>
 	    </dependency> -->
-	        
+
 	    <!-- Docx4j JAXB ReferenceImpl (replaces MOXy).
 
 	     docx4j-JAXB-MOXy 11.5.14 cannot be used on JDK 21 + jakarta.xml.bind-api 4.x:
@@ -69,11 +71,13 @@
 	         护栏；如下游按 11.5.14 mvnrepository 片段复制粘贴，此处会构建失败提示 -->
 
 		<!-- https://mvnrepository.com/artifact/ognl/ognl -->
+		<!-- OGNL（对象图导航语言，docx4j 模板变量表达式求值） -->
 		<dependency>
 			<groupId>ognl</groupId>
 			<artifactId>ognl</artifactId>
 		</dependency>
 
+		<!-- ======== Test ======== -->
 		<!-- SLF4J binding（test scope）：否则测试类路径上没有任何 provider，
 		     LOG.warn 会落到 NOP logger，WordprocessingMLTemplateVariantsTest
 		     无法断言 JDK 21 透明降级的 WARN 日志（slf4j-simple 默认输出到
@@ -83,7 +87,6 @@
 			<artifactId>slf4j-simple</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 
 		<!-- JAXB 4.x runtime provider. docx4j 11.5.14 statically initializes
 		     org.docx4j.jaxb.Context to look up jakarta.xml.bind.JAXBContext

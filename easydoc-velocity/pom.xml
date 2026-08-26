@@ -14,19 +14,27 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<!-- easydoc-xhtml 模块（XHTML 模板处理核心） -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-xhtml</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- ======== Velocity 模板引擎 ======== -->
+		<!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-engine-core -->
+		<!-- Velocity 引擎核心（VTL 模板解析与渲染） -->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-engine-core</artifactId>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-engine-scripting -->
+		<!-- Velocity Scripting（JSR 223 脚本引擎支持） -->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-engine-scripting</artifactId>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-tools -->
+		<!-- Velocity Tools（Web 工具集，排除过时的 Struts 依赖） -->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-tools</artifactId>

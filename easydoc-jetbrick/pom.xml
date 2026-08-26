@@ -13,12 +13,15 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<!-- easydoc-xhtml 模块（XHTML 模板处理核心） -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-xhtml</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.github.subchen/jetbrick-template -->
+		<!-- Jetbrick Template 模板引擎（类 JSP 语法的高性能模板引擎）；
+		     排除传递的 antlr4-runtime，使用模块内显式声明的 4.7.1 版本 -->
 		<dependency>
 			<groupId>com.github.subchen</groupId>
 			<artifactId>jetbrick-template</artifactId>
@@ -31,6 +34,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- ANTLR4 运行时 4.7.1（与 jetbrick-template 2.1.10 编译版本匹配） -->
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr4-runtime</artifactId>

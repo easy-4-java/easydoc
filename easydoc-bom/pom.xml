@@ -13,56 +13,67 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- easydoc 核心模块（docx4j 封装、XHTML 模型、通用工具类） -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- Beetl 模板引擎适配模块 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-beetl</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- FreeMarker 模板引擎适配模块 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-freemarker</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- HTTL 模板引擎适配模块 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-httl</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- Jetbrick Template 模板引擎适配模块 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-jetbrick</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- JSP 模板引擎适配模块（基于 Tomcat Jasper） -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-jsp</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- Rythm 模板引擎适配模块 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-rythm</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- Thymeleaf 模板引擎适配模块 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-thymeleaf</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- Velocity 模板引擎适配模块 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-velocity</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- Webit Script 模板引擎适配模块 -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-webit</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<!-- XHTML 模板处理模块（Jsoup + docx4j ImportXHTML） -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-xhtml</artifactId>

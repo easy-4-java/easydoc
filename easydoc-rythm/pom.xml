@@ -13,12 +13,14 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<!-- easydoc-xhtml 模块（XHTML 模板处理核心） -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-xhtml</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.rythmengine/rythm-engine -->
+		<!-- Rythm 模板引擎（类 Razor 语法的高性能 Java 模板引擎） -->
 		<dependency>
 			<groupId>org.rythmengine</groupId>
 			<artifactId>rythm-engine</artifactId>

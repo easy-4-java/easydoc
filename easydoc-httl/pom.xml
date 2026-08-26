@@ -13,12 +13,14 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<!-- easydoc-xhtml 模块（XHTML 模板处理核心） -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-xhtml</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.perfcake/httl -->
+		<!-- HTTL 模板引擎（高性能模板引擎，类似 Velocity 语法） -->
 		<dependency>
 			<groupId>org.perfcake</groupId>
 			<artifactId>httl</artifactId>

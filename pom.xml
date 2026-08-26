@@ -48,14 +48,10 @@
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.version>4.0.0-rc-5</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Dependency versions -->
-        <antlr4.version>4.9.3</antlr4.version>
-        <assertj.version>3.27.7</assertj.version>
-        <beetl.version>3.21.2.RELEASE</beetl.version>
-        <commons-beanutils.version>1.11.0</commons-beanutils.version>
-        <commons-io.version>2.22.0</commons-io.version>
-        <commons-lang3.version>3.20.0</commons-lang3.version>
-        <commons-logging.version>1.3.6</commons-logging.version>
+
+        <!-- ═══ 第二段: docx4j 全家桶版本 ═══ -->
+        <!-- docx4j 核心 + JAXB + FOP + ImportXHTML 统一锁定在 17.0.x 系列 -->
+        <docx4j.version>17.0.3</docx4j.version>
         <docx4j-export-fo.version>17.0.3</docx4j-export-fo.version>
         <docx4j-importxhtml.version>17.0.2</docx4j-importxhtml.version>
         <docx4j-jaxb.version>17.0.3</docx4j-jaxb.version>
@@ -63,28 +59,45 @@
              docx4j 17.0.x 已把模型构件改名为 docx4j-generated-objects，
              但为兼容仍引用旧构件的第三方/历史依赖，这里显式锁定其最后版本 -->
         <docx4j-openxml.version>11.5.14</docx4j-openxml.version>
-        <docx4j.version>17.0.3</docx4j.version>
+        <!-- EclipseLink MOXy（docx4j JAXB MOXy 后端的运行时依赖） -->
+        <persistence.version>2.7.6</persistence.version>
+
+        <!-- ═══ 第三段: Jakarta / JAXB / XML 相关 ═══ -->
+        <jakarta-activation.version>2.1.4</jakarta-activation.version>
+        <jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
+        <jaxb-impl.version>4.0.5</jaxb-impl.version>
+        <javax.mail-api.version>1.6.2</javax.mail-api.version>
+
+        <!-- ═══ 第四段: 模板引擎版本 ═══ -->
+        <beetl.version>3.21.2.RELEASE</beetl.version>
         <freemarker.version>2.3.34</freemarker.version>
         <httl.version>1.0.12</httl.version>
-        <jackson.version>2.18.4</jackson.version>
-        <jakarta-activation.version>2.1.4</jakarta-activation.version>
-        <javax.mail-api.version>1.6.2</javax.mail-api.version>
-        <jaxb-impl.version>4.0.5</jaxb-impl.version>
         <jetbrick.version>2.1.10</jetbrick.version>
-        <jsoup.version>1.23.1</jsoup.version>
-        <junit-jupiter.version>6.1.0</junit-jupiter.version>
-        <junit.version>4.13.2</junit.version>
-        <ognl.version>3.3.4</ognl.version>
-        <persistence.version>2.7.6</persistence.version>
         <rythm.version>1.4.2</rythm.version>
-        <jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
-        <slf4j.version>2.0.18</slf4j.version>
         <thymeleaf.version>3.1.5.RELEASE</thymeleaf.version>
-        <tomcat-jasper.version>10.1.54</tomcat-jasper.version>
-        <velocity-tools.version>2.0</velocity-tools.version>
         <velocity.version>2.4.1</velocity.version>
+        <velocity-tools.version>2.0</velocity-tools.version>
         <webit-script.version>1.5.2</webit-script.version>
-        <!-- Maven Plugin versions -->
+
+        <!-- ═══ 第五段: 第三方基础库版本 ═══ -->
+        <antlr4.version>4.9.3</antlr4.version>
+        <commons-beanutils.version>1.11.0</commons-beanutils.version>
+        <commons-io.version>2.22.0</commons-io.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
+        <commons-logging.version>1.3.6</commons-logging.version>
+        <jackson.version>2.18.4</jackson.version>
+        <jsoup.version>1.23.1</jsoup.version>
+        <ognl.version>3.3.4</ognl.version>
+        <tomcat-jasper.version>10.1.54</tomcat-jasper.version>
+
+        <!-- ═══ 第六段: 测试框架版本 ═══ -->
+        <assertj.version>3.27.7</assertj.version>
+        <junit.version>4.13.2</junit.version>
+        <junit-jupiter.version>6.1.0</junit-jupiter.version>
+        <slf4j.version>2.0.18</slf4j.version>
+        <lombok.version>1.18.46</lombok.version>
+
+        <!-- ═══ 第七段: Maven 插件版本 ═══ -->
         <maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>
         <maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
         <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
@@ -103,30 +116,37 @@
         <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
-        <lombok.version>1.18.46</lombok.version>
     </properties>
 
 
     <dependencyManagement>
         <dependencies>
 
+            <!-- ======== 测试框架 ======== -->
+
+            <!-- https://mvnrepository.com/artifact/junit/junit -->
+            <!-- JUnit 4（历史测试用例兼容） -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
             </dependency>
-            <!-- For JUnit 5 -->
+            <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
+            <!-- JUnit 5（聚合构件，包含 api + engine + params） -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
                 <version>${junit-jupiter.version}</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+            <!-- JUnit 5 API（编写测试用例的注解与断言） -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
                 <version>${junit-jupiter.version}</version>
             </dependency>
-            <!-- For AssertJ -->
+            <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
+            <!-- AssertJ（流式断言库，测试代码使用） -->
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
@@ -140,43 +160,62 @@
                  Spring Boot 3 / Jakarta EE 下游项目不会在它们的 dependencyManagement
                  里继承到 javax 命名空间的条目 -->
 
+            <!-- ======== 日志 ======== -->
 
+            <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+            <!-- SLF4J 日志门面（所有模块统一日志接口） -->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+            <!-- SLF4J 简单实现（test scope 日志绑定，避免测试时 NOP logger） -->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
 
+            <!-- ======== Apache Commons ======== -->
+
+            <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
+            <!-- BeanUtils（JavaBean 属性拷贝与反射工具） -->
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
                 <version>${commons-beanutils.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+            <!-- Commons Lang3（字符串、Object、枚举等通用工具类） -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+            <!-- Commons IO（IO 流工具类，文件复制/过滤等） -->
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
             </dependency>
 
+            <!-- ======== HTML / CSS 解析 ======== -->
+
+            <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+            <!-- Jsoup（HTML 解析与 DOM 操作，easydoc-xhtml 使用） -->
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
                 <version>${jsoup.version}</version>
             </dependency>
 
+            <!-- ======== docx4j 核心全家桶 ======== -->
+
+            <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-core -->
+            <!-- docx4j 核心（Word/Excel/PPT 的 OOXML 读写引擎）；
+                 排除旧版日志桥接，由 SLF4J 2.x 统一管理 -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-core</artifactId>
@@ -196,7 +235,8 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-export-fo -->
+            <!-- docx4j FOP 导出（PDF/HTML 渲染核心） -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-export-fo</artifactId>
@@ -205,34 +245,41 @@
 
             <!-- docx4j-export-fo fonts 子模块（11.5.3 起独立发布），
                  PDF/HTML 渲染需要的 Symbol/Cross-core/Cross-extra 字体集 -->
+            <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-export-fo-fonts-symbol -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-export-fo-fonts-symbol</artifactId>
                 <version>${docx4j-export-fo.version}</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-export-fo-fonts-croscore -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-export-fo-fonts-croscore</artifactId>
                 <version>${docx4j-export-fo.version}</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-export-fo-fonts-crosextra -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-export-fo-fonts-crosextra</artifactId>
                 <version>${docx4j-export-fo.version}</version>
             </dependency>
 
+            <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-docx-anon -->
+            <!-- docx4j 匿名化工具（去除文档中的作者/修订信息） -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-docx-anon</artifactId>
                 <version>${docx4j.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-diffx -->
+            <!-- docx4j DiffX（XML 文档差异比较） -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-diffx</artifactId>
                 <version>${docx4j.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-ImportXHTML-core -->
+            <!-- docx4j ImportXHTML（XHTML 转 docx 的核心引擎） -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-ImportXHTML-core</artifactId>
@@ -242,182 +289,229 @@
             <!-- openhtmltopdf（docx4j-ImportXHTML 的传递依赖，XHTML 解析核心）：
                  全部 8 个构件统一锁定到 1.1.75（Maven Central 最新版）。
                  openhtmltopdf 在 JDK 解析器上 setProperty(ACCESS_EXTERNAL_DTD)
-                 失败会打 SEVERE 警告——XXE 防护由 XHTMLImporterUtils.handle()
+                 失败会打 SEVERE 警告：XXE 防护由 XHTMLImporterUtils.handle()
                  的 JAXP 系统属性兜底，与本版本无关 -->
+            <!-- https://mvnrepository.com/artifact/io.github.openhtmltopdf/openhtmltopdf-core -->
             <dependency>
                 <groupId>io.github.openhtmltopdf</groupId>
                 <artifactId>openhtmltopdf-core</artifactId>
                 <version>1.1.75</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/io.github.openhtmltopdf/openhtmltopdf-pdfbox -->
             <dependency>
                 <groupId>io.github.openhtmltopdf</groupId>
                 <artifactId>openhtmltopdf-pdfbox</artifactId>
                 <version>1.1.75</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/io.github.openhtmltopdf/openhtmltopdf-objects -->
             <dependency>
                 <groupId>io.github.openhtmltopdf</groupId>
                 <artifactId>openhtmltopdf-objects</artifactId>
                 <version>1.1.75</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/io.github.openhtmltopdf/openhtmltopdf-latex-support -->
             <dependency>
                 <groupId>io.github.openhtmltopdf</groupId>
                 <artifactId>openhtmltopdf-latex-support</artifactId>
                 <version>1.1.75</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/io.github.openhtmltopdf/openhtmltopdf-slf4j -->
             <dependency>
                 <groupId>io.github.openhtmltopdf</groupId>
                 <artifactId>openhtmltopdf-slf4j</artifactId>
                 <version>1.1.75</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/io.github.openhtmltopdf/openhtmltopdf-rtl-support -->
             <dependency>
                 <groupId>io.github.openhtmltopdf</groupId>
                 <artifactId>openhtmltopdf-rtl-support</artifactId>
                 <version>1.1.75</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/io.github.openhtmltopdf/openhtmltopdf-mathml-support -->
             <dependency>
                 <groupId>io.github.openhtmltopdf</groupId>
                 <artifactId>openhtmltopdf-mathml-support</artifactId>
                 <version>1.1.75</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/io.github.openhtmltopdf/openhtmltopdf-svg-support -->
             <dependency>
                 <groupId>io.github.openhtmltopdf</groupId>
                 <artifactId>openhtmltopdf-svg-support</artifactId>
                 <version>1.1.75</version>
             </dependency>
 
+            <!-- ======== JAXB 实现 ======== -->
+
+            <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-JAXB-MOXy -->
+            <!-- docx4j JAXB MOXy 后端（EclipseLink 实现，JDK 21 + jakarta 4.x 已不可用） -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-JAXB-MOXy</artifactId>
                 <version>${docx4j-jaxb.version}</version>
             </dependency>
 
+            <!-- ======== EclipseLink（MOXy 运行时依赖） ======== -->
+
+            <!-- https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink -->
+            <!-- EclipseLink 核心（MOXy JAXB 实现的运行时依赖） -->
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>eclipselink</artifactId>
                 <version>${persistence.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.eclipse.persistence/org.eclipse.persistence.asm -->
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.asm</artifactId>
                 <version>${persistence.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.eclipse.persistence/org.eclipse.persistence.core -->
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.core</artifactId>
                 <version>${persistence.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.eclipse.persistence/org.eclipse.persistence.moxy -->
+            <!-- EclipseLink MOXy（JAXB 对象/XML 绑定实现） -->
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.moxy</artifactId>
                 <version>${persistence.version}</version>
             </dependency>
 
+            <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-JAXB-ReferenceImpl -->
+            <!-- docx4j JAXB ReferenceImpl（Glassfish 实现，JDK 21 推荐使用） -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
                 <version>${docx4j-jaxb.version}</version>
             </dependency>
 
+            <!-- ======== Jakarta XML Bind / Activation ======== -->
+
+            <!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
+            <!-- Glassfish JAXB 4.x 运行时（docx4j 静态初始化需要的 JAXB provider） -->
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
                 <version>4.0.6</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api -->
+            <!-- Jakarta XML Bind API 4.x（JAXB 4 的 jakarta 命名空间接口） -->
             <dependency>
                 <groupId>jakarta.xml.bind</groupId>
                 <artifactId>jakarta.xml.bind-api</artifactId>
                 <version>4.0.4</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/jakarta.activation/jakarta.activation-api -->
+            <!-- Jakarta Activation API（MIME 类型处理，JAXB 运行时依赖） -->
             <dependency>
                 <groupId>jakarta.activation</groupId>
                 <artifactId>jakarta.activation-api</artifactId>
                 <version>${jakarta-activation.version}</version>
             </dependency>
 
+            <!-- ======== docx4j 生成模型 ======== -->
+
+            <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-generated-objects -->
+            <!-- docx4j 17.0.x 生成的 OOXML 模型类（替代旧 openxml-objects） -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-generated-objects</artifactId>
                 <version>${docx4j.version}</version>
             </dependency>
-
             <!-- 旧 openxml-objects 模型构件（docx4j 11.5.x 时代，最终版 11.5.14）；
                  仅当外部依赖显式引用时生效，docx4j 17.0.x 树内不再使用 -->
+            <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-openxml-objects -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-openxml-objects</artifactId>
                 <version>${docx4j-openxml.version}</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-openxml-objects-pml -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-openxml-objects-pml</artifactId>
                 <version>${docx4j-openxml.version}</version>
             </dependency>
 
+            <!-- ======== OGNL 表达式引擎 ======== -->
+
+            <!-- https://mvnrepository.com/artifact/ognl/ognl -->
+            <!-- OGNL（对象图导航语言，docx4j 模板变量表达式求值） -->
             <dependency>
                 <groupId>ognl</groupId>
                 <artifactId>ognl</artifactId>
                 <version>${ognl.version}</version>
             </dependency>
 
+            <!-- ======== 模板引擎 ======== -->
+
+            <!-- https://mvnrepository.com/artifact/com.ibeetl/beetl -->
+            <!-- Beetl 模板引擎（easydoc-beetl 模块使用） -->
             <dependency>
                 <groupId>com.ibeetl</groupId>
                 <artifactId>beetl</artifactId>
                 <version>${beetl.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
+            <!-- FreeMarker 模板引擎（easydoc-freemarker 模块使用） -->
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
                 <version>${freemarker.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.perfcake/httl -->
+            <!-- HTTL 模板引擎（easydoc-httl 模块使用） -->
             <dependency>
                 <groupId>org.perfcake</groupId>
                 <artifactId>httl</artifactId>
                 <version>${httl.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/com.github.subchen/jetbrick-template -->
+            <!-- Jetbrick Template 模板引擎（easydoc-jetbrick 模块使用） -->
             <dependency>
                 <groupId>com.github.subchen</groupId>
                 <artifactId>jetbrick-template</artifactId>
                 <version>${jetbrick.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.antlr/antlr4-runtime -->
+            <!-- ANTLR4 运行时（Beetl/Jetbrick 等模板引擎的解析器依赖） -->
             <dependency>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-runtime</artifactId>
                 <version>${antlr4.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.rythmengine/rythm-engine -->
+            <!-- Rythm 模板引擎（easydoc-rythm 模块使用） -->
             <dependency>
                 <groupId>org.rythmengine</groupId>
                 <artifactId>rythm-engine</artifactId>
                 <version>${rythm.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf -->
+            <!-- Thymeleaf 模板引擎（easydoc-thymeleaf 模块使用） -->
             <dependency>
                 <groupId>org.thymeleaf</groupId>
                 <artifactId>thymeleaf</artifactId>
                 <version>${thymeleaf.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-engine-core -->
+            <!-- Velocity 引擎核心（easydoc-velocity 模块使用） -->
             <dependency>
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity-engine-core</artifactId>
                 <version>${velocity.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-engine-scripting -->
+            <!-- Velocity Scripting（JSR 223 脚本引擎支持） -->
             <dependency>
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity-engine-scripting</artifactId>
                 <version>${velocity.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-tools -->
+            <!-- Velocity Tools（Web 工具集，排除过时的 Struts 依赖） -->
             <dependency>
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity-tools</artifactId>
@@ -437,13 +531,18 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/com.github.zqq90.webit-script/webit-script -->
+            <!-- Webit Script 模板引擎（easydoc-webit 模块使用） -->
             <dependency>
                 <groupId>com.github.zqq90.webit-script</groupId>
                 <artifactId>webit-script</artifactId>
                 <version>${webit-script.version}</version>
             </dependency>
 
+            <!-- ======== 开发工具 ======== -->
+
+            <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+            <!-- Lombok（编译期注解处理器，简化 JavaBean 代码） -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
@@ -456,29 +555,32 @@
 
     <dependencies>
 
+        <!-- For Slf4j -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
+        <!-- ======== Test ======== -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- For JUnit 5 -->
+        <!-- JUnit 5（聚合构件） -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- For AssertJ -->
+        <!-- AssertJ（流式断言） -->
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
 
+        <!-- For Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -519,41 +621,38 @@
         <pluginManagement>
             <plugins>
 
-
+                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-clean-plugin -->
+                <!-- Maven Clean（清理 target 目录） -->
                 <plugin>
-
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>${maven-clean-plugin.version}</version>
                 </plugin>
 
-
+                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+                <!-- Maven Compiler（Java 编译，配置 release / encoding / 内存） -->
                 <plugin>
-
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
                     <configuration>
                         <release>${java.version}</release>
-
-
                         <encoding>${project.build.sourceEncoding}</encoding>
-
                         <maxmem>512M</maxmem>
                     </configuration>
                 </plugin>
 
-
+                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-deploy-plugin -->
+                <!-- Maven Deploy（部署构件到远程仓库） -->
                 <plugin>
-
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>${maven-deploy-plugin.version}</version>
                 </plugin>
 
-
+                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-enforcer-plugin -->
+                <!-- Maven Enforcer（构建护栏：强制 Maven/Java 版本 + 禁止旧 docx4j 构件） -->
                 <plugin>
-
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <version>${maven-enforcer-plugin.version}</version>
@@ -601,9 +700,9 @@
                     </executions>
                 </plugin>
 
-
+                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-gpg-plugin -->
+                <!-- Maven GPG（release 时对构件进行 GPG 签名） -->
                 <plugin>
-
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
                     <version>${maven-gpg-plugin.version}</version>
@@ -618,17 +717,17 @@
                     </executions>
                 </plugin>
 
-
+                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-install-plugin -->
+                <!-- Maven Install（将构件安装到本地仓库） -->
                 <plugin>
-
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
                     <version>${maven-install-plugin.version}</version>
                 </plugin>
 
-
+                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-resources-plugin -->
+                <!-- Maven Resources（处理资源文件的过滤与复制） -->
                 <plugin>
-
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>${maven-resources-plugin.version}</version>
@@ -637,9 +736,9 @@
                     </configuration>
                 </plugin>
 
-
+                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-release-plugin -->
+                <!-- Maven Release（版本发布自动化：打 tag、升版本、部署） -->
                 <plugin>
-
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
                     <version>${maven-release-plugin.version}</version>
@@ -652,9 +751,9 @@
                     </configuration>
                 </plugin>
 
-
+                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-source-plugin -->
+                <!-- Maven Source（生成源码 jar 并附加到构件） -->
                 <plugin>
-
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>${maven-source-plugin.version}</version>
@@ -671,9 +770,9 @@
                     </executions>
                 </plugin>
 
-
+                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
+                <!-- Maven Surefire（执行单元测试） -->
                 <plugin>
-
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
@@ -693,9 +792,9 @@
                     </configuration>
                 </plugin>
 
-
+                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jar-plugin -->
+                <!-- Maven Jar（打包 jar，含 manifest 信息） -->
                 <plugin>
-
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${maven-jar-plugin.version}</version>
@@ -710,9 +809,14 @@
                     </configuration>
                 </plugin>
 
-
+                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin -->
+                <!-- Maven Javadoc（生成 javadoc jar）；
+                     doclint=none：历史上 disable-javadoc-doclint profile 通过
+                     additionalparam 传 -Xdoclint:none，但 javadoc-plugin 3.x 已
+                     移除该参数（改名 additionalJOption），导致配置从未生效、
+                     release profile 的 javadoc jar 在存量中文注释上 80+ 报错。
+                     在此处用插件原生 doclint 属性恢复原意 -->
                 <plugin>
-
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven-javadoc-plugin.version}</version>
@@ -720,11 +824,6 @@
                         <charset>${project.build.sourceEncoding}</charset>
                         <encoding>${project.build.sourceEncoding}</encoding>
                         <docencoding>${project.build.sourceEncoding}</docencoding>
-                        <!-- doclint=none：历史上 disable-javadoc-doclint profile 通过
-                             additionalparam 传 -Xdoclint:none，但 javadoc-plugin 3.x 已
-                             移除该参数（改名 additionalJOption），导致配置从未生效、
-                             release profile 的 javadoc jar 在存量中文注释上 80+ 报错。
-                             在此处用插件原生 doclint 属性恢复原意 -->
                         <doclint>none</doclint>
                     </configuration>
                     <executions>
@@ -738,7 +837,8 @@
                     </executions>
                 </plugin>
 
-
+                <!-- https://mvnrepository.com/artifact/org.sonatype.plugins/nexus-staging-maven-plugin -->
+                <!-- Nexus Staging（OSSRH 仓库发布暂存与自动释放） -->
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -757,9 +857,9 @@
         </pluginManagement>
         <plugins>
 
-
+            <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
+            <!-- JaCoCo（代码覆盖率：prepare-agent + report + check，行覆盖率阈值 90%） -->
             <plugin>
-
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${maven-jacoco-plugin.version}</version>
@@ -802,15 +902,14 @@
                 </executions>
             </plugin>
 
-
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+            <!-- Maven Compiler（全局编译配置，含 Lombok 注解处理器路径） -->
             <plugin>
-
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <release>${java.version}</release>
-
                     <parameters>true</parameters>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <maxmem>512M</maxmem>
@@ -838,6 +937,7 @@
 
 
     <profiles>
+        <!-- 禁用 Javadoc doclint（JDK 8+ 默认开启，存量中文注释会报错） -->
         <profile>
             <id>disable-javadoc-doclint</id>
             <activation>
@@ -849,90 +949,57 @@
             </properties>
         </profile>
 
-
+        <!-- release profile：发布到 OSSRH/Maven Central 时激活，
+             携带 enforcer/compile/surefire/jar/source/javadoc/gpg/deploy/
+             release/nexus-staging 全套插件 -->
         <profile>
             <id>release</id>
             <build>
                 <plugins>
-
-
                     <plugin>
-
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-enforcer-plugin</artifactId>
                     </plugin>
-
-
                     <plugin>
-
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
                     </plugin>
-
-
                     <plugin>
-
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
                     </plugin>
-
-
                     <plugin>
-
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                     </plugin>
-
-
                     <plugin>
-
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
                     </plugin>
-
-
                     <plugin>
-
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
                     </plugin>
-
-
                     <plugin>
-
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
                     </plugin>
-
-
                     <plugin>
-
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-install-plugin</artifactId>
                     </plugin>
-
-
                     <plugin>
-
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                     </plugin>
-
-
                     <plugin>
-
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
                     </plugin>
-
-
                     <plugin>
-
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-release-plugin</artifactId>
                     </plugin>
-
-
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -941,15 +1008,15 @@
             </build>
         </profile>
 
-
+        <!-- central profile：通过 Sonatype Central Portal 发布，
+             使用 central-publishing-maven-plugin 替代旧的 nexus-staging 方式 -->
         <profile>
             <id>central</id>
             <build>
                 <plugins>
-
-
+                    <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-gpg-plugin -->
+                    <!-- GPG 签名（Central Portal 要求所有构件签名） -->
                     <plugin>
-
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>${maven-gpg-plugin.version}</version>
@@ -964,9 +1031,9 @@
                         </executions>
                     </plugin>
 
-
+                    <!-- https://central.sonatype.com/publish/publish-portal-maven/ -->
+                    <!-- Central Publishing（Sonatype Central Portal 发布插件，自动发布） -->
                     <plugin>
-
                         <groupId>org.sonatype.central</groupId>
                         <artifactId>central-publishing-maven-plugin</artifactId>
                         <version>${maven-central-publishing-plugin.version}</version>
