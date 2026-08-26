@@ -5,7 +5,9 @@
 	<parent>
 		<groupId>io.github.easy4j</groupId>
 		<artifactId>easydoc</artifactId>
-		<version>${revision}</version></parent>
+		<version>${revision}</version>
+	</parent>
+
 	<artifactId>easydoc-bom</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>pom</packaging>
