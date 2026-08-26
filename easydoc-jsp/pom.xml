@@ -1,35 +1,48 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
+
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>io.github.easy4j</groupId>
 		<artifactId>easydoc</artifactId>
 		<version>2.0.x.20260630-SNAPSHOT</version>
 	</parent>
-	
+
 	<artifactId>easydoc-jsp</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>jar</packaging>
-	
+
+	<!-- JSP 模板引擎适配模块：基于 XHTML 模板生成 docx 文档 -->
 	<dependencies>
+
+		<!-- ======== 核心模块 ======== -->
+
+		<!-- easydoc-xhtml：XHTML 模板引擎核心（HTML 转 docx） -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-xhtml</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+		<!-- ======== Servlet ======== -->
+
+		<!-- javax.servlet-api：Servlet 容器 API，JSP 编译期需要 -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
-		<!-- PDFBox (transitive via docx4j-ImportXHTML) needs commons-logging at runtime;
-		     jcl-over-slf4j is excluded from docx4j-core, so we must declare it explicitly. -->
+
+		<!-- ======== Test ======== -->
+
+		<!-- PDFBox（通过 docx4j-ImportXHTML 传递依赖）在运行时需要 commons-logging；
+		     docx4j-core 排除了 jcl-over-slf4j，因此测试环境需显式声明 -->
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 			<version>${commons-logging.version}</version>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
-	
+
 </project>

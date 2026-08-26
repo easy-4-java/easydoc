@@ -13,20 +13,34 @@
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>jar</packaging>
 
+	<!-- Velocity 模板引擎适配模块：基于 XHTML 模板生成 docx 文档 -->
 	<dependencies>
+
+		<!-- ======== 核心模块 ======== -->
+
+		<!-- easydoc-xhtml：XHTML 模板引擎核心（HTML 转 docx） -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-xhtml</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+		<!-- ======== Velocity 引擎 ======== -->
+
+		<!-- velocity-engine-core：Apache Velocity 模板引擎核心 -->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-engine-core</artifactId>
 		</dependency>
+
+		<!-- velocity-engine-scripting：Velocity 的 JSR-223 脚本引擎适配 -->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-engine-scripting</artifactId>
 		</dependency>
+
+		<!-- velocity-tools：Velocity 工具集（日期/数字/链接等辅助方法） -->
+		<!-- 排除 struts-core/taglib/tiles：velocity-tools 传递依赖了过时的 Struts 1.x -->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-tools</artifactId>

@@ -1,44 +1,55 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
+
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>io.github.easy4j</groupId>
 		<artifactId>easydoc</artifactId>
 		<version>2.0.x.20260630-SNAPSHOT</version>
 	</parent>
-	
+
 	<artifactId>easydoc-xhtml</artifactId>
 	<description>Building doc documents based on xhtml templates using docx4j</description>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>jar</packaging>
-	
+
 	<dependencies>
-	
+
+		<!-- ======== Servlet ======== -->
+
+		<!-- javax.servlet-api：Servlet 容器 API，编译期依赖（运行时由容器提供） -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
-    	
-    	<dependency>
+
+		<!-- ======== 核心模块 ======== -->
+
+		<!-- easydoc-core：docx4j 封装核心（模板渲染引擎基类、docx 生成） -->
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>easydoc-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
-		<!-- ###################### HTML、CSS 解析工具包###################### -->
-		
+
+		<!-- ======== HTML / CSS 解析 ======== -->
+
+		<!-- jsoup：HTML 解析与 DOM 操作库，用于 XHTML 模板预处理 -->
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 		</dependency>
-		
- 		<!-- Docx4j ImportXHTML -->
+
+		<!-- docx4j-ImportXHTML-core：将 XHTML/HTML 片段导入为 docx 内容 -->
 		<dependency>
 		    <groupId>org.docx4j</groupId>
 		    <artifactId>docx4j-ImportXHTML-core</artifactId>
 		</dependency>
+
+		<!-- ======== Test ======== -->
+
+		<!-- eclipselink：JPA 实现，测试环境用于 docx4j MOXy JAXB 兼容验证 -->
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>eclipselink</artifactId>
@@ -46,5 +57,5 @@
 		</dependency>
 
 	</dependencies>
-	
+
 </project>

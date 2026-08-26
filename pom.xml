@@ -42,43 +42,51 @@
 
     <!-- 版本属性定义：Java 版本、依赖版本与 Maven 插件版本统一管理 -->
     <properties>
-        <!-- ═══ 第一段: 基础属性（自然排序）═══ -->
+        <!-- ═══ 核心配置：JDK / 编译 / 编码 ═══ -->
         <java.version>17</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.version>3.9.16</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Dependency versions -->
-        <antlr4.version>4.7.1</antlr4.version>
-        <assertj.version>3.27.3</assertj.version>
-        <beetl.version>3.1.3.RELEASE</beetl.version>
-        <commons-beanutils.version>1.11.0</commons-beanutils.version>
-        <commons-io.version>2.22.0</commons-io.version>
-        <commons-lang3.version>3.20.0</commons-lang3.version>
-        <commons-logging.version>1.3.5</commons-logging.version>
+
+        <!-- ═══ Docx4j 全家桶版本（11.5.14 统一锁定） ═══ -->
+        <docx4j.version>11.5.14</docx4j.version>
         <docx4j-export-fo.version>11.5.14</docx4j-export-fo.version>
         <docx4j-importxhtml.version>11.5.14</docx4j-importxhtml.version>
         <docx4j-jaxb.version>11.5.14</docx4j-jaxb.version>
         <docx4j-openxml.version>11.5.14</docx4j-openxml.version>
-        <docx4j.version>11.5.14</docx4j.version>
+
+        <!-- ═══ Jakarta XML Binding（JAXB 4）与 Activation ═══ -->
+        <jakarta-activation.version>2.1.3</jakarta-activation.version>
+
+        <!-- ═══ 模板引擎版本 ═══ -->
+        <beetl.version>3.1.3.RELEASE</beetl.version>
         <freemarker.version>2.3.29</freemarker.version>
         <httl.version>1.0.12</httl.version>
-        <jackson.version>2.17.2</jackson.version>
-        <jakarta-activation.version>2.1.3</jakarta-activation.version>
-        <javax.mail-api.version>1.6.2</javax.mail-api.version>
         <jetbrick.version>2.1.10</jetbrick.version>
+        <rythm.version>1.3.0</rythm.version>
+        <thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
+        <velocity.version>2.2</velocity.version>
+        <velocity-tools.version>2.0</velocity-tools.version>
+        <webit-script.version>1.5.2</webit-script.version>
+
+        <!-- ═══ Third-Party Dependencies（按字母序） ═══ -->
+        <antlr4.version>4.7.1</antlr4.version>
+        <assertj.version>3.27.3</assertj.version>
+        <commons-beanutils.version>1.11.0</commons-beanutils.version>
+        <commons-io.version>2.22.0</commons-io.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
+        <commons-logging.version>1.3.5</commons-logging.version>
+        <jackson.version>2.17.2</jackson.version>
+        <javax.mail-api.version>1.6.2</javax.mail-api.version>
         <jsoup.version>1.13.1</jsoup.version>
-        <junit-jupiter.version>6.1.0</junit-jupiter.version>
         <junit.version>4.13.2</junit.version>
+        <junit-jupiter.version>6.1.0</junit-jupiter.version>
         <ognl.version>3.2.13</ognl.version>
         <persistence.version>2.7.6</persistence.version>
-        <rythm.version>1.3.0</rythm.version>
         <servlet-api.version>3.0.1</servlet-api.version>
         <slf4j.version>2.0.18</slf4j.version>
-        <thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
-        <velocity-tools.version>2.0</velocity-tools.version>
-        <velocity.version>2.2</velocity.version>
-        <webit-script.version>1.5.2</webit-script.version>
-        <!-- Maven Plugin versions -->
+
+        <!-- ═══ Maven Plugin versions ═══ -->
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
         <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
@@ -98,6 +106,8 @@
         <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
         <maven-war-plugin.version>3.2.2</maven-war-plugin.version>
         <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
+
+        <!-- ═══ 工具库版本 ═══ -->
         <jaxb-namespaceprefixmapper.version>6.1.0</jaxb-namespaceprefixmapper.version>
         <lombok.version>1.18.46</lombok.version>
     </properties>
@@ -419,8 +429,9 @@
         </plugins>
     </build>
 
-    <!-- 构建 Profile 配置 -->
+    <!-- ═══ 构建 Profile 配置 ═══ -->
     <profiles>
+        <!-- 自动激活（JDK 1.8+）：禁用 Javadoc doclint、锁定 Lombok/JaCoCo 版本 -->
         <profile>
             <id>disable-javadoc-doclint</id>
             <activation>
@@ -570,42 +581,62 @@
     <!-- 依赖版本统一管理（dependencyManagement） -->
     <dependencyManagement>
         <dependencies>
-            <!-- For Junit -->
+            <!-- ======== Test ======== -->
+
+            <!-- https://mvnrepository.com/artifact/junit/junit -->
+            <!-- JUnit 4：单元测试框架 -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
             </dependency>
-            <!-- For JUnit 5 -->
+
+            <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
+            <!-- JUnit 5（聚合包）：新一代单元测试框架，包含 api + engine + params -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
                 <version>${junit-jupiter.version}</version>
             </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+            <!-- JUnit 5 API：编写测试用例的公共 API -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
                 <version>${junit-jupiter.version}</version>
             </dependency>
-            <!-- For AssertJ -->
+
+            <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
+            <!-- AssertJ：流式断言库，提供更优雅的测试断言 API -->
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>${assertj.version}</version>
             </dependency>
-            <!-- For Servlet Api -->
+
+            <!-- ======== Servlet ======== -->
+
+            <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+            <!-- Servlet API：JSP 模块编译期依赖，运行时由容器提供 -->
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>${servlet-api.version}</version>
             </dependency>
-            <!-- For Slf4j -->
+
+            <!-- ======== Logging ======== -->
+
+            <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+            <!-- SLF4J API：日志门面，所有模块统一使用此版本 -->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
-            <!-- For Slf4j -->
+
+            <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+            <!-- SLF4J Simple：轻量级日志实现，用于测试环境 -->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
@@ -617,25 +648,37 @@
                 <artifactId>commons-beanutils</artifactId>
                 <version>${commons-beanutils.version}</version>
             </dependency>
-            <!-- For Commons Lang3 -->
+            <!-- ======== Commons ======== -->
+
+            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+            <!-- Commons Lang3：字符串、对象、数组等常用工具方法 -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
             </dependency>
-            <!-- For Commons IO -->
+
+            <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+            <!-- Commons IO：文件/流操作工具类 -->
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
             </dependency>
-            <!-- For Jsoup -->
+
+            <!-- ======== HTML / CSS ======== -->
+
+            <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+            <!-- Jsoup：HTML 解析与操作库，用于 XHTML 模板处理 -->
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
                 <version>${jsoup.version}</version>
             </dependency>
-            <!-- For Docx4j -->
+            <!-- ======== Docx4j 全家桶（11.5.14） ======== -->
+
+            <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-core -->
+            <!-- Docx4j Core：docx/pptx/xlsx 的 Open XML 解析与生成核心库 -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-core</artifactId>
@@ -656,142 +699,198 @@
                 </exclusions>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-export-fo -->
+            <!-- Docx4j Export FO：通过 Apache FOP 将 docx 导出为 PDF -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-export-fo</artifactId>
                 <version>${docx4j-export-fo.version}</version>
             </dependency>
+
             <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-docx-anon -->
+            <!-- Docx4j Docx Anon：docx 文档匿名化（去除作者等元数据） -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-docx-anon</artifactId>
                 <version>${docx4j.version}</version>
             </dependency>
+
             <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-diffx -->
+            <!-- Docx4j Diffx：XML 差异比较工具 -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-diffx</artifactId>
                 <version>${docx4j.version}</version>
             </dependency>
+
             <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-ImportXHTML-core -->
+            <!-- Docx4j ImportXHTML：将 XHTML/HTML 片段导入为 docx 内容（核心模块） -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-ImportXHTML-core</artifactId>
                 <version>${docx4j-importxhtml.version}</version>
             </dependency>
+
             <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-JAXB-ReferenceImpl -->
+            <!-- Docx4j JAXB ReferenceImpl：docx4j 的 JAXB 实现，替代旧版 MOXy -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
                 <version>${docx4j-jaxb.version}</version>
             </dependency>
+
+            <!-- ======== Jakarta XML Binding 4（替代 javax.xml.bind） ======== -->
+
             <!-- https://mvnrepository.com/artifact/com.googlecode.jaxb-namespaceprefixmapper-interfaces/JAXBNamespacePrefixMapper -->
+            <!-- JAXB NamespacePrefixMapper：自定义 XML 命名空间前缀 -->
             <dependency>
                 <groupId>com.googlecode.jaxb-namespaceprefixmapper-interfaces</groupId>
                 <artifactId>JAXBNamespacePrefixMapper</artifactId>
                 <version>${jaxb-namespaceprefixmapper.version}</version>
             </dependency>
-            <!-- Jakarta JAXB 4 API + runtime (replaces javax.xml.bind:jaxb-api / com.sun.xml.bind:jaxb-impl) -->
+
+            <!-- https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api -->
+            <!-- Jakarta JAXB 4 API：替代 javax.xml.bind:jaxb-api，docx4j 11.x 需要 -->
             <dependency>
                 <groupId>jakarta.xml.bind</groupId>
                 <artifactId>jakarta.xml.bind-api</artifactId>
                 <version>4.0.2</version>
             </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
+            <!-- JAXB Runtime（GlassFish）：Jakarta JAXB 4 的运行时实现 -->
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
                 <version>4.0.6</version>
             </dependency>
+
+            <!-- https://mvnrepository.com/artifact/jakarta.activation/jakarta.activation-api -->
+            <!-- Jakarta Activation API：MIME 类型处理，JAXB 运行时依赖 -->
             <dependency>
                 <groupId>jakarta.activation</groupId>
                 <artifactId>jakarta.activation-api</artifactId>
                 <version>${jakarta-activation.version}</version>
             </dependency>
+
+            <!-- ======== EclipseLink ======== -->
+
             <!-- https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink -->
+            <!-- EclipseLink：JPA 实现，docx4j MOXy JAXB 依赖（测试/兼容） -->
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>eclipselink</artifactId>
                 <version>${persistence.version}</version>
             </dependency>
+
+            <!-- ======== Docx4j Open XML Objects ======== -->
+
             <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-openxml-objects -->
+            <!-- Docx4j OpenXML Objects：docx（Word）格式的 JAXB 对象模型 -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-openxml-objects</artifactId>
                 <version>${docx4j-openxml.version}</version>
             </dependency>
+
             <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-openxml-objects-pml -->
+            <!-- Docx4j OpenXML Objects PML：pptx（PowerPoint）格式的 JAXB 对象模型 -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-openxml-objects-pml</artifactId>
                 <version>${docx4j-openxml.version}</version>
             </dependency>
+
             <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j-openxml-objects-sml -->
+            <!-- Docx4j OpenXML Objects SML：xlsx（Excel）格式的 JAXB 对象模型 -->
             <dependency>
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-openxml-objects-sml</artifactId>
                 <version>${docx4j-openxml.version}</version>
             </dependency>
-            <!-- For OGNL -->
+            <!-- ======== 模板引擎及其依赖 ======== -->
+
+            <!-- https://mvnrepository.com/artifact/ognl/ognl -->
+            <!-- OGNL：表达式语言引擎，beetl/httl 等模板引擎的底层依赖 -->
             <dependency>
                 <groupId>ognl</groupId>
                 <artifactId>ognl</artifactId>
                 <version>${ognl.version}</version>
             </dependency>
-            <!-- For Beetl -->
+
+            <!-- https://mvnrepository.com/artifact/com.ibeetl/beetl -->
+            <!-- Beetl：高性能 Java 模板引擎，语法简洁 -->
             <dependency>
                 <groupId>com.ibeetl</groupId>
                 <artifactId>beetl</artifactId>
                 <version>${beetl.version}</version>
             </dependency>
-            <!-- For Freemarker -->
+
+            <!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
+            <!-- FreeMarker：经典 Java 模板引擎，MVC 架构常用 -->
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
                 <version>${freemarker.version}</version>
             </dependency>
-            <!-- For HTTL -->
+
+            <!-- https://mvnrepository.com/artifact/org.perfcake/httl -->
+            <!-- HTTL：高性能模板引擎，编译型，适合大流量场景 -->
             <dependency>
                 <groupId>org.perfcake</groupId>
                 <artifactId>httl</artifactId>
                 <version>${httl.version}</version>
             </dependency>
-            <!-- For Jetbrick -->
+
+            <!-- https://mvnrepository.com/artifact/com.github.subchen/jetbrick-template -->
+            <!-- Jetbrick Template：轻量级 Java 模板引擎 -->
             <dependency>
                 <groupId>com.github.subchen</groupId>
                 <artifactId>jetbrick-template</artifactId>
                 <version>${jetbrick.version}</version>
             </dependency>
+
             <!-- https://mvnrepository.com/artifact/org.antlr/antlr4-runtime -->
+            <!-- ANTLR4 Runtime：解析器生成器运行时，Rythm 引擎依赖 -->
             <dependency>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-runtime</artifactId>
                 <version>${antlr4.version}</version>
             </dependency>
-            <!-- For Rythm -->
+
+            <!-- https://mvnrepository.com/artifact/org.rythmengine/rythm-engine -->
+            <!-- Rythm：类 Razor 语法的高性能 Java 模板引擎 -->
             <dependency>
                 <groupId>org.rythmengine</groupId>
                 <artifactId>rythm-engine</artifactId>
                 <version>${rythm.version}</version>
             </dependency>
-            <!-- For Thymeleaf -->
+
+            <!-- https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf -->
+            <!-- Thymeleaf：自然模板引擎，支持直接在浏览器预览 -->
             <dependency>
                 <groupId>org.thymeleaf</groupId>
                 <artifactId>thymeleaf</artifactId>
                 <version>${thymeleaf.version}</version>
             </dependency>
-            <!-- For Velocity -->
+
+            <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-engine-core -->
+            <!-- Velocity Engine Core：Apache 经典模板引擎核心 -->
             <dependency>
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity-engine-core</artifactId>
                 <version>${velocity.version}</version>
             </dependency>
+
             <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-engine-scripting -->
+            <!-- Velocity Engine Scripting：Velocity 的 JSR-223 脚本引擎适配 -->
             <dependency>
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity-engine-scripting</artifactId>
                 <version>${velocity.version}</version>
             </dependency>
+
             <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-tools -->
+            <!-- Velocity Tools：Velocity 的工具集（日期/数字/链接等） -->
             <dependency>
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity-tools</artifactId>
@@ -811,13 +910,20 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            <!-- For Webit -->
+            <!-- ======== Webit ======== -->
+
+            <!-- https://mvnrepository.com/artifact/com.github.zqq90.webit-script/webit-script -->
+            <!-- Webit Script：轻量级 Java 模板引擎 -->
             <dependency>
                 <groupId>com.github.zqq90.webit-script</groupId>
                 <artifactId>webit-script</artifactId>
                 <version>${webit-script.version}</version>
             </dependency>
-            <!-- For Lombok -->
+
+            <!-- ======== 工具库 ======== -->
+
+            <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+            <!-- Lombok：编译期注解处理器，自动生成 getter/setter/builder 等样板代码 -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>

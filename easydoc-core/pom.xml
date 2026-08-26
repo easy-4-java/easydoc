@@ -8,54 +8,65 @@
 		<version>2.0.x.20260630-SNAPSHOT</version>
 	</parent>
 	<artifactId>easydoc-core</artifactId>
-	
+
 	<description>Building doc documents based on doc/docx file using docx4j</description>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>jar</packaging>
-	
+
 	<dependencies>
-	
+
+		<!-- ======== Servlet ======== -->
+
+		<!-- javax.servlet-api：Servlet 容器 API，编译期依赖（运行时由容器提供） -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
-    	
-    	<dependency>
+
+		<!-- ======== Commons 工具库 ======== -->
+
+		<!-- commons-lang3：字符串、对象、数组等常用工具方法 -->
+		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
+
+		<!-- commons-io：文件/流操作工具类 -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 		</dependency>
-		
-		<!-- ###################### Docx4j ###################### -->
 
-		<!-- Docx4j Core -->
+		<!-- ======== Docx4j ======== -->
+
+		<!-- docx4j-core：Open XML（docx/pptx/xlsx）解析与生成核心库 -->
 		<dependency>
 		    <groupId>org.docx4j</groupId>
 		    <artifactId>docx4j-core</artifactId>
 		</dependency>
 
-	    <!-- Docx4j JAXB ReferenceImpl (replaces MOXy; compatible with jakarta.xml.bind-api 4.x) -->
+	    <!-- docx4j-JAXB-ReferenceImpl：docx4j 的 JAXB ReferenceImpl 实现，兼容 jakarta.xml.bind-api 4.x -->
 	    <dependency>
 	        <groupId>org.docx4j</groupId>
 	        <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
 	    </dependency>
 
-	    <!-- JAXB 4.x runtime provider (docx4j 11.5.14 needs this for ServiceLoader-based JAXBContext init) -->
+	    <!-- jaxb-runtime（GlassFish）：Jakarta JAXB 4 运行时，docx4j 11.5.14 通过 ServiceLoader 加载 JAXBContext -->
 	    <dependency>
 	        <groupId>org.glassfish.jaxb</groupId>
 	        <artifactId>jaxb-runtime</artifactId>
 	    </dependency>
-	    
+
+	    <!-- ======== 表达式引擎 ======== -->
+
 	    <!-- https://mvnrepository.com/artifact/ognl/ognl -->
+	    <!-- OGNL：表达式语言引擎，用于模板中的动态值计算 -->
 		<dependency>
 		    <groupId>ognl</groupId>
 		    <artifactId>ognl</artifactId>
 		</dependency>
 
 	</dependencies>
-	
+
 </project>

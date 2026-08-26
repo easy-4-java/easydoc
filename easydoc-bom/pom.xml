@@ -11,63 +11,91 @@
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>pom</packaging>
 
+	<!-- ═══ BOM（Bill of Materials）：统一管理 easydoc 全部模块版本，下游项目按需引入 ═══ -->
 	<dependencyManagement>
 		<dependencies>
+
+			<!-- ======== 核心模块 ======== -->
+
+			<!-- easydoc-core：docx4j 封装核心（模板渲染引擎基类、docx 生成） -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>easydoc-beetl</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>easydoc-freemarker</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>easydoc-httl</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>easydoc-jetbrick</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>easydoc-jsp</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>easydoc-rythm</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>easydoc-thymeleaf</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>easydoc-velocity</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>easydoc-webit</artifactId>
-				<version>${project.version}</version>
-			</dependency>
+
+			<!-- easydoc-xhtml：XHTML 模板引擎（HTML 转 docx 核心逻辑） -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>easydoc-xhtml</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+
+			<!-- ======== 模板引擎适配模块 ======== -->
+
+			<!-- easydoc-beetl：Beetl 模板引擎适配 -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>easydoc-beetl</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- easydoc-freemarker：FreeMarker 模板引擎适配 -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>easydoc-freemarker</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- easydoc-httl：HTTL 模板引擎适配 -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>easydoc-httl</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- easydoc-jetbrick：Jetbrick Template 模板引擎适配 -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>easydoc-jetbrick</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- easydoc-jsp：JSP 模板引擎适配 -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>easydoc-jsp</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- easydoc-rythm：Rythm 模板引擎适配 -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>easydoc-rythm</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- easydoc-thymeleaf：Thymeleaf 模板引擎适配 -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>easydoc-thymeleaf</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- easydoc-velocity：Velocity 模板引擎适配 -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>easydoc-velocity</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- easydoc-webit：Webit Script 模板引擎适配 -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>easydoc-webit</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
