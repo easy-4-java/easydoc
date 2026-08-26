@@ -27,4 +27,12 @@ class MarkdownConverterTest {
 		assertTrue(html.contains("<pre>"), "code block must render to <pre>");
 		assertTrue(html.contains("<li>item1</li>"), "list item must render");
 	}
+
+	@Test
+	void htmlToMarkdownHandlesTagsWithAttributes() {
+		String md = MarkdownConverter.htmlToMarkdown(
+				"<strong class=\"x\">bold</strong> and <li class=\"y\">item</li>");
+		assertTrue(md.contains("**bold**"), "strong with attribute must become **bold**");
+		assertTrue(md.contains("- item"), "li with attribute must become list item");
+	}
 }

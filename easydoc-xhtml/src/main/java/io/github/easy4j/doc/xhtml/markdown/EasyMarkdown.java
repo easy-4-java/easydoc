@@ -24,7 +24,7 @@ public final class EasyMarkdown {
 		return markdownToDocx(markdown, null);
 	}
 
-	/** Markdown → docx（支持 ${var} 占位符替换——MD 内容渲染后由 HTML 管线处理）。 */
+	/** Markdown → docx。variables 参数当前未生效（WordprocessingMLHtmlTemplate 暂不支持 HTML 变量替换）；传入 null 即可。 */
 	public static WordprocessingMLPackage markdownToDocx(String markdown,
 			Map<String, Object> vars) throws Exception {
 		String html = MarkdownConverter.mdToHtml(markdown);
