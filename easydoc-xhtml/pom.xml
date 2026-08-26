@@ -37,11 +37,7 @@
  		<!-- Docx4j ImportXHTML -->
 		<dependency>
 		    <groupId>org.docx4j</groupId>
-		    <artifactId>xhtmlrenderer</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.docx4j</groupId>
-		    <artifactId>docx4j-ImportXHTML</artifactId>
+		    <artifactId>docx4j-ImportXHTML-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>

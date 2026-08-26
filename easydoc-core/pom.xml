@@ -32,49 +32,23 @@
 		
 		<!-- ###################### Docx4j ###################### -->
 
-		<!-- JAXB API for JDK 9+ -->
-		<dependency>
-		    <groupId>javax.xml.bind</groupId>
-		    <artifactId>jaxb-api</artifactId>
-		</dependency>
-		
 		<!-- Docx4j Core -->
 		<dependency>
 		    <groupId>org.docx4j</groupId>
 		    <artifactId>docx4j-core</artifactId>
 		</dependency>
-		
-		<!-- Docx4j JAXB Internal
-	    <dependency>
-	        <groupId>org.docx4j</groupId>
-	        <artifactId>docx4j-JAXB-Internal</artifactId>
-	    </dependency> -->
-	        
-	    <!-- Docx4j JAXB MOXy -->
-	
-	    <!-- jaxb.properties files specifying that docx4j should use the EclipseLink MOXy (JAXB) runtime -->
-	    <dependency>
-	      	<groupId>org.docx4j</groupId>
-	      	<artifactId>docx4j-JAXB-MOXy</artifactId>
-	    </dependency>
-	    <dependency>
-	      	<groupId>org.eclipse.persistence</groupId>
-	      	<artifactId>org.eclipse.persistence.asm</artifactId>
-	    </dependency>
-	    <dependency>
-	     	<groupId>org.eclipse.persistence</groupId>
-	      	<artifactId>org.eclipse.persistence.core</artifactId>
-	    </dependency>
-	    <dependency>
-	      	<groupId>org.eclipse.persistence</groupId>
-	      	<artifactId>org.eclipse.persistence.moxy</artifactId>
-	    </dependency>
-	     
-	    <!-- Docx4j JAXB ReferenceImpl
+
+	    <!-- Docx4j JAXB ReferenceImpl (replaces MOXy; compatible with jakarta.xml.bind-api 4.x) -->
 	    <dependency>
 	        <groupId>org.docx4j</groupId>
 	        <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
-	    </dependency> -->
+	    </dependency>
+
+	    <!-- JAXB 4.x runtime provider (docx4j 11.5.14 needs this for ServiceLoader-based JAXBContext init) -->
+	    <dependency>
+	        <groupId>org.glassfish.jaxb</groupId>
+	        <artifactId>jaxb-runtime</artifactId>
+	    </dependency>
 	    
 	    <!-- https://mvnrepository.com/artifact/ognl/ognl -->
 		<dependency>

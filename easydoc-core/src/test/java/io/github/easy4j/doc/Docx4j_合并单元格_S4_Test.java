@@ -18,7 +18,7 @@ package io.github.easy4j.doc;
 import java.math.BigInteger;  
 import java.util.ArrayList;  
 import java.util.List;  
-import javax.xml.bind.JAXBElement;  
+import jakarta.xml.bind.JAXBElement;  
 import org.docx4j.wml.ContentAccessor;  
 import org.docx4j.wml.Tbl;  
 import org.docx4j.wml.Tc;  

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;  
 import java.util.List;  
   
-import javax.xml.bind.JAXBElement;  
+import jakarta.xml.bind.JAXBElement;  
   
 import org.docx4j.TraversalUtil;  
 import org.docx4j.TraversalUtil.CallbackImpl;  
@@ -99,7 +99,7 @@ public class Docx4j_删除所有批注_S3_Test {
         List<Child> commentElements = new ArrayList<Child>();  
   
         public List<Object> apply(Object o) {  
-            if (o instanceof javax.xml.bind.JAXBElement  
+            if (o instanceof jakarta.xml.bind.JAXBElement  
                     && (((JAXBElement) o).getName().getLocalPart()  
                             .equals("commentReference")  
                             || ((JAXBElement) o).getName().getLocalPart()  
@@ -121,7 +121,7 @@ public class Docx4j_删除所有批注_S3_Test {
             List children = getChildren(parent);  
             if (children != null) {  
                 for (Object o : children) {  
-                    if (o instanceof javax.xml.bind.JAXBElement  
+                    if (o instanceof jakarta.xml.bind.JAXBElement  
                             && (((JAXBElement) o).getName().getLocalPart()  
                                     .equals("commentReference")  
                                     || ((JAXBElement) o).getName()  

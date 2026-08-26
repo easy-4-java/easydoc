@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import org.docx4j.XmlUtils;
 import org.docx4j.fonts.PhysicalFont;
 import org.docx4j.fonts.PhysicalFonts;

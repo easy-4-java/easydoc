@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;  
   
 
-import javax.xml.bind.JAXBElement;  
+import jakarta.xml.bind.JAXBElement;  
   
 
 import org.apache.commons.lang3.RandomStringUtils;  

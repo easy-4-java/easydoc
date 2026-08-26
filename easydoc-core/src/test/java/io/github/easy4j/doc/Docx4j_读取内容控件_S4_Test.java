@@ -20,7 +20,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;  
 import java.util.List;  
   
-import javax.xml.bind.JAXBElement;  
+import jakarta.xml.bind.JAXBElement;  
   
 import org.docx4j.TextUtils;  
 import org.docx4j.TraversalUtil;  
@@ -164,7 +164,7 @@ class SdtFinder_2 extends CallbackImpl {
     List<Child> sdtList = new ArrayList<Child>();  
   
     public List<Object> apply(Object o) {  
-        if (o instanceof javax.xml.bind.JAXBElement  
+        if (o instanceof jakarta.xml.bind.JAXBElement  
                 && (((JAXBElement) o).getName().getLocalPart().equals("sdt"))) {  
             sdtList.add((Child) XmlUtils.unwrap(o));  
         } else if (o instanceof SdtBlock) {  
@@ -178,7 +178,7 @@ class SdtFinder_2 extends CallbackImpl {
         List children = getChildren(parent);  
         if (children != null) {  
             for (Object o : children) {  
-                if (o instanceof javax.xml.bind.JAXBElement  
+                if (o instanceof jakarta.xml.bind.JAXBElement  
                         && (((JAXBElement) o).getName().getLocalPart()  
                                 .equals("sdt"))) {  
                     ((Child) ((JAXBElement) o).getValue()).setParent(XmlUtils  
