@@ -48,7 +48,8 @@ Maven 4 构建基线、安全加固与一系列正确性修复。相对 1.0.x（
 ### Markdown ↔ docx
 
 - **Markdown ↔ docx**：`EasyMarkdown.markdownToDocx`（MD→HTML→docx，flexmark 驱动）、
-  `EasyMarkdown.docxToMarkdown`（docx→HTML→MD 简化映射）
+  `EasyMarkdown.docxToMarkdown`（docx→HTML→MD 简化映射；提供 File/InputStream/byte[]/路径
+  四种快捷重载，智能体/文档读取场景一次调用直接产出 Markdown）
 
 ### JDK 21 特性
 
