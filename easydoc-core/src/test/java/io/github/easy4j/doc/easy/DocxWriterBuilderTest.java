@@ -55,6 +55,15 @@ class DocxWriterBuilderTest {
 	}
 
 	@Test
+	void processHandlesNullVarsAsEmpty() throws Exception {
+		File tmp = tempTemplate();
+		WordprocessingMLPackage pkg = new DocxWriterBuilder<Contract>(tmp, Contract.class)
+				.process((java.util.Map<String, Object>) null);
+		assertNotNull(pkg, "null vars must render as empty variables");
+		tmp.delete();
+	}
+
+	@Test
 	void documentAndModeAreChainable() throws Exception {
 		File tmp = tempTemplate();
 		DocxWriterBuilder<Contract> b = new DocxWriterBuilder<Contract>(tmp, Contract.class)

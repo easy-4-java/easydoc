@@ -2,6 +2,7 @@ package io.github.easy4j.doc.easy;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Map;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -47,10 +48,12 @@ public final class DocxWriterBuilder<T> {
 		return process(DocxFields.from(data));
 	}
 
-	/** 原始 Map 渲染（兼容现有 API 的变量注入）。 */
+	/** 原始 Map 渲染（兼容现有 API 的变量注入）；vars 为 null 时按空变量处理。 */
 	public WordprocessingMLPackage process(Map<String, Object> vars) throws Exception {
 		WordprocessingMLTemplate template = DocxTemplates.create(mode);
-		Map<String, Object> effective = new HashMap<String, Object>(vars);
+		Map<String, Object> effective = vars != null
+				? new HashMap<String, Object>(vars)
+				: new HashMap<String, Object>();
 		return template.process(templateFile, effective);
 	}
 }
