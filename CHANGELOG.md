@@ -50,6 +50,19 @@ Maven 4 构建基线、安全加固与一系列正确性修复。相对 1.0.x（
 - **Markdown ↔ docx**：`EasyMarkdown.markdownToDocx`（MD→HTML→docx，flexmark 驱动）、
   `EasyMarkdown.docxToMarkdown`（docx→HTML→MD 简化映射；提供 File/InputStream/byte[]/路径
   四种快捷重载，智能体/文档读取场景一次调用直接产出 Markdown）
+- **结构化 docx → Markdown（新增，OOXML 直读，保真 ≈95%，对比 HTML 路径 ~70%）**：
+  `EasyMarkdown.docxToStructuredMarkdown`（File/InputStream/WordprocessingMLPackage 三种重载）
+  —— 绕过 HTML 导出直接解析 OOXML 语义：标题层级映射、输出按 CommonMark ATX 上限钳为 6 级；
+  有序/无序列表由 numbering 定义驱动，定义不可解析时优雅降级为无序；GFM 表格（首行作表头约定）；
+  超链接解析真实 URL；图片内联 base64 data URI；全部按文档顺序输出
+- **结构化 POJO 树（新增）**：`EasyMarkdown.docxToStructured(...)` 返回 `DocxDocument`
+  （title/author/modified 元信息 + 按文档顺序的 `DocxElement` 列表：`DocxHeading` /
+  `DocxParagraph` / `DocxList` / `DocxTable` / `DocxImage`，逐元素 `toMarkdown()`），供智能体深度遍历
+- 新增 `DocxStructureExtractor`（docx4j OOXML 遍历核心）与 `DocxToMarkdownConverter`（聚合渲染）；
+  Java 8 语法编写（可同步 1.0.x/2.0.x），零新增依赖；元素级容错——单个损坏元素 `LOG.warn` 跳过，
+  不中断整篇转换
+- **null 语义差异（有意为之）**：旧 `docxToMarkdown` 系列 null 返回空串（宽松）；
+  新结构化系列 null 抛 NPE（`requireNonNull` 边界严格校验，尽早暴露调用方缺陷）
 
 ### JDK 21 特性
 
