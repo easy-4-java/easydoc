@@ -1,6 +1,9 @@
 package io.github.easy4j.doc.xhtml.markdown;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
 import java.util.Map;
 
 import org.docx4j.Docx4J;
@@ -30,6 +33,40 @@ public final class EasyMarkdown {
 		String html = MarkdownConverter.mdToHtml(markdown);
 		WordprocessingMLHtmlTemplate template = new WordprocessingMLHtmlTemplate();
 		return template.process(html, vars);
+	}
+
+	/** docx 文件 → Markdown。null 输入返回空串。 */
+	public static String docxToMarkdown(File file) throws Exception {
+		if (file == null) {
+			return "";
+		}
+		return docxToMarkdown(WordprocessingMLPackage.load(file));
+	}
+
+	/** docx 输入流 → Markdown（流由本方法负责关闭）。null 输入返回空串。 */
+	public static String docxToMarkdown(InputStream in) throws Exception {
+		if (in == null) {
+			return "";
+		}
+		try (InputStream closeable = in) {
+			return docxToMarkdown(WordprocessingMLPackage.load(closeable));
+		}
+	}
+
+	/** docx 字节数组 → Markdown。null 输入返回空串。 */
+	public static String docxToMarkdown(byte[] bytes) throws Exception {
+		if (bytes == null) {
+			return "";
+		}
+		return docxToMarkdown(WordprocessingMLPackage.load(new ByteArrayInputStream(bytes)));
+	}
+
+	/** docx 文件路径 → Markdown。null/空白路径返回空串。 */
+	public static String docxToMarkdown(String path) throws Exception {
+		if (path == null || path.trim().isEmpty()) {
+			return "";
+		}
+		return docxToMarkdown(new File(path));
 	}
 
 	/** docx → Markdown（经 docx4j HTML 导出 + 简化 HTML→MD 映射）。null 输入返回空串。 */
