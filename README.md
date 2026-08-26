@@ -164,6 +164,38 @@ doc.save(new File("output.docx"));
 
 Expected result: `output.docx` contains the rendered document. When no template file is passed, a dummy sample document is created (via `SampleDocument`).
 
+## 6.1 EasyDocx（类 EasyExcel 体验）
+
+POJO 模型 + 注解 + 链式门面（docx 语义：`document` 而非 sheet）：
+
+```java
+import io.github.easy4j.doc.easy.EasyDocx;
+import io.github.easy4j.doc.annotation.DocxField;
+import io.github.easy4j.doc.annotation.DocxIgnore;
+
+public class Contract {
+    @DocxField("partyName") private String partyName;
+    @DocxField(value = "signDate", format = "yyyy-MM-dd") private java.util.Date signDate;
+    @DocxIgnore private String internalId;
+    // getters/setters...
+}
+
+// 写：门面 + 链式 + 注解模型（POJO → 占位符）
+org.docx4j.openpackaging.packages.WordprocessingMLPackage doc =
+        EasyDocx.write("template.docx", Contract.class)
+                .document("合同")      // docx 语义中间层（Document 概念），单文档可省略
+                .process(contract);    // 返回 WordprocessingMLPackage
+
+// 读：监听器
+EasyDocx.read("template.docx", Contract.class, (data, values) -> {
+        // values: 占位符名 → 值
+    }).doRead();
+
+// 原始 Map 仍兼容
+EasyDocx.write("template.docx", Contract.class)
+        .process(java.util.Map.of("partyName", "ACME"));
+```
+
 ## 7. Configuration
 
 The core library is template-driven and requires no configuration file. Engine adapters may accept engine-specific settings programmatically:

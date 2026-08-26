@@ -35,6 +35,16 @@ Maven 4 构建基线、安全加固与一系列正确性修复。相对 1.0.x（
   setter 保留为 @Deprecated（设值后使 factory 失效重建）。虚拟线程下无 synchronized 方法 / 无
   carrier-thread pinning。
 
+### EasyDocx API（类 EasyExcel / easyodf 体验）
+
+- **注解模型**：`@DocxField`（value=占位符, format 日期格式化, ignore）、`@DocxIgnore`
+- **门面 + 链式**：`EasyDocx.write(template, Model).document("名").process(pojo|map)`、
+  `EasyDocx.read(template, Model, listener).doRead()`（`DocxWriterBuilder`/`DocxReaderBuilder`）
+- **监听器**：`DocxReadListener<T>`（invoke / doAfterAllAnalysed）
+- **POJO→Map**：`DocxFields.from(bean)`（反射提取注解字段）
+- docx 语义：中间层用 `document`（Document 概念）而非 EasyExcel 的 sheet；单文档可省略
+- 薄封装：内部委托 DocxTemplates + WordprocessingMLTemplate 管线，Java 8 兼容（可同步 1.0.x/2.0.x）
+
 ### JDK 21 特性
 
 - **sealed + record**：三模板（DEFAULT/SAX/STAX）收敛到 `AbstractWmlTemplate` 骨架 +
