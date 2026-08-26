@@ -126,8 +126,9 @@ public class WordprocessingMLHtmlTemplate implements WordprocessingMLTemplate {
  */
 	@Override
 	public WordprocessingMLPackage process(String template, Map<String, Object> variables) throws Exception {
-		// 返回WordprocessingMLPackage对象
-		return wordMLPackageBuilder.buildWhithXhtml(template, altChunk);
+		// 返回WordprocessingMLPackage对象（3 参重载传入 landscape，与 3.0.x 行为一致；
+		// 原 2 参重载忽略 landscape，String 路径总产出纵向文档）
+		return wordMLPackageBuilder.buildWhithXhtml(template, landscape, altChunk);
 	}
 
 	public DocumentHandler getDocHandler() {
