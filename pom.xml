@@ -87,7 +87,6 @@
         <jackson-bom.version>2.22.1</jackson-bom.version>
         <javax.mail-api.version>1.6.2</javax.mail-api.version>
         <jsoup.version>1.23.1</jsoup.version>
-        <junit.version>4.13.2</junit.version>
         <junit-jupiter.version>6.1.0</junit-jupiter.version>
         <ognl.version>3.4.2</ognl.version>
         <persistence.version>2.7.6</persistence.version>
@@ -807,14 +806,6 @@
 
             <!-- ======== Test ======== -->
 
-            <!-- https://mvnrepository.com/artifact/junit/junit -->
-            <!-- JUnit 4：单元测试框架 -->
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-            </dependency>
-
             <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
             <!-- JUnit 5（聚合包）：新一代单元测试框架，包含 api + engine + params -->
             <dependency>
@@ -1161,13 +1152,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <!-- For Junit -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-                <!-- For JUnit 5 -->
+        <!-- For JUnit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
