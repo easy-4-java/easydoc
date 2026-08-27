@@ -196,7 +196,9 @@ public final class DocxStructureExtractor {
 
 		if (headingLevel >= 0) {
 			ctx.flushPendingList();
-			ctx.elements.add(new DocxHeading(headingLevel, plainText(pc.spans), firstLink(pc.spans)));
+			// 标题必须单行：正文中的换行/制表（含首个子元素即换行的场景）折叠为单空格并 trim
+			String headingText = MarkdownEscaper.collapseLineBreaks(plainText(pc.spans));
+			ctx.elements.add(new DocxHeading(headingLevel, headingText, firstLink(pc.spans)));
 			appendImages(pc.images, ctx);
 			return;
 		}

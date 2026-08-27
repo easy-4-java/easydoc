@@ -69,7 +69,8 @@ public final class DocxList extends DocxElement {
 			if (rich != null && !rich.isEmpty()) {
 				md.append(DocxParagraph.renderSpans(rich));
 			} else if (items != null && i < items.size() && items.get(i) != null) {
-				md.append(items.get(i));
+				// 纯文本项与富文本项同源（docx 正文），同样需要转义层保护
+				md.append(MarkdownEscaper.escapeText(items.get(i)));
 			}
 		}
 		return md.toString();

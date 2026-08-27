@@ -52,12 +52,13 @@ public final class DocxTable extends DocxElement {
 		return rows;
 	}
 
+	/** 行渲染：单元格文本统一经 {@link MarkdownEscaper#escapeText} 转义（含竖线 → "\\|"，及强调/标题等结构字符），规避表格语法破坏。 */
 	private static void appendRow(StringBuilder md, List<String> cells) {
 		md.append('|');
 		int count = cells == null ? 0 : cells.size();
 		for (int i = 0; i < count; i++) {
 			String cell = cells.get(i);
-			md.append(' ').append(cell == null ? "" : cell.replace("|", "\\|")).append(" |");
+			md.append(' ').append(cell == null ? "" : MarkdownEscaper.escapeText(cell)).append(" |");
 		}
 		md.append('\n');
 	}

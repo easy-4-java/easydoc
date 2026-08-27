@@ -28,7 +28,11 @@ public final class DocxHeading extends DocxElement {
 		this.hyperlinkUrl = hyperlinkUrl;
 	}
 
-	/** 转 Markdown：输出 level 个井号（0 与负数按一级；CommonMark ATX 仅支持 1-6 级，超出 6 钳为 6），带链接时文本包为 [text](url)。 */
+	/**
+	 * 转 Markdown：输出 level 个井号（0 与负数按一级；CommonMark ATX 仅支持 1-6 级，
+	 * 超出 6 钳为 6）。标题文本先折叠换行（ATX 标题必须单行）再转义 Markdown 结构字符；
+	 * 带链接时文本包为 [text](url)，url 同样转义。
+	 */
 	@Override
 	public String toMarkdown() {
 		int hashes = level < 1 ? 1 : Math.min(level, MAX_LEVEL);
@@ -36,9 +40,10 @@ public final class DocxHeading extends DocxElement {
 		for (int i = 0; i < hashes; i++) {
 			md.append('#');
 		}
-		String body = text == null ? "" : text;
+		String body = text == null ? "" : MarkdownEscaper.escapeText(
+				MarkdownEscaper.collapseLineBreaks(text));
 		if (hyperlinkUrl != null && !hyperlinkUrl.isEmpty()) {
-			body = "[" + body + "](" + hyperlinkUrl + ")";
+			body = "[" + body + "](" + MarkdownEscaper.escapeUrl(hyperlinkUrl) + ")";
 		}
 		return md.append(' ').append(body).toString();
 	}
