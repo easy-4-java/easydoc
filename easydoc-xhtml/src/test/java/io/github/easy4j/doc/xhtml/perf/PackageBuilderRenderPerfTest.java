@@ -22,6 +22,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,10 @@ import io.github.easy4j.doc.xhtml.io.WordprocessingMLPackageBuilder;
  *   - buildWithXhtml (2 KB html): ~6 ms (bound 500 ms)
  *   - buildWithXhtml (10 KB html): ~15 ms (bound 1 500 ms)</p>
  */
+// 绝对时间门（render 中位数上限）：对持续高负载敏感，建议以
+// -DexcludedGroups=perf-absolute 移出常规 CI，由专用 perf 任务
+// 以 -Dgroups=perf-absolute 单独调度（审计 #28）。
+@Tag("perf-absolute")
 class PackageBuilderRenderPerfTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(PackageBuilderRenderPerfTest.class);

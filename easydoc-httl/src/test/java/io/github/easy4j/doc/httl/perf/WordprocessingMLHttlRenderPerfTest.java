@@ -19,10 +19,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.nio.file.Path;
 import java.util.Map;
+
+import java.io.File;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +47,10 @@ import io.github.easy4j.doc.httl.WordprocessingMLHttlTemplate;
  *   - render /tpl/hello.htt: ~3 us per call (median over 1 000 renders)
  *   - process /tpl/hello.htt (end-to-end docx): ~11 ms per call (median of 3)</p>
  */
+// 绝对时间门（render 中位数上限）：对持续高负载敏感，建议以
+// -DexcludedGroups=perf-absolute 移出常规 CI，由专用 perf 任务
+// 以 -Dgroups=perf-absolute 单独调度（审计 #28）。
+@Tag("perf-absolute")
 class WordprocessingMLHttlRenderPerfTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(WordprocessingMLHttlRenderPerfTest.class);
@@ -53,7 +62,10 @@ class WordprocessingMLHttlRenderPerfTest {
     private static final long MAX_MEDIAN_RENDER_MICROS = 50_000L;
 
     private static final int PROCESS_MEASURED = 3;
-    private static final long MAX_MEDIAN_PROCESS_MILLIS = 5_000L;
+    /** 端到端负载容忍倍率：hello 全流程耗时上限 = 该倍率 x 同机“空包 create+save”基线。
+     *  基线走同一条 JAXB 编组 + zip 输出重路径，整机变慢时分子分母同比放大，比值稳定；
+     *  表达式求值/模板渲染一旦数量级退化，只有分子抬升（审计 #28）。 */
+    private static final double MAX_EMPTY_TO_HELLO_RATIO = 25d;
 
     /** Local subclass exposing the protected engine render step for direct timing. */
     private static class ExposedTemplate extends WordprocessingMLHttlTemplate {
@@ -90,7 +102,7 @@ class WordprocessingMLHttlRenderPerfTest {
 
     @Test
     @Timeout(value = 120)
-    void processHelloTemplateEndToEndUnderBound() throws Exception {
+    void processHelloTemplateEndToEndLoadTolerantBound(@TempDir Path tempDir) throws Exception {
         WordprocessingMLHttlTemplate t = new WordprocessingMLHttlTemplate();
         Map<String, Object> vars = Map.of("name", "world");
 
@@ -104,10 +116,28 @@ class WordprocessingMLHttlRenderPerfTest {
             samplesMillis[i] = (System.nanoTime() - start) / 1_000_000L;
             assertNotNull(pkg);
         }
-        long medianMillis = median(samplesMillis);
-        LOG.debug("httl process {} end-to-end: {} ms median over {} renders", TEMPLATE, medianMillis, PROCESS_MEASURED);
-        assertTrue(medianMillis < MAX_MEDIAN_PROCESS_MILLIS,
-                "httl process median " + medianMillis + " ms exceeded bound " + MAX_MEDIAN_PROCESS_MILLIS + " ms");
+        long medianHello = median(samplesMillis);
+        long medianEmpty = median(emptyPackageSaveSamples(tempDir));
+        LOG.debug("httl process {} end-to-end: {} ms median vs empty-save {} ms (limit factor {})",
+                TEMPLATE, medianHello, medianEmpty, MAX_EMPTY_TO_HELLO_RATIO);
+        assertTrue(medianHello < MAX_EMPTY_TO_HELLO_RATIO * Math.max(1L, medianEmpty),
+                "httl hello-process median " + medianHello + " ms is "
+                        + String.format("%.1fx", (double) medianHello / Math.max(1L, medianEmpty))
+                        + " of an equal-count empty-package save — pipeline regression");
+    }
+
+    /** 基线：与被测路径同 JVM 的“空文档 create+save”中位数样本。 */
+    private static long[] emptyPackageSaveSamples(Path tempDir) throws Exception {
+        long[] samples = new long[PROCESS_MEASURED];
+        File dir = tempDir.toFile();
+        for (int i = 0; i < PROCESS_MEASURED; i++) {
+            File out = new File(dir, "empty-baseline-" + i + ".docx");
+            long start = System.nanoTime();
+            WordprocessingMLPackage.createPackage().save(out);
+            samples[i] = (System.nanoTime() - start) / 1_000_000L;
+            assertTrue(out.delete() || !out.exists(), "baseline file must be deletable");
+        }
+        return samples;
     }
 
     private static long median(long[] samples) {

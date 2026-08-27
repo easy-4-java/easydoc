@@ -27,6 +27,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
@@ -52,6 +53,10 @@ import io.github.easy4j.doc.utils.WmlZipUtils;
  *   - WmlZipUtils.zipDir: ~45 ms for a 200-entry directory (median over 5 runs)
  * Both bounds below are 500 ms (~10x headroom).</p>
  */
+// 绝对时间门（render 中位数上限）：对持续高负载敏感，建议以
+// -DexcludedGroups=perf-absolute 移出常规 CI，由专用 perf 任务
+// 以 -Dgroups=perf-absolute 单独调度（审计 #28）。
+@Tag("perf-absolute")
 class WmlZipUtilsPerfTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(WmlZipUtilsPerfTest.class);

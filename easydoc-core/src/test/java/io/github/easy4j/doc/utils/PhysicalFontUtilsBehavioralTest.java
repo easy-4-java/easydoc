@@ -9,6 +9,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.RFonts;
 import org.docx4j.wml.RPr;
 import io.github.easy4j.doc.fonts.ChineseFont;
+import io.github.easy4j.doc.testutil.FontDiscoveryTestBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,15 +17,14 @@ import org.junit.jupiter.api.Test;
  * Behavioral tests for {@link PhysicalFontUtils}.
  *
  * These tests verify actual font values after calling the utility methods,
- * not just that they don't throw. For methods that use IdentityPlusMapper
- * (which requires PhysicalFonts discovery), we exercise the code path and
- * verify the result or the exception behavior.
- *
- * On environments without IdentityPlusMapper (e.g., missing fontconfig),
- * NoClassDefFoundError is caught to still exercise the code path.
+ * not just that they don't throw. Methods that use IdentityPlusMapper require
+ * working font discovery, so this suite extends {@link FontDiscoveryTestBase}:
+ * on machines where {@code PhysicalFonts.discoverPhysicalFonts()} throws
+ * (macOS FOP issue) the affected tests SKIP via assumption instead of
+ * swallowing errors and passing vacuously (audit #17).
  */
 @DisplayName("PhysicalFontUtils Behavioral Tests")
-class PhysicalFontUtilsBehavioralTest {
+class PhysicalFontUtilsBehavioralTest extends FontDiscoveryTestBase {
 
     // ---------------------------------------------------------------
     // setDefaultFont - does NOT use IdentityPlusMapper
@@ -87,6 +87,7 @@ class PhysicalFontUtilsBehavioralTest {
     @Test
     @DisplayName("setWmlPackageFonts sets a non-null font mapper on the package")
     void setWmlPackageFontsSetsMapper() throws Exception {
+        assumeFontDiscoveryWorks();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
         PhysicalFontUtils.setWmlPackageFonts(pkg);
         Mapper mapper = pkg.getFontMapper();
@@ -100,35 +101,29 @@ class PhysicalFontUtilsBehavioralTest {
     @Test
     @DisplayName("setPhysicalFont with PhysicalFont object exercises code path")
     void setPhysicalFontWithObject() throws Exception {
+        assumeFontDiscoveryWorks();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        try {
-            PhysicalFont font = PhysicalFonts.get("Arial");
-            if (font != null) {
-                PhysicalFontUtils.setPhysicalFont(pkg, font);
-                assertNotNull(pkg.getFontMapper());
-            }
-        } catch (Throwable e) {
-            // IdentityPlusMapper may not be available — code path still exercised
+        PhysicalFont font = PhysicalFonts.get("Arial");
+        if (font == null) {
+            return; // Arial genuinely absent on this machine
         }
+        PhysicalFontUtils.setPhysicalFont(pkg, font);
+        assertNotNull(pkg.getFontMapper());
     }
 
     @Test
     @DisplayName("setPhysicalFont with PhysicalFont and existing mapper exercises non-null branch")
     void setPhysicalFontWithObjectAndExistingMapper() throws Exception {
+        assumeFontDiscoveryWorks();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        try {
-            PhysicalFont font = PhysicalFonts.get("Arial");
-            if (font != null) {
-                // First call creates mapper (null branch), second call uses existing (non-null branch)
-                PhysicalFontUtils.setPhysicalFont(pkg, font);
-                PhysicalFont font2 = PhysicalFonts.get("Courier New");
-                if (font2 != null) {
-                    PhysicalFontUtils.setPhysicalFont(pkg, font2);
-                }
-            }
-        } catch (Throwable e) {
-            // OK for coverage
+        // First call creates mapper (null branch), second call uses existing (non-null branch)
+        PhysicalFont font = PhysicalFonts.get("Arial");
+        PhysicalFont font2 = PhysicalFonts.get("Courier New");
+        if (font == null || font2 == null) {
+            return; // specific families absent on this machine
         }
+        PhysicalFontUtils.setPhysicalFont(pkg, font);
+        PhysicalFontUtils.setPhysicalFont(pkg, font2);
     }
 
     // ---------------------------------------------------------------
@@ -138,25 +133,27 @@ class PhysicalFontUtilsBehavioralTest {
     @Test
     @DisplayName("setPhysicalFont with font name exercises code path")
     void setPhysicalFontWithName() throws Exception {
+        assumeFontDiscoveryWorks();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        try {
-            PhysicalFontUtils.setPhysicalFont(pkg, "Arial");
-        } catch (Throwable e) {
-            // IdentityPlusMapper may not be available — code path still exercised
+        if (PhysicalFonts.get("Arial") == null) {
+            return; // Arial genuinely absent on this machine
         }
+        PhysicalFontUtils.setPhysicalFont(pkg, "Arial");
+        assertNotNull(pkg.getFontMapper());
     }
 
     @Test
     @DisplayName("setPhysicalFont with font name and existing mapper exercises non-null branch")
     void setPhysicalFontWithNameAndExistingMapper() throws Exception {
+        assumeFontDiscoveryWorks();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        try {
-            // First call creates mapper (null branch)
-            PhysicalFontUtils.setPhysicalFont(pkg, "Arial");
-            // Second call uses existing mapper (non-null branch)
-            PhysicalFontUtils.setPhysicalFont(pkg, "Courier New");
-        } catch (Throwable e) {
-            // OK for coverage
+        if (PhysicalFonts.get("Arial") == null || PhysicalFonts.get("Courier New") == null) {
+            return; // specific families absent on this machine
         }
+        // First call creates mapper (null branch)
+        PhysicalFontUtils.setPhysicalFont(pkg, "Arial");
+        // Second call uses existing mapper (non-null branch)
+        PhysicalFontUtils.setPhysicalFont(pkg, "Courier New");
+        assertNotNull(pkg.getFontMapper());
     }
 }

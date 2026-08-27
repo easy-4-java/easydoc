@@ -38,10 +38,11 @@ import org.junit.jupiter.api.function.Executable;
  * and {@link WordprocessingMLDocxStAXTemplate}.
  *
  * <p>NOTE: Null-template paths call {@code SampleDocument.createContent()} which
- * invokes {@code PhysicalFonts.discoverPhysicalFonts()}. On some macOS environments
- * a specific system font triggers an {@code AssertionError} inside FOP's font parser.
- * The production code catches {@code Exception} but not {@code Error}.
- * TODO: fix production bug — SampleDocument.createContent should catch Throwable
+ * invokes {@code PhysicalFonts.discoverPhysicalFonts()}. Historical note: on some
+ * macOS environments font discovery threw {@code AssertionError} from FOP's parser;
+ * {@code SampleDocument.createContent} now guards with {@code catch (Throwable)}, so
+ * these tests assert unconditionally again (the old runAllowingFontError swallow is
+ * gone — see audit #17).
  */
 @DisplayName("WordprocessingML Template variants")
 class WordprocessingMLTemplateVariantsTest {
@@ -57,19 +58,6 @@ class WordprocessingMLTemplateVariantsTest {
         vars.put("title", "Test Title");
         vars.put("content", "Test Content");
         return vars;
-    }
-
-    /**
-     * Runs a block that may hit the SampleDocument font-discovery AssertionError.
-     * If it does, the test still passes (the code was executed for JaCoCo coverage).
-     */
-    private static void runAllowingFontError(Runnable r) {
-        try {
-            r.run();
-        } catch (AssertionError e) {
-            // TODO: fix production bug — SampleDocument.createContent catches Exception but not Error
-            // Font discovery AssertionError on macOS: code was still executed for JaCoCo coverage
-        }
     }
 
     /**
@@ -108,40 +96,22 @@ class WordprocessingMLTemplateVariantsTest {
         @Test
         @DisplayName("process(File,null) creates dummy document")
         void processFile_null_createsDummy() throws Exception {
-            runAllowingFontError(() -> {
-                try {
-                    WordprocessingMLPackage result = tmpl.process((File) null, sampleVars());
-                    assertThat(result).isNotNull();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        WordprocessingMLPackage result = tmpl.process((File) null, sampleVars());
+            assertThat(result).isNotNull();
         }
 
         @Test
         @DisplayName("process(File,null,empty vars) creates dummy document")
         void processFile_null_emptyVars_createsDummy() throws Exception {
-            runAllowingFontError(() -> {
-                try {
-                    WordprocessingMLPackage result = tmpl.process((File) null, new HashMap<>());
-                    assertThat(result).isNotNull();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        WordprocessingMLPackage result = tmpl.process((File) null, new HashMap<>());
+            assertThat(result).isNotNull();
         }
 
         @Test
         @DisplayName("process(File,null,null vars) creates dummy document")
         void processFile_null_nullVars_createsDummy() throws Exception {
-            runAllowingFontError(() -> {
-                try {
-                    WordprocessingMLPackage result = tmpl.process((File) null, null);
-                    assertThat(result).isNotNull();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        WordprocessingMLPackage result = tmpl.process((File) null, null);
+            assertThat(result).isNotNull();
         }
 
         @Test
@@ -172,27 +142,15 @@ class WordprocessingMLTemplateVariantsTest {
         @Test
         @DisplayName("process(InputStream,null) creates dummy document")
         void processStream_null_createsDummy() throws Exception {
-            runAllowingFontError(() -> {
-                try {
-                    WordprocessingMLPackage result = tmpl.process((InputStream) null, sampleVars());
-                    assertThat(result).isNotNull();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        WordprocessingMLPackage result = tmpl.process((InputStream) null, sampleVars());
+            assertThat(result).isNotNull();
         }
 
         @Test
         @DisplayName("process(InputStream,null,null vars) creates dummy")
         void processStream_null_nullVars_createsDummy() throws Exception {
-            runAllowingFontError(() -> {
-                try {
-                    WordprocessingMLPackage result = tmpl.process((InputStream) null, null);
-                    assertThat(result).isNotNull();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        WordprocessingMLPackage result = tmpl.process((InputStream) null, null);
+            assertThat(result).isNotNull();
         }
 
         @Test
@@ -251,14 +209,8 @@ class WordprocessingMLTemplateVariantsTest {
         @DisplayName("process(File,non-existent) creates dummy and returns package")
         void processFile_nonExistent_createsDummy() throws Exception {
             File ghost = new File("/tmp/no_such_file_42.docx");
-            runAllowingFontError(() -> {
-                try {
-                    WordprocessingMLPackage result = tmpl.process(ghost, sampleVars());
-                    assertThat(result).isNotNull();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        WordprocessingMLPackage result = tmpl.process(ghost, sampleVars());
+            assertThat(result).isNotNull();
         }
     }
 
@@ -338,27 +290,15 @@ class WordprocessingMLTemplateVariantsTest {
         @Test
         @DisplayName("process(File,null) creates dummy document")
         void processFile_null_createsDummy() throws Exception {
-            runAllowingFontError(() -> {
-                try {
-                    WordprocessingMLPackage result = tmpl.process((File) null, sampleVars());
-                    assertThat(result).isNotNull();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        WordprocessingMLPackage result = tmpl.process((File) null, sampleVars());
+            assertThat(result).isNotNull();
         }
 
         @Test
         @DisplayName("process(File,null,null vars) creates dummy")
         void processFile_null_nullVars_createsDummy() throws Exception {
-            runAllowingFontError(() -> {
-                try {
-                    WordprocessingMLPackage result = tmpl.process((File) null, null);
-                    assertThat(result).isNotNull();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        WordprocessingMLPackage result = tmpl.process((File) null, null);
+            assertThat(result).isNotNull();
         }
 
         @Test
@@ -385,14 +325,8 @@ class WordprocessingMLTemplateVariantsTest {
         @Test
         @DisplayName("process(InputStream,null) creates dummy document")
         void processStream_null_createsDummy() throws Exception {
-            runAllowingFontError(() -> {
-                try {
-                    WordprocessingMLPackage result = tmpl.process((InputStream) null, sampleVars());
-                    assertThat(result).isNotNull();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        WordprocessingMLPackage result = tmpl.process((InputStream) null, sampleVars());
+            assertThat(result).isNotNull();
         }
 
         @Test
@@ -430,14 +364,8 @@ class WordprocessingMLTemplateVariantsTest {
         @DisplayName("process(File,non-existent) creates dummy")
         void processFile_nonExistent_createsDummy() throws Exception {
             File ghost = new File("/tmp/no_such_file_sax_42.docx");
-            runAllowingFontError(() -> {
-                try {
-                    WordprocessingMLPackage result = tmpl.process(ghost, sampleVars());
-                    assertThat(result).isNotNull();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        WordprocessingMLPackage result = tmpl.process(ghost, sampleVars());
+            assertThat(result).isNotNull();
         }
 
         @Test
@@ -495,27 +423,15 @@ class WordprocessingMLTemplateVariantsTest {
         @Test
         @DisplayName("process(File,null) creates dummy document")
         void processFile_null_createsDummy() throws Exception {
-            runAllowingFontError(() -> {
-                try {
-                    WordprocessingMLPackage result = tmpl.process((File) null, sampleVars());
-                    assertThat(result).isNotNull();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        WordprocessingMLPackage result = tmpl.process((File) null, sampleVars());
+            assertThat(result).isNotNull();
         }
 
         @Test
         @DisplayName("process(File,null,null vars) creates dummy")
         void processFile_null_nullVars_createsDummy() throws Exception {
-            runAllowingFontError(() -> {
-                try {
-                    WordprocessingMLPackage result = tmpl.process((File) null, null);
-                    assertThat(result).isNotNull();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        WordprocessingMLPackage result = tmpl.process((File) null, null);
+            assertThat(result).isNotNull();
         }
 
         @Test
@@ -550,27 +466,15 @@ class WordprocessingMLTemplateVariantsTest {
         @Test
         @DisplayName("process(InputStream,null) creates dummy document")
         void processStream_null_createsDummy() throws Exception {
-            runAllowingFontError(() -> {
-                try {
-                    WordprocessingMLPackage result = tmpl.process((InputStream) null, sampleVars());
-                    assertThat(result).isNotNull();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        WordprocessingMLPackage result = tmpl.process((InputStream) null, sampleVars());
+            assertThat(result).isNotNull();
         }
 
         @Test
         @DisplayName("process(InputStream,null,null vars) creates dummy")
         void processStream_null_nullVars_createsDummy() throws Exception {
-            runAllowingFontError(() -> {
-                try {
-                    WordprocessingMLPackage result = tmpl.process((InputStream) null, null);
-                    assertThat(result).isNotNull();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        WordprocessingMLPackage result = tmpl.process((InputStream) null, null);
+            assertThat(result).isNotNull();
         }
 
         @Test
@@ -600,14 +504,8 @@ class WordprocessingMLTemplateVariantsTest {
         @DisplayName("process(File,non-existent) creates dummy")
         void processFile_nonExistent_createsDummy() throws Exception {
             File ghost = new File("/tmp/no_such_file_stax_42.docx");
-            runAllowingFontError(() -> {
-                try {
-                    WordprocessingMLPackage result = tmpl.process(ghost, sampleVars());
-                    assertThat(result).isNotNull();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                        WordprocessingMLPackage result = tmpl.process(ghost, sampleVars());
+            assertThat(result).isNotNull();
         }
 
         @Test

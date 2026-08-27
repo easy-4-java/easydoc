@@ -95,14 +95,20 @@
         <tomcat-jasper.version>10.1.54</tomcat-jasper.version>
 
         <!-- ═══ 第六段: 测试框架版本 ═══ -->
+        <!-- JUnit 4 已随 3.0.x 移除：存量 JUnit 4 用例均无 vintage 引擎支撑
+             （surefire 走 JUnit Platform，不加载 junit:junit），且每个模块
+             都有语义等价、断言更强的 JUnit Jupiter 用例（Hello/Coverage/
+             Variants/perf）。详见 refactor/p0-test 分支的删除提交说明 -->
         <assertj.version>3.27.7</assertj.version>
-        <junit.version>4.13.2</junit.version>
         <junit-jupiter.version>6.1.0</junit-jupiter.version>
         <slf4j.version>2.0.18</slf4j.version>
         <lombok.version>1.18.46</lombok.version>
 
         <!-- ═══ 第七段: Maven 插件版本 ═══ -->
         <maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>
+        <!-- surefire 的 @{argLine} 晚绑定兜底默认值：无 jacoco（-Djacoco.skip=true）
+             且未在命令行传 -DargLine 时避免字面量 "@{argLine}" 混入 fork JVM 参数；
+             jacoco prepare-agent 执行时会以 agent 参数覆盖该工程属性 -->
         <maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
         <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
@@ -120,6 +126,12 @@
         <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+
+        <!-- 测试进程额外参数默认值（可被命令行 -DargLine=... 覆盖；
+             与 1.0.x / 2.0.x 分支的 @{argLine} 晚绑定风格保持一致，见审计 #30：
+             晚绑定才能在同一构建里正确吃到 jacoco prepare-agent 注入的
+             -javaagent 参数，${argLine} 早绑定会被 pom 构建期求值吞掉） -->
+        <argLine></argLine>
     </properties>
 
 
@@ -128,15 +140,11 @@
 
             <!-- ======== 测试框架 ======== -->
 
-            <!-- https://mvnrepository.com/artifact/junit/junit -->
-            <!-- JUnit 4（历史测试用例兼容） -->
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-            </dependency>
             <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
-            <!-- JUnit 5（聚合构件，包含 api + engine + params） -->
+            <!-- JUnit 6/Jupiter（聚合构件，包含 api + engine + params）；
+                 JUnit 4 已移除：无 vintage 引擎时 surefire（JUnit Platform）
+                 本就不会执行任何 org.junit.Test 用例，保留 junit:junit 只会
+                 伪装成"测试在跑" -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
@@ -574,12 +582,7 @@
         </dependency>
 
         <!-- ======== Test ======== -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- JUnit 5（聚合构件） -->
+        <!-- JUnit Jupiter（聚合构件，唯一测试框架；JUnit 4 已随死用例一并移除） -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -792,8 +795,11 @@
                     <configuration>
                         <skip>false</skip>
                         <skipTests>false</skipTests>
+                        <!-- @{argLine} 为 surefire 3.x 晚绑定写法（与 1.0.x/2.0.x 统一）：
+                             运行期才求值，能取到 jacoco prepare-agent 注入的 -javaagent；
+                             早绑定 ${argLine} 在 pom 构建期展开，jacoco 的注入会丢失 -->
                         <!--suppress UnresolvedMavenProperty -->
-                        <argLine>${argLine} -Xmx1024m -Dfile.encoding=UTF-8</argLine>
+                        <argLine>@{argLine} -Xmx1024m -Dfile.encoding=UTF-8</argLine>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/target/test-classes</additionalClasspathElement>
                         </additionalClasspathElements>
@@ -872,7 +878,15 @@
         <plugins>
 
             <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
-            <!-- JaCoCo（代码覆盖率：prepare-agent + report + check，行覆盖率阈值 90%） -->
+            <!-- JaCoCo（代码覆盖率：prepare-agent + report + check）。
+                 双层门槛（审计 #18）：
+                   1) BUNDLE 级 LINE ≥ 0.92：v20260830 基线（原 0.90 名义门槛实际全模块 91.45%~100%）；
+                   2) PACKAGE 级 LINE ≥ 0.85：此前 BUNDLE 汇总掩盖了子包短板
+                      （easydoc-core/io.github.easy4j.doc.handler 曾仅 84.34%、
+                       easydoc-xhtml/io.github.easy4j.doc.xhtml.markdown 曾为 88.99%），
+                      先以 VariableReplaceGuardsPathTest / DocxStructureExtractorExtendedTest
+                      抬升至 91.57% / 91.04%，再启用包级硬门。
+                 棘轮计划：后续每次发版将两级下限各收紧约 5~10 个百分点，向 1.00 渐进 -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -906,7 +920,34 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.90</minimum>
+                                            <minimum>0.92</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                                <!-- 包级硬门：VM 记法包名（见 jacoco check 规则的 element-name 匹配） -->
+                                <rule>
+                                    <element>PACKAGE</element>
+                                    <includes>
+                                        <include>io/github/easy4j/doc/handler</include>
+                                    </includes>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.85</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                                <rule>
+                                    <element>PACKAGE</element>
+                                    <includes>
+                                        <include>io/github/easy4j/doc/xhtml/markdown</include>
+                                    </includes>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.85</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

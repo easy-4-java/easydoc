@@ -9,35 +9,35 @@ import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import io.github.easy4j.doc.testutil.FontDiscoveryTestBase;
+
 /**
  * Behavioral tests for {@link SampleDocument} that exercise the createContent
  * method and the addObject method with various templates.
  *
- * On macOS, PhysicalFonts.discoverPhysicalFonts() may throw AssertionError
- * from FOP font parsing. The production code catches Exception but not Error.
- * We handle this in tests to ensure the code path is exercised for JaCoCo.
+ * <p>Tests that trigger {@code PhysicalFonts.discoverPhysicalFonts()} extend
+ * {@link FontDiscoveryTestBase} so they SKIP (via JUnit assumption) on machines
+ * where font discovery throws — instead of swallowing the error and passing
+ * vacuously.</p>
  */
 @DisplayName("SampleDocument Behavioral Tests")
-class SampleDocumentBehavioralTest {
+class SampleDocumentBehavioralTest extends FontDiscoveryTestBase {
 
     @Test
     @DisplayName("createContent adds paragraphs for discovered fonts")
     void createContentAddsParagraphs() throws Exception {
+        assumeFontDiscoveryWorks();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
         MainDocumentPart mdp = pkg.getMainDocumentPart();
         int sizeBefore = mdp.getContent().size();
 
-        try {
-            SampleDocument.createContent(mdp);
-        } catch (AssertionError e) {
-            // macOS FOP font parsing may throw AssertionError
-            // The code is still exercised for JaCoCo coverage
-        }
+        SampleDocument.createContent(mdp);
 
-        // createContent should have added paragraphs if fonts were discovered
-        int sizeAfter = mdp.getContent().size();
-        // We can't guarantee fonts are available, but the method should not crash
-        assertTrue(sizeAfter >= sizeBefore);
+        // Once fonts are discovered, createContent must actually add paragraphs
+        List<?> content = mdp.getContent();
+        int sizeAfter = content.size();
+        assertTrue(sizeAfter > sizeBefore,
+                "createContent must add at least one paragraph when fonts are discovered");
     }
 
     @Test
