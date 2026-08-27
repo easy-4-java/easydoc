@@ -93,6 +93,50 @@ Maven 4 构建基线、安全加固与一系列正确性修复。相对 1.0.x（
 - httl / rythm / webit 引擎标记 `@Deprecated(since = "3.0")`（上游停更，httl 2014 年、
   rythm 2015 年、webit 2016 年最后发布；建议新项目选用 freemarker / thymeleaf / velocity）。
 
+### 审计修复（Sprint 1，30 项，多智能体并行交付）
+
+**正确性（P0）**
+
+- `Assert.notEmpty(Object[])` 条件写反（非空抛、空放行）修复为契约语义；同步修正
+  `CoverageBoostTest` 中三条锁定旧缺陷的断言。
+- `DocxElementWmlRender.newCell(Tr, String)` 自引用修复（原把单元格加进自己，
+  `newTable(row, cell)` 产出的表格行内容为空且存在编组递归风险）。
+- 结构化 Markdown：**列表缩进按 CommonMark 标记几何计算**（多级/10+ 有序列表不再散架）；
+  新增 `MarkdownEscaper` 转义层（`*_[]#\` 等字面字符不再污染下游）；
+  **合并单元格** gridSpan 展开 / vMerge 续行占位 / 行列宽规范化；
+  **header/footer/footnote 内容纳入提取**（body → headers → footers → footnotes）。
+- 删除 14 个在 JUnit Platform 下**静默从未执行**的 JUnit 4 测试类（无 vintage-engine），
+  由 Jupiter 等价套件承接覆盖；移除根 pom 的 junit4 依赖。
+
+**健壮性（P1）**
+
+- SAX 变量替换器对未闭合占位符（`${foo`）不再崩溃（对齐 StAX 宽松语义：WARN + 字面保留），
+  占位符前后缀长度不再硬编码 2。
+- writer 家族：`writeToHtml(pkg)` 不再写入 `.pdf` 后缀文件；临时文件改
+  `Files.createTempFile`（同毫秒不再互踩）；`WmlZipUtils` 的 ZipFile/entry 流全部
+  try-with-resources；`writeToFile` 流关闭；删除经字节码验证为**死代码**的全局
+  `Docx4jProperties` 突变（key 拼写错误从未生效），handler 字段 volatile + 同步 setter。
+- 引擎工厂：HTTL 默认配置不再 NPE；Velocity 清理 7 个分号前缀死键 + 修正 loader FQN；
+  Rythm 修复 `home.tmp` 拼写与空配置 NPE；Freemarker 双阶段初始化收敛为与其它 7 模块一致的
+  `factory.get()` 单入口（修复每次 `getInternalEngine()` 重建 Renderer、首个 render 丢失
+  静态助手、过期 setter 不重置缓存三处缺陷）；8 模块统一 IOException 异常边界。
+- 静默异常吞噬点（DocxReaderBuilder / WMLPackageUtils / insertDocx / SampleDocument /
+  双 handler）全部改为带完整 cause 链的 WARN 日志。
+
+**测试与门禁**
+
+- JaCoCo 门禁诚实化：BUNDLE 0.90→**0.92**，新增 PACKAGE 级 0.85 规则
+  （handler 84%→91.6%、markdown 89%→91.0% 已先补测试达标）；
+- 新增 `FontDiscoveryTestBase`（字体发现失败从"静默弱通过"改为显式 Assumption 跳过）；
+  14 个 perf 测试统一 `@Tag("perf-absolute")`，8 个 e2e 改为同 JVM 比值界限（负载免疫）；
+  surefire argLine 统一晚绑定 `@{argLine}`；清理 src/test/resources/output 残留产物。
+- 结构化门面 6 个方法 `throws Exception` 收窄为 `IOException`（源码兼容）。
+
+**安全（依赖）**
+
+- 详见 [docs/release-central.md](docs/release-central.md) 旁的 CVE 扫描结论：
+  3.0.x 仅剩 fastjson（rythm 传递，无上游修复）一项 CRITICAL 未决。
+
 ### 安全
 
 - OGNL 注入：`DefaultMemberAccess(false, false, false)` 仅允许 public 成员。
@@ -113,7 +157,7 @@ Maven 4 构建基线、安全加固与一系列正确性修复。相对 1.0.x（
   直接返回 StAX 模板（行为一致，运行时降级保留防御直接 new 实例化）。
 - httl / rythm / webit 引擎标记 `@Deprecated`（上游停更 2014–2016），可用但建议新项目选用
   freemarker / thymeleaf / velocity。
-- easydoc-jsp 仍是 javax.servlet + Tomcat 9 Jasper（Jakarta EE 用户不可用，其余模块不受影响）。
+- easydoc-jsp 已迁移 jakarta.servlet 6.0.0 + Tomcat 10.1 Jasper（见架构演进节）。
 - HTML→PDF 的 openhtmltopdf（docx4j-xhtmlrenderer 3.0.0）会打印 XXE 相关 SEVERE 警告；
   处理不可信 HTML 时建议 JVM 参数 `javax.xml.accessExternalDTD=""`。
 
