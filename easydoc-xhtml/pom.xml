@@ -57,6 +57,14 @@
 		    <groupId>com.vladsch.flexmark</groupId>
 		    <artifactId>flexmark-all</artifactId>
 		</dependency>
+		<!-- flexmark HTML→Markdown 转换器（FlexmarkHtmlConverter，AST 驱动，
+		     替代 MarkdownConverter.htmlToMarkdown 中的正则映射，解决 F1 系列
+		     标题属性/嵌套列表/有序编号/表格分隔行/内联代码/锚点失真问题。 -->
+		<dependency>
+		    <groupId>com.vladsch.flexmark</groupId>
+		    <artifactId>flexmark-html2md-converter</artifactId>
+		    <version>${flexmark.version}</version>
+		</dependency>
 
 		<!-- ======== 日志桥接 ======== -->
 		<!-- jcl-over-slf4j：ImportXHTML 转换路径中 pdfbox 依赖 commons-logging 接口，

@@ -33,18 +33,33 @@ public final class DocxToMarkdownConverter {
 	private DocxToMarkdownConverter() {
 	}
 
-	/** 结构化 DOCX 文件 → Markdown。null 抛 NPE；文件不存在抛 IOException。 */
+	/** 结构化 DOCX 文件 → Markdown（默认渲染选项）。null 抛 NPE；文件不存在抛 IOException。 */
 	public static String convert(File docx) throws IOException {
-		return DocxStructureExtractor.extract(docx).fullMarkdown();
+		return convert(docx, MarkdownRenderOptions.DEFAULT);
 	}
 
-	/** 结构化 DOCX 输入流 → Markdown（流由本方法负责关闭）。null 抛 NPE；损坏包抛 IOException。 */
+	/** 结构化 DOCX 文件 → Markdown（指定渲染选项）。null 抛 NPE；文件不存在抛 IOException。 */
+	public static String convert(File docx, MarkdownRenderOptions opts) throws IOException {
+		return DocxStructureExtractor.extract(docx).fullMarkdown(opts);
+	}
+
+	/** 结构化 DOCX 输入流 → Markdown（默认渲染选项，流由本方法负责关闭）。null 抛 NPE；损坏包抛 IOException。 */
 	public static String convert(InputStream in) throws IOException {
-		return DocxStructureExtractor.extract(in).fullMarkdown();
+		return convert(in, MarkdownRenderOptions.DEFAULT);
 	}
 
-	/** 已加载结构化 DOCX 包 → Markdown。null 抛 NPE。 */
+	/** 结构化 DOCX 输入流 → Markdown（指定渲染选项，流由本方法负责关闭）。null 抛 NPE；损坏包抛 IOException。 */
+	public static String convert(InputStream in, MarkdownRenderOptions opts) throws IOException {
+		return DocxStructureExtractor.extract(in).fullMarkdown(opts);
+	}
+
+	/** 已加载结构化 DOCX 包 → Markdown（默认渲染选项）。null 抛 NPE。 */
 	public static String convert(WordprocessingMLPackage pkg) {
-		return DocxStructureExtractor.extract(pkg).fullMarkdown();
+		return convert(pkg, MarkdownRenderOptions.DEFAULT);
+	}
+
+	/** 已加载结构化 DOCX 包 → Markdown（指定渲染选项）。null 抛 NPE。 */
+	public static String convert(WordprocessingMLPackage pkg, MarkdownRenderOptions opts) {
+		return DocxStructureExtractor.extract(pkg).fullMarkdown(opts);
 	}
 }

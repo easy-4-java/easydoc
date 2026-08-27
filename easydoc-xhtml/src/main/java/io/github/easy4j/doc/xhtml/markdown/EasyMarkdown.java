@@ -98,27 +98,60 @@ public final class EasyMarkdown {
 	// 同组一致签名并预留未来降级空间）。
 
 	/**
-	 * 结构化 docx 文件 → Markdown（OOXML 直读，高保真；对照 HTML 路径 {@link #docxToMarkdown(File)}）。
+	 * 结构化 docx 文件 → Markdown（OOXML 直读，高保真；默认渲染选项，纯 GFM 输出）。
 	 * null 输入抛 NPE；文件不存在或包损坏抛 IOException。
 	 */
 	public static String docxToStructuredMarkdown(File docx) throws IOException {
-		return DocxToMarkdownConverter.convert(docx);
+		return docxToStructuredMarkdown(docx, MarkdownRenderOptions.DEFAULT);
 	}
 
 	/**
-	 * 结构化 docx 输入流 → Markdown（流由底层负责关闭，勿重复关闭）。
+	 * 结构化 docx 文件 → Markdown（OOXML 直读，指定渲染选项）。
+	 * null 输入抛 NPE；文件不存在或包损坏抛 IOException。
+	 *
+	 * @param docx docx 文件
+	 * @param opts 渲染选项；null 等价于 {@link MarkdownRenderOptions#DEFAULT}
+	 */
+	public static String docxToStructuredMarkdown(File docx, MarkdownRenderOptions opts) throws IOException {
+		return DocxToMarkdownConverter.convert(docx, opts);
+	}
+
+	/**
+	 * 结构化 docx 输入流 → Markdown（默认渲染选项，流由底层负责关闭，勿重复关闭）。
 	 * null 输入抛 NPE；损坏包抛 IOException。
 	 */
 	public static String docxToStructuredMarkdown(InputStream in) throws IOException {
-		return DocxToMarkdownConverter.convert(in);
+		return docxToStructuredMarkdown(in, MarkdownRenderOptions.DEFAULT);
 	}
 
 	/**
-	 * 已加载结构化 docx 包 → Markdown（OOXML 直读，高保真）。
+	 * 结构化 docx 输入流 → Markdown（指定渲染选项，流由底层负责关闭，勿重复关闭）。
+	 * null 输入抛 NPE；损坏包抛 IOException。
+	 *
+	 * @param in   docx 输入流
+	 * @param opts 渲染选项；null 等价于 {@link MarkdownRenderOptions#DEFAULT}
+	 */
+	public static String docxToStructuredMarkdown(InputStream in, MarkdownRenderOptions opts) throws IOException {
+		return DocxToMarkdownConverter.convert(in, opts);
+	}
+
+	/**
+	 * 已加载结构化 docx 包 → Markdown（默认渲染选项，OOXML 直读，高保真）。
 	 * null 输入抛 NPE。
 	 */
 	public static String docxToStructuredMarkdown(WordprocessingMLPackage pkg) throws IOException {
-		return DocxToMarkdownConverter.convert(pkg);
+		return docxToStructuredMarkdown(pkg, MarkdownRenderOptions.DEFAULT);
+	}
+
+	/**
+	 * 已加载结构化 docx 包 → Markdown（指定渲染选项，OOXML 直读，高保真）。
+	 * null 输入抛 NPE。
+	 *
+	 * @param pkg  已加载的 docx 包
+	 * @param opts 渲染选项；null 等价于 {@link MarkdownRenderOptions#DEFAULT}
+	 */
+	public static String docxToStructuredMarkdown(WordprocessingMLPackage pkg, MarkdownRenderOptions opts) throws IOException {
+		return DocxToMarkdownConverter.convert(pkg, opts);
 	}
 
 	/**

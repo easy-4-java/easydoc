@@ -78,7 +78,6 @@
         <jetbrick.version>2.1.10</jetbrick.version>
         <jsoup.version>1.23.1</jsoup.version>
         <junit-jupiter.version>5.11.4</junit-jupiter.version>
-        <junit.version>4.13.2</junit.version>
         <ognl.version>3.4.2</ognl.version>
         <persistence.version>2.7.6</persistence.version>
         <rythm.version>1.4.2</rythm.version>
@@ -287,10 +286,10 @@
                     <configuration>
                         <skip>false</skip>
                         <skipTests>false</skipTests>
-                        <!-- -da:org.docx4j...：docx4j 内嵌 fop 的字体表解析含仅在 -ea（surefire 默认开启）
+                        <!-- -da:org.docx4j.fonts.fop：docx4j 内嵌 fop 的字体表解析含仅在 -ea（surefire 默认开启）
                              下触发的断言，扫描本机系统字体时可能误报 AssertionError；生产运行不带 -ea，
-                             故仅对 org.docx4j 包树关闭断言以对齐真实运行语义（其余包的断言保持生效） -->
-                        <argLine>-Xmx1024m -Dfile.encoding=UTF-8 -da:org.docx4j... @{argLine}</argLine>
+                             故仅对 fop 字体包关闭断言以对齐真实运行语义（其余包的断言保持生效） -->
+                        <argLine>-Xmx1024m -Dfile.encoding=UTF-8 -da:org.docx4j.fonts.fop... @{argLine}</argLine>
                         <includes>
                             <include>**/*Test.java</include>
                             <include>**/*Tests.java</include>
@@ -797,13 +796,6 @@
                 <scope>import</scope>
             </dependency>
             <!-- ======== Test ======== -->
-            <!-- Source: https://mvnrepository.com/artifact/junit/junit -->
-            <!-- For Junit -->
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-            </dependency>
             <!-- Source: https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
             <!-- For JUnit 5 -->
             <dependency>
@@ -1172,12 +1164,6 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <!-- ======== Test ======== -->
-        <!-- For Junit：JUnit 4 测试框架 -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
         <!-- For JUnit 5：JUnit Jupiter 测试框架 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

@@ -33,6 +33,7 @@ import org.docx4j.openpackaging.parts.WordprocessingML.NumberingDefinitionsPart;
 import org.docx4j.openpackaging.parts.relationships.RelationshipsPart;
 import org.docx4j.wml.Body;
 import org.docx4j.wml.Br;
+import org.docx4j.wml.Color;
 import org.docx4j.wml.Document;
 import org.docx4j.wml.Drawing;
 import org.docx4j.wml.Lvl;
@@ -573,21 +574,21 @@ public final class DocxStructureExtractor {
 			return null;
 		}
 		Set<Integer> vMergedColumns = new LinkedHashSet<Integer>();
-		List<String> headers = extractRowCells(rows.get(0), vMergedColumns);
-		List<List<String>> dataRows = new ArrayList<List<String>>();
+		List<DocxCell> headers = extractRowCells(rows.get(0), vMergedColumns);
+		List<List<DocxCell>> dataRows = new ArrayList<List<DocxCell>>();
 		for (int i = 1; i < rows.size(); i++) {
 			dataRows.add(extractRowCells(rows.get(i), vMergedColumns));
 		}
 		return new HeadersAndRows(headers, dataRows);
 	}
 
-	/** 解析结果载体：表头 + 数据行。 */
+	/** 解析结果载体：表头 + 数据行（含单元格样式）。 */
 	static final class HeadersAndRows {
 
-		final List<String> headers;
-		final List<List<String>> rows;
+		final List<DocxCell> headers;
+		final List<List<DocxCell>> rows;
 
-		HeadersAndRows(List<String> headers, List<List<String>> rows) {
+		HeadersAndRows(List<DocxCell> headers, List<List<DocxCell>> rows) {
 			this.headers = headers;
 			this.rows = rows;
 		}
@@ -595,11 +596,12 @@ public final class DocxStructureExtractor {
 
 	/**
 	 * 单行单元格抽取（含合并展开）：gridSpan&gt;1 展开为重复单元格；vMerge 延续格输出
-	 * 空串占位（仅当该列确有更早行的 restart 开启），使每行列数与网格一致。列号按
-	 * gridSpan 逐格推进；普通格抵达时视为该列合并链结束。
+	 * 空占位（仅当该列确有更早行的 restart 开启），使每行列数与网格一致。列号按
+	 * gridSpan 逐格推进；普通格抵达时视为该列合并链结束。单元格同时采集字体色 /
+	 * 背景色（{@link DocxCell}），供下游可选颜色渲染使用。
 	 */
-	private static List<String> extractRowCells(Tr tr, Set<Integer> vMergedColumns) {
-		List<String> cells = new ArrayList<String>();
+	private static List<DocxCell> extractRowCells(Tr tr, Set<Integer> vMergedColumns) {
+		List<DocxCell> cells = new ArrayList<DocxCell>();
 		if (tr.getContent() == null) {
 			return cells;
 		}
@@ -622,7 +624,7 @@ public final class DocxStructureExtractor {
 				vMergedColumns.add(key);
 			} else if (hasVMerge && vMergedColumns.contains(key)) {
 				// 纵向延续：内容归并到上方格，此处仅空占位以对齐网格
-				cells.add("");
+				cells.add(DocxCell.EMPTY);
 			} else {
 				// 普通格（含"孤立延续"的容错：无前置 restart 则按普通内容保留）
 				cells.addAll(flattenedCell(tc, span));
@@ -633,14 +635,91 @@ public final class DocxStructureExtractor {
 		return cells;
 	}
 
-	/** 取单元格扁平文本；横向合并（span&gt;1）展开为重复占位。 */
-	private static List<String> flattenedCell(org.docx4j.wml.Tc tc, int span) {
+	/**
+	 * 从单元格提取文本及样式：文本通过 {@link #flatText} 扁平化，背景色取
+	 * {@code <w:shd w:fill="...">}，字体色取第一个 run 的 {@code <w:color w:val="...">}。
+	 * 仅接受显式 6 位十六进制值；主题色（{@code theme=}）/自动色返回 null（不渲染）。
+	 */
+	private static DocxCell extractCell(org.docx4j.wml.Tc tc) {
 		StringBuilder sb = new StringBuilder();
 		flatText(tc.getContent(), sb);
 		String text = sb.toString().trim();
-		List<String> expanded = new ArrayList<String>(Math.max(span, 1));
+
+		// 背景色：tcPr/shd/w:fill
+		String bgHex = null;
+		org.docx4j.wml.TcPr tcPr = tc.getTcPr();
+		if (tcPr != null && tcPr.getShd() != null) {
+			bgHex = hex6FromString(tcPr.getShd().getFill());
+		}
+
+		// 字体色：第一个 run 的 rPr/color/w:val
+		String fgHex = null;
+		Color color = firstRunColor(tc.getContent());
+		if (color != null) {
+			fgHex = hex6FromString(color.getVal());
+		}
+
+		return new DocxCell(text, fgHex, bgHex);
+	}
+
+	/**
+	 * 从内容列表中提取第一个 run 的字体颜色（{@code w:color}），递归搜索嵌套容器。
+	 * 未找到返回 null。
+	 */
+	private static Color firstRunColor(List<Object> content) {
+		if (content == null) {
+			return null;
+		}
+		for (Object rawItem : content) {
+			Object item = unwrap(rawItem);
+			if (item instanceof R) {
+				R r = (R) item;
+				if (r.getRPr() != null && r.getRPr().getColor() != null) {
+					return r.getRPr().getColor();
+				}
+			} else if (item instanceof P) {
+				Color found = firstRunColor(((P) item).getContent());
+				if (found != null) {
+					return found;
+				}
+			} else if (item instanceof org.docx4j.wml.ContentAccessor) {
+				Color found = firstRunColor(((org.docx4j.wml.ContentAccessor) item).getContent());
+				if (found != null) {
+					return found;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 解析 6 位十六进制颜色字符串：接受带或不带 {@code #} 前缀，仅当长度恰好 6 且
+	 * 全为合法十六进制字符时返回大写形式，其余一律返回 null（主题色、自动色等场景）。
+	 */
+	private static String hex6FromString(String raw) {
+		if (raw == null || raw.isEmpty()) {
+			return null;
+		}
+		String s = raw.startsWith("#") ? raw.substring(1) : raw;
+		if (s.length() != 6) {
+			return null;
+		}
+		for (int i = 0; i < 6; i++) {
+			char c = s.charAt(i);
+			boolean ok = (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+			if (!ok) {
+				return null;
+			}
+		}
+		return s.toUpperCase();
+	}
+
+	/** 取单元格文本与样式；横向合并（span&gt;1）展开为重复占位（颜色一并复制）。 */
+	private static List<DocxCell> flattenedCell(org.docx4j.wml.Tc tc, int span) {
+		DocxCell cell = extractCell(tc);
+		List<DocxCell> expanded = new ArrayList<DocxCell>(Math.max(span, 1));
 		for (int i = 0; i < span; i++) {
-			expanded.add(text);
+			expanded.add(cell);
 		}
 		return expanded;
 	}
