@@ -39,29 +39,44 @@ public class XHTMLImporterUtils {
 	 */
 	private static final Object JAXP_PROPERTY_LOCK = new Object();
 
+	private static final String DBF_PROPERTY = "javax.xml.parsers.DocumentBuilderFactory";
+
 	public static WordprocessingMLPackage handle(WordprocessingMLPackage wmlPackage, Document doc,boolean fragment,boolean altChunk) throws IOException, Docx4JException {
-		// XXE 防护：docx4j-ImportXHTML 内部的 openhtmltopdf 尝试在 XMLReader 上
-		// setProperty(ACCESS_EXTERNAL_DTD) 时被 JDK 解析器拒绝（"不支持"），打
-		// "Unable to disable XML External Entities" SEVERE 警告。这里通过 JAXP
-		// 系统属性兜底：解析器创建时读取系统属性作为默认，外部 DTD/Schema 被
-		// 真正禁止（空串 = 不允许任何外部访问），finally 恢复调用方原值。
-		//
-		// ⚠ 线程敌对契约：System.setProperty 本身就是 JVM 全局副作用。即便有
-		// try/finally 恢复 + 类级锁保护本方法内部的属性窗口，以下情况仍无法防御：
-		// （1）用户代码在 handle 执行期间读写同名属性；（2）解析器在窗口外延迟读取
-		// 属性。若业务方直接依赖这两个属性的精确取值，应避开与本方法并发执行，
-		// 或改为在容器层面统一配置解析器工厂。
-		synchronized (JAXP_PROPERTY_LOCK) {
-			String oldDtd = System.getProperty("javax.xml.accessExternalDTD");
-			String oldSchema = System.getProperty("javax.xml.accessExternalSchema");
-			System.setProperty("javax.xml.accessExternalDTD", "");
-			System.setProperty("javax.xml.accessExternalSchema", "");
-			try {
-				return handleInternal(wmlPackage, doc, fragment, altChunk);
-			} finally {
-				restore("javax.xml.accessExternalDTD", oldDtd);
-				restore("javax.xml.accessExternalSchema", oldSchema);
+		// XXE 防护（第二层）：临时将 DocumentBuilderFactory 系统属性指向
+		// SecureDocumentBuilderFactory，使 docx4j 内部 DocumentBuilderFactory.newInstance()
+		// 加载我们的安全工厂——在构造器内统一应用 disallow-doctype-decl /
+		// FEATURE_SECURE_PROCESSING / 关闭外部实体与 XInclude。
+		// 此属性窗口在 accessExternalDTD/SCHEMA 序列化窗口外层，避免持有
+		// JAXP_PROPERTY_LOCK 期间扩大锁范围。
+		String oldDbf = System.getProperty(DBF_PROPERTY);
+		System.setProperty(DBF_PROPERTY, SecureDocumentBuilderFactory.class.getName());
+		try {
+			// XXE 防护（第一层）：docx4j-ImportXHTML 内部的 openhtmltopdf 尝试在 XMLReader 上
+			// setProperty(ACCESS_EXTERNAL_DTD) 时被 JDK 解析器拒绝（"不支持"），打
+			// "Unable to disable XML External Entities" SEVERE 警告。这里通过 JAXP
+			// 系统属性兜底：解析器创建时读取系统属性作为默认，外部 DTD/Schema 被
+			// 真正禁止（空串 = 不允许任何外部访问），finally 恢复调用方原值。
+			//
+			// ⚠ 线程敌对契约：System.setProperty 本身就是 JVM 全局副作用。即便有
+			// try/finally 恢复 + 类级锁保护本方法内部的属性窗口，以下情况仍无法防御：
+			// （1）用户代码在 handle 执行期间读写同名属性；（2）解析器在窗口外延迟读取
+			// 属性。若业务方直接依赖这两个属性的精确取值，应避开与本方法并发执行，
+			// 或改为在容器层面统一配置解析器工厂。
+			synchronized (JAXP_PROPERTY_LOCK) {
+				String oldDtd = System.getProperty("javax.xml.accessExternalDTD");
+				String oldSchema = System.getProperty("javax.xml.accessExternalSchema");
+				System.setProperty("javax.xml.accessExternalDTD", "");
+				System.setProperty("javax.xml.accessExternalSchema", "");
+				try {
+					return handleInternal(wmlPackage, doc, fragment, altChunk);
+				} finally {
+					restore("javax.xml.accessExternalDTD", oldDtd);
+					restore("javax.xml.accessExternalSchema", oldSchema);
+				}
 			}
+		} finally {
+			// 恢复 DocumentBuilderFactory 系统属性（caller 原值优先）
+			restore(DBF_PROPERTY, oldDbf);
 		}
 	}
 

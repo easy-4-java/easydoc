@@ -17,6 +17,7 @@ package io.github.easy4j.doc.xhtml.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -35,11 +36,13 @@ class XHTMLImporterUtilsXxeProtectionTest {
 
 	private static final String DTD = "javax.xml.accessExternalDTD";
 	private static final String SCHEMA = "javax.xml.accessExternalSchema";
+	private static final String DBF = "javax.xml.parsers.DocumentBuilderFactory";
 
 	@AfterEach
 	void clearProps() {
 		System.clearProperty(DTD);
 		System.clearProperty(SCHEMA);
+		System.clearProperty(DBF);
 	}
 
 	@Test
@@ -77,5 +80,46 @@ class XHTMLImporterUtilsXxeProtectionTest {
 				pkg, Jsoup.parse("<html><body><p>xxe-guard</p></body></html>"), true, false);
 		assertTrue(result.getMainDocumentPart().getContent().size() > 0,
 				"parsed content must be present in the package");
+	}
+
+	@Test
+	@DisplayName("handle() 拒绝含 DOCTYPE 声明的恶意输入（抛异常而非返回含实体内容的 docx）")
+	void handleRejectsDoctypeDeclaration() throws Exception {
+		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+		// 含 DOCTYPE + 外部实体声明的恶意 XHTML
+		String maliciousHtml =
+			"<!DOCTYPE foo [<!ENTITY x SYSTEM 'file:///etc/passwd'>]>"
+			+ "<html><body><p>&x;</p></body></html>";
+		assertThrows(Exception.class,
+			() -> XHTMLImporterUtils.handle(pkg, Jsoup.parse(maliciousHtml), true, false),
+			"含 DOCTYPE 声明的输入必须被拒绝（SAXParseException / XHTMLImportException / Docx4JException）");
+	}
+
+	@Test
+	@DisplayName("handle() 恢复 caller 预先设置的 DocumentBuilderFactory 系统属性")
+	void handleRestoresDocumentBuilderFactoryProperty() throws Exception {
+		// caller 预先设置了一个自定义工厂类名
+		System.setProperty(DBF, "com.example.OtherFactory");
+
+		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+		XHTMLImporterUtils.handle(pkg, Jsoup.parse("<html><body><p>hi</p></body></html>"), true, false);
+
+		// handle 结束后恢复 caller 原值
+		assertEquals("com.example.OtherFactory", System.getProperty(DBF),
+			"caller 预先设置的 DocumentBuilderFactory 属性必须被恢复");
+	}
+
+	@Test
+	@DisplayName("handle() 清除 caller 未设置的 DocumentBuilderFactory 系统属性")
+	void handleClearsDocumentBuilderFactoryProperty() throws Exception {
+		// caller 未设置该属性
+		System.clearProperty(DBF);
+
+		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+		XHTMLImporterUtils.handle(pkg, Jsoup.parse("<html><body><p>hi</p></body></html>"), true, false);
+
+		// handle 结束后属性被清除（不残留 SecureDocumentBuilderFactory 类名）
+		assertNull(System.getProperty(DBF),
+			"caller 未设置 DocumentBuilderFactory 属性时，handle() 后必须清除");
 	}
 }
