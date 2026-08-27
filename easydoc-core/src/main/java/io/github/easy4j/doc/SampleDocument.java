@@ -69,8 +69,9 @@ public class SampleDocument {
 			}
 		} catch (Throwable e) {
 			// 捕获 Throwable（含 AssertionError）：macOS 上 FOP 字体解析
-			// 会对特定系统字体抛 AssertionError，不能让其中断文档生成
-			LOG.warn("Failed to evaluate expression", e);
+			// 会对特定系统字体抛 AssertionError，不能让其中断文档生成。
+			// 日志消息须与实际失败场景一致：这里是字体枚举/示例段落生成失败
+			LOG.warn("Failed to create sample document content for available fonts", e);
 		}    		    
 		
 	}
