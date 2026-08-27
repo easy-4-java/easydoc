@@ -74,10 +74,11 @@ public final class EasyMarkdown {
 		if (pkg == null) {
 			return "";
 		}
-		// 3.0.x WordprocessingMLPackageWriter 无 writeToHtml(pkg, OutputStream) 重载，
-		// File 重载要求目录却又对其建 FileOutputStream（已记录的缺陷，见
-		// WordprocessingMLPackageWriterBehavioralTest），故此处直接使用其内部
-		// 同款 docx4j API（HTMLSettings + Docx4J.toHTML）导出到内存流。
+		// 3.0.x WordprocessingMLPackageWriter 未提供 writeToHtml(pkg, OutputStream)
+		// 重载，为避免落盘临时文件，此处直接使用同款 docx4j API
+		// （HTMLSettings + Docx4J.toHTML）导出到内存流。
+		// （历史上的 File 重载“要求目录却又对其建流”缺陷已在
+		// WordprocessingMLPackageWriter 中修复：File 现为统一的目标文件语义。）
 		HTMLSettings htmlSettings = Docx4J.createHTMLSettings();
 		htmlSettings.setWmlPackage(pkg);
 		// 防止含图片文档在 HTML 导出时因未设置 imageDirPath 而失败
