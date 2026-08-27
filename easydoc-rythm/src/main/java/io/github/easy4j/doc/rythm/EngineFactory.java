@@ -17,10 +17,13 @@ package io.github.easy4j.doc.rythm;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Properties;
 
 import org.docx4j.Docx4jProperties;
 import io.github.easy4j.doc.utils.ConfigUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.rythmengine.Rythm;
 import org.rythmengine.RythmEngine;
@@ -32,6 +35,8 @@ import org.rythmengine.RythmEngine;
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public final class EngineFactory {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EngineFactory.class);
 
     private volatile RythmEngine engine;
 
@@ -46,15 +51,35 @@ public final class EngineFactory {
                 if (local == null) {
                     Properties props = ConfigUtils.filterWithPrefix("docx4j.rythm.", "docx4j.rythm.", Docx4jProperties.getProperties(), false);
 
-                    props.put("engine.mode", Rythm.Mode.valueOf(props.getProperty("engine.mode", "dev")));
+                    // 解析引擎运行模式：非法取值给出明确上下文，而不是裸抛 IllegalArgumentException
+                    String modeName = props.getProperty("engine.mode", "dev");
+                    final Rythm.Mode mode;
+                    try {
+                        mode = Rythm.Mode.valueOf(modeName);
+                    } catch (IllegalArgumentException e) {
+                        throw new IOException("非法的 docx4j.rythm.engine.mode 取值 '" + modeName
+                                + "'，允许的取值为: dev / prod", e);
+                    }
+                    props.put("engine.mode", mode);
                     props.put("log.enabled", false);
                     props.put("feature.smart_escape.enabled", false);
                     props.put("feature.transform.enabled", false);
+                    // 解析模板根目录：未配置或资源不存在时回退为 "/"，避免 getResource(null) 的 NPE
+                    String homeTemplate = props.getProperty("home.template");
                     try {
-                        props.put("home.template", Rythm.class.getResource(props.getProperty("home.template")).toURI().toURL().getFile());
+                        URL templateUrl = homeTemplate == null ? null : Rythm.class.getResource(homeTemplate);
+                        if (templateUrl != null) {
+                            props.put("home.template", templateUrl.toURI().toURL().getFile());
+                        } else {
+                            // 未配置 home.template（或配置的 classpath 资源不存在）时使用默认根目录
+                            LOG.warn("Rythm 模板目录 '{}' 在 classpath 中未找到，回退为默认值 '/'",
+                                    homeTemplate == null ? "<unset>" : homeTemplate);
+                            props.put("home.template", "/");
+                        }
                     } catch (URISyntaxException e) {
-                        // ignore
-                        props.put("home.tmp", "/");
+                        LOG.warn("Rythm 模板目录 '{}' 解析失败，回退为默认值 '/': {}", homeTemplate, e.getMessage());
+                        // 注意：此处历史上误写为键 "home.tmp"，已修正为 "home.template"
+                        props.put("home.template", "/");
                     }
                     props.put("codegen.dynamic_exp.enabled", true);
                     props.put("built_in.code_type", "false");

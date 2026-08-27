@@ -44,7 +44,8 @@ public final class EngineFactory {
                 local = engine;
                 if (local == null) {
                     Properties props = ConfigUtils.filterWithPrefix("docx4j.httl.", "docx4j.httl.", Docx4jProperties.getProperties(), false);
-                    props.setProperty("template.directory", props.getProperty("template.directory"));
+                    // 未配置 template.directory 时提供默认值，避免 Properties(Hashtable).put(key, null) 抛出 NullPointerException
+                    props.setProperty("template.directory", props.getProperty("template.directory", "/"));
                     props.setProperty("template.suffix", props.getProperty("template.suffix", ".httl"));
                     props.setProperty("input.encoding", props.getProperty("input.encoding", Docx4jConstants.DEFAULT_CHARSETNAME));
                     props.setProperty("output.encoding", props.getProperty("output.encoding", Docx4jConstants.DEFAULT_CHARSETNAME));

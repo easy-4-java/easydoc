@@ -32,15 +32,8 @@
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-engine-core</artifactId>
 		</dependency>
-
-		<!-- velocity-engine-scripting：Velocity 的 JSR-223 脚本引擎适配 -->
-		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity-engine-scripting</artifactId>
-		</dependency>
-
-		<!-- velocity-tools-generic：Velocity 工具集（日期/数字/链接等辅助方法） -->
-		<!-- 3.x 拆分为 velocity-tools-generic/view/jsp；Struts 1.x 支持移入 velocity-tools-view，generic 不再传递，无需再排除 -->
+		<!-- https://mvnrepository.com/artifact/org.apache.velocity/tools -->
+		<!-- Velocity Tools Generic（3.x 通用工具集，含 DateTool；不再依赖 Struts，无需排除） -->
 		<dependency>
 			<groupId>org.apache.velocity.tools</groupId>
 			<artifactId>velocity-tools-generic</artifactId>

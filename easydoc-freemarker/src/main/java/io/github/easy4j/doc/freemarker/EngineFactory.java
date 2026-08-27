@@ -40,7 +40,9 @@ import freemarker.template.utility.XmlEscape;
 
 /**
  * Immutable factory that lazily creates and caches a Freemarker {@link Configuration}
- * instance using double-checked locking.
+ * instance using double-checked locking. The shared {@link Renderer} bound to the
+ * resolved {@link TemplateModel} is created exactly once inside the same lock,
+ * so repeated {@link #get()} / {@link #getRenderer()} calls never churn instances.
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
@@ -56,6 +58,7 @@ public final class EngineFactory {
 
     private volatile Configuration engine;
     private volatile TemplateModel templateModel;
+    private volatile Renderer renderer;
 
     /**
      * Creates a new EngineFactory with the given configuration.
@@ -78,31 +81,41 @@ public final class EngineFactory {
 
     /**
      * Returns the shared {@link Configuration} instance, creating it on first access.
+     * FreeMarker 的受检异常（{@link TemplateException} 等）统一包装为 {@link IOException}，
+     * 使模板类层面的异常面与其他引擎模块保持一致（仅声明 IOException）。
      */
-    public Configuration get() throws IOException, TemplateException {
+    public Configuration get() throws IOException {
         Configuration local = engine;
         if (local == null) {
             synchronized (this) {
                 local = engine;
                 if (local == null) {
 
+                    TemplateModel stringStaticModel;
                     try {
                         BeansWrapper beansWrapper = new BeansWrapper(Configuration.VERSION_2_3_23);
-                        this.templateModel = beansWrapper.getStaticModels().get(String.class.getName());
+                        stringStaticModel = beansWrapper.getStaticModels().get(String.class.getName());
                     } catch (TemplateModelException e) {
                         throw new IOException(e.getMessage(), e.getCause());
                     }
 
+                    // 创建 Configuration 实例
                     Configuration config = new Configuration(Configuration.VERSION_2_3_23);
 
                     Properties props = ConfigUtils.filterWithPrefix("docx4j.freemarker.", "docx4j.freemarker.", Docx4jProperties.getProperties(), false);
 
-                    if (!props.isEmpty()) {
-                        config.setSettings(props);
-                    }
+                    // FreeMarker will only accept known keys in its setSettings and
+                    // setAllSharedVariables methods.
+                    try {
+                        if (!props.isEmpty()) {
+                            config.setSettings(props);
+                        }
 
-                    if (this.freemarkerVariables != null && !this.freemarkerVariables.isEmpty()) {
-                        config.setAllSharedVariables(new SimpleHash(this.freemarkerVariables, config.getObjectWrapper()));
+                        if (this.freemarkerVariables != null && !this.freemarkerVariables.isEmpty()) {
+                            config.setAllSharedVariables(new SimpleHash(this.freemarkerVariables, config.getObjectWrapper()));
+                        }
+                    } catch (TemplateException e) {
+                        throw new IOException("Failed to apply FreeMarker settings/shared variables: " + e.getMessage(), e);
                     }
 
                     if (this.defaultEncoding != null) {
@@ -111,12 +124,14 @@ public final class EngineFactory {
 
                     List<TemplateLoader> templateLoaders = new LinkedList<TemplateLoader>();
 
+                    // Register template loaders that are supposed to kick in early.
                     if (this.preTemplateLoaders != null) {
                         templateLoaders.addAll(this.preTemplateLoaders);
                     }
 
                     postProcessTemplateLoaders(templateLoaders);
 
+                    // Register template loaders that are supposed to kick in late.
                     if (this.postTemplateLoaders != null) {
                         templateLoaders.addAll(this.postTemplateLoaders);
                     }
@@ -128,12 +143,25 @@ public final class EngineFactory {
                     config.setSharedVariable("fmXmlEscape", new XmlEscape());
                     config.setSharedVariable("fmHtmlEscape", new HtmlEscape());
 
+                    // 引擎构建成功后一次性发布共享状态（处于同一把锁内，不会产生部分初始化）
+                    this.templateModel = stringStaticModel;
+                    this.renderer = new Renderer(stringStaticModel);
+
                     local = config;
                     engine = local;
                 }
             }
         }
         return local;
+    }
+
+    /**
+     * Returns the shared {@link Renderer} bound to the resolved {@link TemplateModel}.
+     * Available after {@link #get()} has been called at least once (callers should
+     * invoke {@link #get()} first to guarantee initialization).
+     */
+    public Renderer getRenderer() {
+        return renderer;
     }
 
     /**

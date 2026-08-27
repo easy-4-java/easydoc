@@ -19,10 +19,10 @@ package io.github.easy4j.doc;
  * 该模板负责对WordprocessingMLPackage进行普通变量替换和复杂变量替换并返回处理后的WordprocessingMLPackage对象
  * 备注：该工具只能解决固定模板的word生成（来自：https://blog.csdn.net/qq_35598240/article/details/84439929）
  *
- * <p>Refactored to thin facade over
- * {@link AbstractWmlTemplate} + a {@link VariableReplacer.Sax}
- * strategy. The JDK 21 transparent fallback to StAX lives in the record;
- * the public API is preserved verbatim.
+ * <p>本类成为
+ * {@link AbstractWmlTemplate} + {@link VariableReplacer.Sax}
+ * 策略的薄门面。JDK 21 上向 StAX 的透明降级位于该 final 类内部；
+ * 公共 API 保持原样。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */

@@ -31,63 +31,62 @@ import io.github.easy4j.doc.fonts.FontMapperHolder;
 import io.github.easy4j.doc.utils.WMLPackageUtils;
 
 /**
- * Skeleton for all {@link WordprocessingMLTemplate} implementations in this
- * package. The three historical subclasses
- * ({@link WordprocessingMLDocxTemplate},
+ * 本包内所有 {@link WordprocessingMLTemplate} 实现的骨架。三个历史子类
+ * （{@link WordprocessingMLDocxTemplate},
  * {@link WordprocessingMLDocxSaxTemplate},
- * {@link WordprocessingMLDocxStAXTemplate}) differ only in the variable
- * replacement stage; that stage is modeled as a public {@link VariableReplacer}
- * SPI with three built-in implementations
- * ({@link VariableReplacer.Default}, {@link VariableReplacer.StAX},
- * {@link VariableReplacer.Sax}).
+ * {@link WordprocessingMLDocxStAXTemplate}）的差异仅在变量替换阶段；
+ * 该阶段被建模为公开的 {@link VariableReplacer} SPI，并内置三种实现
+ * （{@link VariableReplacer.Default}, {@link VariableReplacer.StAX},
+ * {@link VariableReplacer.Sax}）。
  *
- * <p>This class owns the shared pipeline:
+ * <p>本类负责共享管道：
  * <pre>
- *   Docx4J.load(template)  // 1. resolve + parse template (or build dummy)
- *   VariablePrepare.prepare // 2. flatten nested ${} runs
- *   WMLPackageUtils.cleanDocumentPart // 3. marshal/unwrap round-trip
- *   VariableReplacer.apply // 4. actual variable substitution (strategy)
- *   FontMapperHolder.useFontMapper // 5. attach user-supplied font mapper
+ *   Docx4J.load(template)  // 1. 定位并解析模板（或构建占位文档）
+ *   VariablePrepare.prepare // 2. 拍平嵌套 ${} 文本段
+ *   WMLPackageUtils.cleanDocumentPart // 3. marshal/unwrap 往返规范化
+ *   VariableReplacer.apply // 4. 实际的变量替换（策略）
+ *   FontMapperHolder.useFontMapper // 5. 挂载用户提供的字体映射器
  * </pre>
  *
- * <p>Subclasses provide a built-in {@link VariableReplacer} via
- * {@link #replacer()}; callers may override the strategy at runtime via
- * {@link #setReplacer(VariableReplacer)} for custom expression languages
- * (MVEL, SpEL, etc.).
+ * <p>子类通过 {@link #replacer()} 提供内置
+ * {@link VariableReplacer}；调用方可在运行时通过
+ * {@link #setReplacer(VariableReplacer)} 覆盖策略，以接入自定义表达式语言
+ * （MVEL、SpEL 等）。JDK 21 上 SAX 到 StAX 的透明降级在基类层只实现一次，
+ * 通过 {@link VariableReplacer.Sax} 类上的 volatile 字段双重检查完成
+ * （与原先 {@code WordprocessingMLDocxSaxTemplate} 中的降级逻辑一致）。
  */
 abstract class AbstractWmlTemplate implements WordprocessingMLTemplate {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
-	/** Variable placeholder start, default: ${ */
+	/** 变量占位符起始标记，默认：${ */
 	protected String placeholderStart = "${";
 
-	/** Variable placeholder end, default: } */
+	/** 变量占位符结束标记，默认：} */
 	protected String placeholderEnd = "}";
 
-	/** Concrete subclass picks the variable-replacement strategy. */
+	/** 具体子类决定内置的变量替换策略。 */
 	protected abstract VariableReplacer replacer();
 
 	/**
-	 * Optional custom {@link VariableReplacer} injected by the caller.
-	 * When non-null, this takes precedence over the built-in {@link #replacer()}.
+	 * 可选的自定义 {@link VariableReplacer}，由调用方注入。
+	 * 非空时优先于内置的 {@link #replacer()}。
 	 */
 	protected volatile VariableReplacer customReplacer = null;
 
 	/**
-	 * Set a custom {@link VariableReplacer} to override the built-in strategy.
-	 * Pass {@code null} to revert to the built-in strategy provided by the
-	 * concrete subclass.
+	 * 设置自定义 {@link VariableReplacer} 以覆盖内置替换策略。
+	 * 传入 {@code null} 则回退到具体子类提供的内置策略。
 	 *
-	 * @param replacer the custom replacer, or {@code null} to use the default
+	 * @param replacer 自定义 replacer；传 {@code null} 使用默认策略
 	 */
 	public void setReplacer(VariableReplacer replacer) {
 		this.customReplacer = replacer;
 	}
 
 	/**
-	 * Returns the effective replacer: the custom one if set, otherwise the
-	 * built-in strategy from {@link #replacer()}.
+	 * 返回生效中的 replacer：已设置自定义策略时返回自定义，
+	 * 否则返回 {@link #replacer()} 的内置策略。
 	 */
 	protected VariableReplacer currentReplacer() {
 		return customReplacer != null ? customReplacer : replacer();
@@ -151,12 +150,11 @@ abstract class AbstractWmlTemplate implements WordprocessingMLTemplate {
 	}
 
 	/**
-	 * Flatten {@code Map<String, Object>} to {@code HashMap<String, String>} using
-	 * {@code toString()} (null → empty string). Shared by
-	 * {@link VariableReplacer.Default} and historically used by the old
-	 * {@code WordprocessingMLDocxTemplate}; protected so that same-package tests
-	 * (e.g. {@code WordprocessingMLTemplateVariantsTest}) can still call it as
-	 * an instance method.
+	 * 使用 {@code toString()} 将 {@code Map<String, Object>} 拍平为
+	 * {@code HashMap<String, String>}（null 转空字符串）。由
+	 * {@link VariableReplacer.Default} 共享使用，历史上也被旧的
+	 * {@code WordprocessingMLDocxTemplate} 使用；保持 protected 以便同包测试
+	 * （如 {@code WordprocessingMLTemplateVariantsTest}）仍能以实例方法调用。
 	 */
 	protected HashMap<String, String> getStaticData(Map<String, Object> variables) {
 		HashMap<String, String> dataMap = new HashMap<>();
