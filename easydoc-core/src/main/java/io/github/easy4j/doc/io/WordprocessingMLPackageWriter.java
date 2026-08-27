@@ -43,7 +43,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * WordprocessingMLPackage writer.
+ * {@link WordprocessingMLPackage} 导出器（docx / html / pdf）。
+ *
+ * <p><b>线程契约</b>：本类默认以单例提供
+ * （{@link #getWMLPackageWriter()}），无参导出重载仅使用局部状态，
+ * 不修改任何 docx4j 全局静态属性。三个可替换处理器字段
+ * （hyperlink / styleElement / scriptElement）属共享可变状态：字段声明为
+ * {@code volatile} 保证跨线程可见，写入口（setter）以类内
+ * {@code handlerLock} 监视器同步互斥。需注意“读取处理器组合→执行转换”
+ * 并非原子事务：并发替换处理器与转换过程重叠时，不保证某次转换使用完全一致的
+ * 三个处理器组合。为保证既有 API 兼容而保留可变设计而非改为不可变工厂；
+ * 需要严格隔离的多线程调用方可自建实例。getter 返回的是外部传入的处理器实例，
+ * 其线程安全性由实现方自行保证。</p>
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
@@ -52,9 +63,15 @@ public class WordprocessingMLPackageWriter  {
 	protected final Logger LOG = LoggerFactory.getLogger(this.getClass());
 	protected final String PDF_SUFFIX = ".pdf";
 	protected final String DOCX_SUFFIX = ".docx";
-	protected ConversionHyperlinkHandler hyperlinkHandler = OutputConversionHyperlinkHandler.getHyperlinkHandler();
-	protected ConversionHTMLStyleElementHandler styleElementHandler = OutputConversionHTMLStyleElementHandler.getStyleElementHandler();
-	protected ConversionHTMLScriptElementHandler scriptElementHandler = OutputConversionHTMLScriptElementHandler.getScriptElementHandler();
+	// P1 缺陷修复（#13）：原 writeToHtml(pkg) 无路径重载误用 PDF_SUFFIX，
+	// 导致生成的是 .pdf 扩展名的 html 文件；补充专用后缀常量。
+	protected final String HTML_SUFFIX = ".html";
+	// 处理器字段的写锁：并发 setter 互斥由 synchronized 保证；
+	// 字段本身的 volatile 保证读端（转换路径）的可见性。
+	private final Object handlerLock = new Object();
+	protected volatile ConversionHyperlinkHandler hyperlinkHandler = OutputConversionHyperlinkHandler.getHyperlinkHandler();
+	protected volatile ConversionHTMLStyleElementHandler styleElementHandler = OutputConversionHTMLStyleElementHandler.getStyleElementHandler();
+	protected volatile ConversionHTMLScriptElementHandler scriptElementHandler = OutputConversionHTMLScriptElementHandler.getScriptElementHandler();
 
 	private static final WordprocessingMLPackageWriter WML_PACKAGE_WRITER = new WordprocessingMLPackageWriter();
 
@@ -72,7 +89,8 @@ public class WordprocessingMLPackageWriter  {
 
 	public File writeToDocx(WordprocessingMLPackage wmlPackage) throws  IOException, Docx4JException{
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
-		File outFile = new File( Docx4jUtils.getTempPath() + DOCX_SUFFIX );
+		// P1 资源修复（#14）：改用 createTempFile 原子命名，消除毫秒级路径碰撞
+		File outFile = Docx4jUtils.newTempOutputFile(DOCX_SUFFIX);
 		return writeToDocx(wmlPackage, outFile);
 	}
 
@@ -102,7 +120,9 @@ public class WordprocessingMLPackageWriter  {
 
 	public File writeToHtml(WordprocessingMLPackage wmlPackage) throws IOException, Docx4JException{
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
-		File outFile = new File( Docx4jUtils.getTempPath() + PDF_SUFFIX );
+		// P1 缺陷修复（#13）：原实现误用 PDF_SUFFIX（生成 .pdf 后缀的 html 文件）；
+		// P1 资源修复（#14）：同时改用 createTempFile 原子命名避免碰撞
+		File outFile = Docx4jUtils.newTempOutputFile(HTML_SUFFIX);
 		return writeToHtml(wmlPackage, outFile);
 	}
 
@@ -164,7 +184,8 @@ public class WordprocessingMLPackageWriter  {
 
 	public File writeToPDF(WordprocessingMLPackage wmlPackage) throws  IOException, Docx4JException{
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
-		File outFile = new File( Docx4jUtils.getTempPath() + PDF_SUFFIX );
+		// P1 资源修复（#14）：改用 createTempFile 原子命名，消除毫秒级路径碰撞
+		File outFile = Docx4jUtils.newTempOutputFile(PDF_SUFFIX);
 		return writeToPDF(wmlPackage, outFile);
 	}
 
@@ -233,24 +254,33 @@ public class WordprocessingMLPackageWriter  {
 		return hyperlinkHandler;
 	}
 
+	/** 线程契约：以 handlerLock 同步写入；字段为 volatile，读端立即可见（见类注释）。 */
 	public void setHyperlinkHandler(ConversionHyperlinkHandler hyperlinkHandler) {
-		this.hyperlinkHandler = hyperlinkHandler;
+		synchronized (handlerLock) {
+			this.hyperlinkHandler = hyperlinkHandler;
+		}
 	}
 
 	public ConversionHTMLStyleElementHandler getStyleElementHandler() {
 		return styleElementHandler;
 	}
 
+	/** 线程契约：以 handlerLock 同步写入；字段为 volatile，读端立即可见（见类注释）。 */
 	public void setStyleElementHandler(ConversionHTMLStyleElementHandler styleElementHandler) {
-		this.styleElementHandler = styleElementHandler;
+		synchronized (handlerLock) {
+			this.styleElementHandler = styleElementHandler;
+		}
 	}
 
 	public ConversionHTMLScriptElementHandler getScriptElementHandler() {
 		return scriptElementHandler;
 	}
 
+	/** 线程契约：以 handlerLock 同步写入；字段为 volatile，读端立即可见（见类注释）。 */
 	public void setScriptElementHandler(ConversionHTMLScriptElementHandler scriptElementHandler) {
-		this.scriptElementHandler = scriptElementHandler;
+		synchronized (handlerLock) {
+			this.scriptElementHandler = scriptElementHandler;
+		}
 	}
 
 }
