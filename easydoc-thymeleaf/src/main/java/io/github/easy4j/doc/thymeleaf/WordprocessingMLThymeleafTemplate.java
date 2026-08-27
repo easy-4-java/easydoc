@@ -84,6 +84,8 @@ public class WordprocessingMLThymeleafTemplate extends AbstractStringTemplateWra
 	@Deprecated
 	public void setTemplateResolver(AbstractConfigurableTemplateResolver templateResolver) {
 		this.templateResolver = templateResolver;
+		// EngineFactory 内部同时缓存了解析器副本与 TemplateEngine，置空 factory 即一次性作废全部陈旧状态；
+		// 本类的 Renderer 为无状态 final 字段，不持有引擎相关缓存，无需额外重置。
 		this.factory = null;
 	}
 
