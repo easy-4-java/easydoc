@@ -91,6 +91,8 @@
         <flexmark.version>0.64.8</flexmark.version>
         <jackson-bom.version>3.2.1</jackson-bom.version>
         <jsoup.version>1.23.1</jsoup.version>
+        <!-- fastjson：v1 兼容构建（内核 fastjson2），锁定 rythm-engine 传递依赖 -->
+        <fastjson.version>2.0.57</fastjson.version>
         <ognl.version>3.4.2</ognl.version>
         <tomcat-jasper.version>10.1.54</tomcat-jasper.version>
 
@@ -137,6 +139,16 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <!-- fastjson 2.x（v1 兼容构建，内核为 fastjson2）：锁定 rythm-engine 传递依赖。
+                 1.2.x 线已终止维护且存在无修复的 CVE-2026-16723（RCE 家族）；
+                 2.0.x 保持 com.alibaba.fastjson v1 包名与 API（rythm 硬编码依赖），
+                 内部实现切换到 fastjson2 内核，彻底脱离受影响的 1.2.x 线 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
 
             <!-- ======== 测试框架 ======== -->
 

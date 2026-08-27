@@ -134,8 +134,12 @@ Maven 4 构建基线、安全加固与一系列正确性修复。相对 1.0.x（
 
 **安全（依赖）**
 
-- 详见 [docs/release-central.md](docs/release-central.md) 旁的 CVE 扫描结论：
-  3.0.x 仅剩 fastjson（rythm 传递，无上游修复）一项 CRITICAL 未决。
+- **fastjson 迁移至 2.x v1 兼容构建**：rythm-engine 硬编码 fastjson v1 API，原传递依赖
+  1.2.83 处于已终止维护且存在无修复 RCE（CVE-2026-16723）的 1.2.x 线；现全分支锁定
+  `com.alibaba:fastjson:2.0.57`——同一 GAV、v1 包名/API 面不变（JSONWrapper /
+  parseArray/parseObject / JSONArray），内部实现切换为 fastjson2 内核，
+  `RythmFastjsonCompatTest` 锁定兼容面。该 CRITICAL 已从全部依赖树清除。
+- 完整 CVE 扫描结论见 [docs/release-central.md](docs/release-central.md)。
 
 ### 安全
 
