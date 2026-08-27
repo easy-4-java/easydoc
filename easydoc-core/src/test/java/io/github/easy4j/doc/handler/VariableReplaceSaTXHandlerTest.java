@@ -150,7 +150,61 @@ class VariableReplaceSaTXHandlerTest {
 
         handler.handleCharacters(reader, writer);
         writer.flush();
-        // Should produce some output (the '$' and remaining text)
-        assertNotNull(sw.toString());
+        // 未闭合占位符走宽松容错分支：'$' 前缀原样保留，剩余文本继续输出，不抛异常
+        assertEquals("${incomplete", sw.toString());
+    }
+
+    @Test
+    void handleCharactersWithLongCustomPlaceholderPrefix() throws Exception {
+        // 多字符占位符前缀（长度 3）：key 切片必须基于前缀长度而非硬编码偏移量
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("name", "张三");
+        VariableReplaceSaTXHandler handler = new VariableReplaceSaTXHandler("#{$", "}}", vars);
+
+        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+        XMLStreamReader reader = inputFactory.createXMLStreamReader(
+                new StringReader("<root>A #{$name}} B</root>"));
+        while (reader.hasNext()) {
+            if (reader.next() == XMLStreamReader.CHARACTERS) {
+                break;
+            }
+        }
+
+        StringWriter sw = new StringWriter();
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        XMLStreamWriter writer = outputFactory.createXMLStreamWriter(sw);
+
+        handler.handleCharacters(reader, writer);
+        writer.flush();
+        // "#{$name}}"（前缀 3 字符、结束符 "}}"）整体作为占位符消费
+        assertEquals("A 张三 B", sw.toString());
+    }
+
+    @Test
+    void handleCharactersWithUnterminatedCustomPrefixDoesNotThrow() throws Exception {
+        // 多字符前缀未闭合：不抛异常（严格来说前缀首字符被保留、其余文本原样跟随）
+        Map<String, Object> vars = new HashMap<>();
+        VariableReplaceSaTXHandler handler = new VariableReplaceSaTXHandler("#{$", "}}", vars);
+
+        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+        XMLStreamReader reader = inputFactory.createXMLStreamReader(new StringReader("<root>x #{oops</root>"));
+        while (reader.hasNext()) {
+            if (reader.next() == XMLStreamReader.CHARACTERS) {
+                break;
+            }
+        }
+
+        StringWriter sw = new StringWriter();
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        XMLStreamWriter writer = outputFactory.createXMLStreamWriter(sw);
+
+        assertDoesNotThrow(() -> {
+            try {
+                handler.handleCharacters(reader, writer);
+                writer.flush();
+            } catch (javax.xml.stream.XMLStreamException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
