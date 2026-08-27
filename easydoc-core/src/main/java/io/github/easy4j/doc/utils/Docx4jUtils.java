@@ -174,7 +174,9 @@ public class Docx4jUtils {
 
             main.addObject(chunk);
         } catch (Exception e) {
-            LOG.error("Failed to insert docx chunk {}", chunkId, e);
+            // 部分成功路径：单个分片插入失败不中断整体合并（保持薄封装语义），
+            // 但必须记录完整异常链并明示最终结果可能不完整
+            LOG.warn("insertDocx chunk {} failed; result may be incomplete", chunkId, e);
         }
     }
 

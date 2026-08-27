@@ -6,6 +6,8 @@ import java.util.Objects;
 import java.util.Map;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * docx 模板读取 Builder（对齐 easyodf {@code OFDReaderBuilder} /
@@ -15,6 +17,8 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
  * @param <T> 模型类型
  */
 public final class DocxReaderBuilder<T> {
+
+	private static final Logger LOG = LoggerFactory.getLogger(DocxReaderBuilder.class);
 
 	private final File templateFile;
 	private final Class<T> model;
@@ -44,7 +48,9 @@ public final class DocxReaderBuilder<T> {
 				listener.doAfterAllAnalysed();
 			}
 		} catch (Exception e) {
-			// 读取失败不抛出（薄封装语义）；调用方可自行判断
+			// 读取失败不抛出（薄封装语义），但不再静默吞掉异常：
+			// 记录 WARN 便于排查模板解析/监听器回调失败
+			LOG.warn("Failed to load DocxReader listener for template {}", templateFile, e);
 		}
 	}
 
