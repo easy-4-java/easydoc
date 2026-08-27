@@ -49,6 +49,9 @@
         <java.version>17</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.version>3.9.16</maven.version>
+
+        <!-- fastjson：v1 兼容构建（内核 fastjson2），锁定 rythm-engine 传递依赖 -->
+        <fastjson.version>2.0.57</fastjson.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- ═══ Docx4j 全家桶版本（11.5.14 统一锁定） ═══ -->
@@ -790,6 +793,16 @@
                 <version>${jackson-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!-- fastjson 2.x（v1 兼容构建，内核为 fastjson2）：锁定 rythm-engine 传递依赖。
+                 1.2.x 线已终止且存在无修复的 CVE-2026-16723（RCE 家族）；
+                 2.0.x 保持 com.alibaba.fastjson v1 包名与 API（rythm 硬编码依赖），
+                 内部实现切换到 fastjson2 内核，彻底脱离受影响的 1.2.x 线 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
             </dependency>
 
             <!-- ======== Test ======== -->
