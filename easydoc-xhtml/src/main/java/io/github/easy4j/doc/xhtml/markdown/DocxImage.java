@@ -21,10 +21,12 @@ public final class DocxImage extends DocxElement {
 		this.mime = mime;
 	}
 
-	/** 图片转 Markdown：输出 ![alt](src)，null 字段按空串处理。 */
+	/** 图片转 Markdown：alt 与 src 分别经转义层处理（结构性字符与 URL 编码），null 字段按空串处理。 */
 	@Override
 	public String toMarkdown() {
-		return "![" + (alt == null ? "" : alt) + "](" + (src == null ? "" : src) + ")";
+		String altText = alt == null ? "" : MarkdownEscaper.escapeText(alt);
+		String target = MarkdownEscaper.escapeUrl(src == null ? "" : src);
+		return "![" + altText + "](" + target + ")";
 	}
 
 	/** 返回图片地址。 */
