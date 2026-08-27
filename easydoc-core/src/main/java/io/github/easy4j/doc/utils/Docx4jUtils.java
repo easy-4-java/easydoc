@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.List;
 
@@ -51,9 +52,47 @@ public class Docx4jUtils {
 
 	/*
 	 * 生成临时文件位置
+	 *
+	 * <p>P1 缺陷修复（port from 3.0.x）：旧实现基于 {@code System.currentTimeMillis()}，同一毫秒内
+	 * 的两次调用会生成完全相同的路径前缀，导致并发写出时互相覆盖/损坏。
+	 * 现改为 {@link Files#createTempFile} 原子占用一个唯一文件名后立即释放，
+	 * 既保证唯一性又保持“返回无后缀前缀、由调用方自行追加扩展名”的历史契约。</p>
+	 *
+	 * @return 系统临时目录下的唯一路径前缀（不含扩展名）
 	 */
 	public static String getTempPath() {
-		return System.getProperty("java.io.tmpdir") + File.separator + System.currentTimeMillis();
+		try {
+			java.nio.file.Path unique = Files.createTempFile("easydoc-", null);
+			Files.delete(unique);
+			return unique.toString();
+		} catch (IOException e) {
+			// 极端文件系统异常下的兜底：随机 UUID 命名，仍可避免毫秒级碰撞
+			LOG.warn("createTempFile failed, falling back to random temp path", e);
+			return System.getProperty("java.io.tmpdir") + File.separator
+					+ "easydoc-" + java.util.UUID.randomUUID();
+		}
+	}
+
+	/**
+	 * 创建全局唯一的临时输出文件（原子命名），用于无显式路径的导出重载。
+	 *
+	 * <p>与 {@link #getTempPath()} 不同，本方法创建的就是最终目标文件本身
+	 * （含正确扩展名），因此不存在“先造前缀再拼后缀”的二次碰撞窗口。</p>
+	 *
+	 * <p>生命周期说明：该文件是无路径导出（如
+	 * {@code writeToDocx(wmlPackage)}）交付给调用方的产物，工具层无法在其被
+	 * 消费前删除；故仅做尽力而为的清理——注册 {@code deleteOnExit}，
+	 * 避免调用方丢弃引用后的永久残留。需要严格控制生命周期的调用方应使用
+	 * 显式路径重载并自行管理文件。</p>
+	 *
+	 * @param suffix 文件后缀，需以 "." 开头（如 ".docx"、".html"、".pdf"）
+	 * @return 已创建（空内容）的唯一临时文件
+	 * @throws IOException ：无法在系统临时目录创建文件时抛出
+	 */
+	public static File newTempOutputFile(String suffix) throws IOException {
+		File file = Files.createTempFile("easydoc-", suffix).toFile();
+		file.deleteOnExit();
+		return file;
 	}
 
     public InputStream mergeDocx(final List<InputStream> streams)  throws Docx4JException, IOException {
