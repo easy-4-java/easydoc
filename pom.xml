@@ -293,7 +293,11 @@
                         <skip>false</skip>
                         <skipTests>false</skipTests>
                         <forkMode>once</forkMode>
-                        <argLine>-Xmx1024m -Dfile.encoding=UTF-8 @{argLine}</argLine>
+                        <!-- docx4j 11.5.x 内嵌的 fop 字体解析代码存在未满足断言（上游 17.x 已修复），
+                             surefire 默认启用 JVM 断言（-ea），测试机个别系统字体会令
+                             PhysicalFonts.discoverPhysicalFonts 抛 AssertionError；
+                             生产 JVM 默认不启用断言，此处同样仅对 org.docx4j.fonts.fop 关闭断言 -->
+                        <argLine>-Xmx1024m -Dfile.encoding=UTF-8 -da:org.docx4j.fonts.fop... @{argLine}</argLine>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/target/test-classes</additionalClasspathElement>
                         </additionalClasspathElements>

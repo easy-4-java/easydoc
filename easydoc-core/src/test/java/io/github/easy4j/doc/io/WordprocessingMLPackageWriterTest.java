@@ -2,6 +2,7 @@ package io.github.easy4j.doc.io;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import static org.assertj.core.api.Assertions.*;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,6 +45,38 @@ class WordprocessingMLPackageWriterTest {
     void staticGetWMLPackageWriterShouldBeCallable() {
         try { WordprocessingMLPackageWriter.getWMLPackageWriter(); } catch (Throwable e) { /* expected */ }
         assertThat(WordprocessingMLPackageWriter.class).isNotNull();
+    }
+
+    @Test
+    @DisplayName("writeToHtml 目标路径为已存在目录时抛出明确 IOException")
+    void writeToHtmlRejectsExistingDirectoryTarget(@TempDir java.nio.file.Path tempDir) throws Exception {
+        // 缺陷修复后语义：outFile 必须是目标 html 文件，传入已存在的目录必须直接失败，
+        // 且异常信息需明确指出“目标是目录”（旧版要求目录却又对其建 FileOutputStream，
+        // 导致任何调用都必然以 FileNotFoundException 失败）
+        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+        WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+        File outDir = tempDir.resolve("htmlout").toFile();
+        assertThat(outDir.mkdir()).isTrue();
+        assertThatThrownBy(() -> writer.writeToHtml(pkg, outDir))
+                .isInstanceOf(IOException.class)
+                .hasMessageContaining("directory");
+    }
+
+    @Test
+    @DisplayName("writeToHtml 自动创建不存在的多级父目录并写出 html 文件")
+    void writeToHtmlCreatesMissingParentDirsAndWritesFile(@TempDir java.nio.file.Path tempDir) throws Exception {
+        // 缺陷修复后语义：File 即目标 html 文件，多级不存在的父目录会被自动创建
+        // （Files.createDirectories），而不是要求先手动建目录；导出空包时 Docx4J.toHTML
+        // 会确定性失败（MainDocumentPart 为空），故补一个正文段落验证成功写出路径
+        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+        WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+        pkg.getMainDocumentPart().addParagraphOfText("hello easydoc");
+        File outFile = tempDir.resolve("level1/level2/report.html").toFile();
+        File result = writer.writeToHtml(pkg, outFile);
+        assertThat(result).isNotNull();
+        assertThat(outFile.isFile()).isTrue();
+        assertThat(outFile.length()).isPositive();
+        assertThat(new File(outFile.getParentFile(), "images").isDirectory()).isTrue();
     }
 
 }
