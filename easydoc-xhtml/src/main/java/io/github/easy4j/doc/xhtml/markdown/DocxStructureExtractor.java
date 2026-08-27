@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.docx4j.dml.CTBlip;
@@ -449,7 +451,13 @@ public final class DocxStructureExtractor {
 
 	// ==================== 表格 ====================
 
-	/** 首行作表头，其余为数据行；无 Tr 返回 null。 */
+	/**
+	 * 首行作表头，其余为数据行；无 Tr 返回 null。
+	 *
+	 * <p>合并单元格处理（audit2 F7）：横向 gridSpan 展开为重复单元格；纵向 vMerge 的
+	 * 延续行（tcPr/vMerge 存在且 val 非 "restart"，缺省 val 即延续）以空字符串占位，
+	 * 保证每行列数一致、GFM 表格不破碎。列位置逐格累计，跨行跟踪已开启的纵向合并。</p>
+	 */
 	static HeadersAndRows parseTable(Tbl tbl) {
 		if (tbl.getContent() == null) {
 			return null;
@@ -463,10 +471,11 @@ public final class DocxStructureExtractor {
 		if (rows.isEmpty()) {
 			return null;
 		}
-		List<String> headers = rowCells(rows.get(0));
+		Set<Integer> vMergedColumns = new LinkedHashSet<Integer>();
+		List<String> headers = extractRowCells(rows.get(0), vMergedColumns);
 		List<List<String>> dataRows = new ArrayList<List<String>>();
 		for (int i = 1; i < rows.size(); i++) {
-			dataRows.add(rowCells(rows.get(i)));
+			dataRows.add(extractRowCells(rows.get(i), vMergedColumns));
 		}
 		return new HeadersAndRows(headers, dataRows);
 	}
@@ -483,19 +492,66 @@ public final class DocxStructureExtractor {
 		}
 	}
 
-	private static List<String> rowCells(Tr tr) {
+	/**
+	 * 单行单元格抽取（含合并展开）：gridSpan&gt;1 展开为重复单元格；vMerge 延续格输出
+	 * 空串占位（仅当该列确有更早行的 restart 开启），使每行列数与网格一致。列号按
+	 * gridSpan 逐格推进；普通格抵达时视为该列合并链结束。
+	 */
+	private static List<String> extractRowCells(Tr tr, Set<Integer> vMergedColumns) {
 		List<String> cells = new ArrayList<String>();
 		if (tr.getContent() == null) {
 			return cells;
 		}
+		int column = 0;
 		for (Object child : tr.getContent()) {
-			if (unwrap(child) instanceof org.docx4j.wml.Tc) {
-				StringBuilder sb = new StringBuilder();
-				flatText(((org.docx4j.wml.Tc) unwrap(child)).getContent(), sb);
-				cells.add(sb.toString().trim());
+			Object cellValue = unwrap(child);
+			if (!(cellValue instanceof org.docx4j.wml.Tc)) {
+				continue;
 			}
+			org.docx4j.wml.Tc tc = (org.docx4j.wml.Tc) cellValue;
+			int span = gridSpanOf(tc);
+			Integer key = Integer.valueOf(column);
+
+			org.docx4j.wml.TcPr tcPr = tc.getTcPr();
+			boolean hasVMerge = tcPr != null && tcPr.getVMerge() != null;
+			boolean restart = hasVMerge && "restart".equals(tcPr.getVMerge().getVal());
+
+			if (hasVMerge && restart) {
+				cells.addAll(flattenedCell(tc, span));
+				vMergedColumns.add(key);
+			} else if (hasVMerge && vMergedColumns.contains(key)) {
+				// 纵向延续：内容归并到上方格，此处仅空占位以对齐网格
+				cells.add("");
+			} else {
+				// 普通格（含"孤立延续"的容错：无前置 restart 则按普通内容保留）
+				cells.addAll(flattenedCell(tc, span));
+				vMergedColumns.remove(key);
+			}
+			column += span;
 		}
 		return cells;
+	}
+
+	/** 取单元格扁平文本；横向合并（span&gt;1）展开为重复占位。 */
+	private static List<String> flattenedCell(org.docx4j.wml.Tc tc, int span) {
+		StringBuilder sb = new StringBuilder();
+		flatText(tc.getContent(), sb);
+		String text = sb.toString().trim();
+		List<String> expanded = new ArrayList<String>(Math.max(span, 1));
+		for (int i = 0; i < span; i++) {
+			expanded.add(text);
+		}
+		return expanded;
+	}
+
+	/** tcPr/gridSpan 跨列数；缺省为 1，非法值钳为 1。 */
+	private static int gridSpanOf(org.docx4j.wml.Tc tc) {
+		if (tc.getTcPr() == null || tc.getTcPr().getGridSpan() == null
+				|| tc.getTcPr().getGridSpan().getVal() == null) {
+			return 1;
+		}
+		int val = tc.getTcPr().getGridSpan().getVal().intValue();
+		return val >= 1 ? val : 1;
 	}
 
 	/** 单元格扁平化：递归收集全部后代 Text（含嵌套表格/Sdt），Br 与 Tab 折叠为空格。 */
