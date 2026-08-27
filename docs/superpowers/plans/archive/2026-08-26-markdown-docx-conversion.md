@@ -390,3 +390,16 @@ git checkout main && git merge --ff-only feature/3.0.x && git push origin main
 3. 适配 `docxToMarkdown` 的 `writeToHtml` 调用（核对 1.0/2.0 签名）
 4. 各分支 `mvn -Denforcer.skip=true -pl easydoc-xhtml -am clean verify` 绿
 5. commit + push feature/1.0.x / feature/2.0.x
+
+## Status
+
+**完成。** 全部 4 个 Task 已落地并通过三分支验证。
+
+| Task | 实现 commit(s) | 验证 |
+|---|---|---|
+| Task 1: flexmark 依赖 + MarkdownConverter.mdToHtml | `3.0.x` 早期提交（已在 `7fd3d2e` 前存在） | `MarkdownConverterTest` |
+| Task 2: EasyMarkdown.markdownToDocx | 同上 | xhtml 测试覆盖 |
+| Task 3: EasyMarkdown.docxToMarkdown（含快路径 4 重载） | 同上；Sprint 1 期间 `18702c0` 增加便捷重载、`64dc689` 增加 6 结构化门面 | `EasyMarkdownTest` / `EasyMarkdownStructuredTest` |
+| Task 4: 全量验证 + README/CHANGELOG + 推送 | `4d38486`（CHANGELOG + quickstart） | xhtml 230 测试全绿 |
+
+附注：原会话期间已三次发版（20260630 / 20260830 / 20260930），本计划所有交付已随版本发布。归档前缀 `[DONE]` 由会话后续补齐。

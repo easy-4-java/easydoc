@@ -1,4 +1,4 @@
-# EasyDocx API 封装实现计划（P0 → P1）
+# [DONE] EasyDocx API 封装实现计划（P0 → P1）
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -833,3 +833,19 @@ P0/P1 全部代码为 Java 8 兼容（无 record/sealed/var/switch 表达式）�
 2. 适配 `DocxWriterBuilder`：`DocxTemplates.create(mode)` → 1.0/2.0 的等价工厂（若无工厂，`mode` 用 `DocxMode` 等价判断：DEFAULT→`new WordprocessingMLDocxTemplate()`，STAX→`new WordprocessingMLDocxStAXTemplate()`）
 3. 各分支 `mvn -Denforcer.skip=true -pl easydoc-core -am clean verify` 绿
 4. commit + push feature/1.0.x / feature/2.0.x
+
+## Status
+
+**完成。** 全部 7 个 Task 已落地并通过三分支验证。
+
+| Task | 实现 commit(s) | 验证 |
+|---|---|---|
+| Task 1: @DocxField / @DocxIgnore 注解 | `b39d436` | annotations 单元测试 |
+| Task 2: DocxFields POJO→Map 反射 | `b39d436`（同 commit） | 单元测试 + JDK21 强封装兼容 |
+| Task 3: DocxReadListener 接口 | `b39d436` | 监听器接口编译通过 |
+| Task 4: EasyDocx 静态门面 | `3eaab06` (1.0) / `20004ad` (2.0) / `e0f5229` 系列 (3.0) | 三分支均含 `EasyDocx.java` |
+| Task 5: DocxWriterBuilder（链式） | 同上 | 三分支均含 |
+| Task 6: DocxReaderBuilder（监听器读取） | 同上 | 三分支均含 |
+| Task 7: 全量验证 + README | `e0f5229`（CHANGELOG） | Maven 3/4 全 reactor 验证绿 |
+
+注：计划文件归档于 2026-08-27，原会话期间未及时更新 Status；归档前缀 `[DONE]` 标记由会话后续补齐。

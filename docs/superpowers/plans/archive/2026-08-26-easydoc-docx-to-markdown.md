@@ -273,3 +273,17 @@ static DocxDocument extract(WordprocessingMLPackage pkg) {
 - **零新依赖**：复用 docx4j 主版本
 - **DOC 旧格式限制**：与上版一致（本计划仅 DOCX，`.doc` 旧二进制格式不处理）
 - **DOCX 大小**：base64 inline 对 ≤10MB docx 可接受；超大文档由调用方用 `docxToStructured(...)` 拿到 POJO 后自行选择是否要 src
+
+## Status
+
+**完成。** 全部 5 个 Task + 三分支同步 + 验收全部完成并随 20260630 / 20260830 / 20260930 三次发布落地。
+
+| Task | 实现 commit(s) | 验证 |
+|---|---|---|
+| Task 1: 4 个核心 POJO + DocxDocument + DocxElement 抽象 | `9216f79` + `6c570ec` (3.0) | 267 xhtml 测试全绿 |
+| Task 2: DocxStructureExtractor（OOXML 遍历核心） | `a44a638` (3.0)；1.0 / 2.0 由此前 markdown 同步（已 byte-identical） | `DocxStructureExtractorTest` 25 用例 |
+| Task 3: EasyMarkdown 门面扩展 + DocxToMarkdownConverter | `64dc689` (3.0) | `EasyMarkdownStructuredTest` 5 用例 |
+| Task 4: 三分支同步 + 推送（与会议目标"3 个分支逻辑保持一致"对应） | 1.0: `28a364a` / 2.0: `cbc98fe` / 3.0: `7fd3d2e` | md5 一致性核验：22 个 markdown 文件中 17 与 3.0 字节一致 |
+| Task 5: 验收与回归（CHANGELOG + quickstart） | `4d38486`（CHANGELOG + agent quickstart doc） | 全量 verify 1366 测试绿 |
+
+附注：随 20260830 发布周期一并上线 `docs/release-central.md`；Sprint 1 进一步将列表几何、转义、合并单元格、header/footer/footnote 等补丁同步到三分支。归档前缀 `[DONE]` 由会话后续补齐。
