@@ -20,6 +20,8 @@ import java.io.IOException;
 import org.docx4j.Docx4jProperties;
 import io.github.easy4j.doc.utils.ArrayUtils;
 import io.github.easy4j.doc.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
@@ -33,6 +35,8 @@ import org.thymeleaf.templateresolver.UrlTemplateResolver;
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public final class EngineFactory {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EngineFactory.class);
 
     private final AbstractConfigurableTemplateResolver templateResolver;
 
@@ -61,11 +65,18 @@ public final class EngineFactory {
                     AbstractConfigurableTemplateResolver resolver = this.templateResolver;
                     if (resolver == null) {
                         String resolverClassName = Docx4jProperties.getProperty("docx4j.thymeleaf.templateResolver", "org.thymeleaf.templateresolver.FileTemplateResolver");
+                        // All arms use equalsIgnoreCase to match the pre-refactor if/else behavior.
+                        //
+                        // 设计取舍（低风险方案）：这里不做反射实例化自定义解析器——未知的类名只会降级为
+                        // FileTemplateResolver 并记录 WARN 日志，而不是静默变换类型或抛出异常。
                         if ("org.thymeleaf.templateresolver.ClassLoaderTemplateResolver".equalsIgnoreCase(resolverClassName)) {
                             resolver = new ClassLoaderTemplateResolver();
                         } else if ("org.thymeleaf.templateresolver.UrlTemplateResolver".equalsIgnoreCase(resolverClassName)) {
                             resolver = new UrlTemplateResolver();
                         } else {
+                            if (!"org.thymeleaf.templateresolver.FileTemplateResolver".equalsIgnoreCase(resolverClassName)) {
+                                LOG.warn("Unknown templateResolver class '{}'; falling back to FileTemplateResolver", resolverClassName);
+                            }
                             resolver = new FileTemplateResolver();
                         }
                     }
