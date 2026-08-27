@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,60 +18,101 @@ import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Behavioral tests for {@link WordprocessingMLPackageWriter} that exercise
- * uncovered code paths: writeToHtml with real directory, writeToPDF with
- * real file, writeToPDFWhithFo with real output, and the no-arg overloads.
+ * uncovered code paths.
+ *
+ * <p>writeToHtml(File) 缺陷修复后的语义固定：File 参数即目标 html 文件
+ * （不再要求其为目录），父目录不存在时自动创建；传入已存在的目录则明确失败。</p>
  */
 @DisplayName("WordprocessingMLPackageWriter Behavioral Tests")
 class WordprocessingMLPackageWriterBehavioralTest {
 
     // ---------------------------------------------------------------
-    // writeToHtml with existing directory
+    // writeToHtml(File)：缺陷修复后的“目标文件”语义
     // ---------------------------------------------------------------
 
-    @Test
-    @DisplayName("writeToHtml with existing directory exercises HTML conversion path")
-    void writeToHtmlWithExistingDirectory(@TempDir Path tempDir) throws Exception {
-        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+    /**
+     * 构造带正文段落的包：空包（仅 createPackage）在 Docx4J.toHTML 导出时
+     * 会确定性失败（MainDocumentPart 为空），无法验证写入成功路径。
+     */
+    private static WordprocessingMLPackage packageWithContent()
+            throws org.docx4j.openpackaging.exceptions.InvalidFormatException {
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-
-        // writeToHtml expects a directory (it calls outFile.listFiles())
-        // Then tries to create FileOutputStream on the directory — this will throw
-        // IOException since you can't write to a directory.
-        // This is a production bug: writeToHtml treats outFile as both directory and file.
-        File outDir = tempDir.resolve("htmlout").toFile();
-        outDir.mkdir();
-
-        try {
-            File result = writer.writeToHtml(pkg, outDir);
-            // If it somehow succeeds, verify the result
-            assertNotNull(result);
-        } catch (java.io.FileNotFoundException e) {
-            // Expected: can't create FileOutputStream on a directory
-            // Lines 162-173 (Assert + listFiles + imageDir creation) are covered
-            assertTrue(e.getMessage() != null || true, "FileNotFoundException from directory write");
-        } catch (Throwable e) {
-            // Other exceptions from HTML conversion — lines are still covered
-        }
+        pkg.getMainDocumentPart().addParagraphOfText("hello easydoc");
+        return pkg;
     }
 
     @Test
-    @DisplayName("writeToHtml with existing directory containing images subdir")
-    void writeToHtmlWithImagesSubdir(@TempDir Path tempDir) throws Exception {
+    @DisplayName("writeToHtml 目标路径为已存在目录时抛出明确 IOException")
+    void writeToHtmlExistingDirectoryTargetFailsClearly(@TempDir Path tempDir) throws Exception {
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
-        WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
 
-        File outDir = tempDir.resolve("htmlout2").toFile();
-        outDir.mkdir();
-        // Create images subdirectory so listFiles returns non-empty
-        File imagesDir = new File(outDir, "images");
-        imagesDir.mkdir();
+        // 缺陷修复语义：File 即目标 html 文件；传入已存在的目录必须直接失败，
+        // 且异常信息需能明确指出“目标是目录”（旧版要求目录却又对其建 FileOutputStream，
+        // 导致任何调用都必然以 FileNotFoundException 失败）
+        File outDir = tempDir.resolve("htmlout").toFile();
+        assertTrue(outDir.mkdir(), "test fixture directory should be created");
 
-        try {
-            writer.writeToHtml(pkg, outDir);
-        } catch (Throwable e) {
-            // Expected: HTML conversion or FileOutputStream on directory
-            // Covers lines 162-191 (the full writeToHtml body)
-        }
+        IOException e = assertThrows(IOException.class,
+                () -> writer.writeToHtml(packageWithContent(), outDir));
+        assertTrue(e.getMessage() != null && e.getMessage().contains("directory"),
+                "exception message should mention directory, but was: " + e.getMessage());
+    }
+
+    @Test
+    @DisplayName("writeToHtml 自动创建不存在的多级父目录并写出 html 与图片目录")
+    void writeToHtmlCreatesMissingParentDirsAndWritesFile(@TempDir Path tempDir) throws Exception {
+        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+
+        // report.html 的多级父目录均不存在，应在写出时自动创建而不是抛 FileNotFoundException
+        File outFile = tempDir.resolve("level1/level2/report.html").toFile();
+        File result = writer.writeToHtml(packageWithContent(), outFile);
+
+        assertNotNull(result);
+        assertTrue(outFile.isFile(), "target html file should be created");
+        assertTrue(outFile.length() > 0, "html output should be non-empty");
+        assertTrue(new File(outFile.getParentFile(), "images").isDirectory(),
+                "images resource dir should be created next to the html file");
+    }
+
+    @Test
+    @DisplayName("writeToHtml 已存在图片子目录时不重复创建")
+    void writeToHtmlReusesExistingImagesDir(@TempDir Path tempDir) throws Exception {
+        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+
+        File baseDir = tempDir.resolve("htmlout").toFile();
+        assertTrue(baseDir.mkdirs(), "test fixture base dir should be created");
+        File imagesDir = new File(baseDir, "images");
+        assertTrue(imagesDir.mkdir(), "pre-existing images dir should be created");
+
+        File result = writer.writeToHtml(packageWithContent(), new File(baseDir, "report.html"));
+        assertNotNull(result);
+        assertTrue(imagesDir.isDirectory(), "existing images dir should be kept");
+    }
+
+    @Test
+    @DisplayName("writeToHtml 父目录路径被同名普通文件阻塞时抛出 IOException")
+    void writeToHtmlUncreatableParentFailsWithIOException(@TempDir Path tempDir) throws Exception {
+        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+
+        // 父路径组件是普通文件 → Files.createDirectories 无法创建父目录，
+        // 以 IOException（FileSystemException 族）明确失败，而非模糊的 FileNotFoundException
+        File blocker = tempDir.resolve("blocked").toFile();
+        assertTrue(blocker.createNewFile(), "blocker file should be created");
+
+        assertThrows(IOException.class,
+                () -> writer.writeToHtml(packageWithContent(), new File(blocker, "report.html")));
+    }
+
+    @Test
+    @DisplayName("writeToHtml String 路径重载同样按“目标文件”语义创建父目录")
+    void writeToHtmlStringPathCreatesMissingParents(@TempDir Path tempDir) throws Exception {
+        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+
+        File outFile = tempDir.resolve("a/b/c/report.html").toFile();
+        File result = writer.writeToHtml(packageWithContent(), outFile.getAbsolutePath());
+
+        assertNotNull(result);
+        assertTrue(outFile.isFile(), "target html file should be created via String path too");
     }
 
     @Test
@@ -79,16 +121,6 @@ class WordprocessingMLPackageWriterBehavioralTest {
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
         assertThrows(IllegalArgumentException.class, () -> {
             writer.writeToHtml(null, new File("dummy"));
-        });
-    }
-
-    @Test
-    @DisplayName("writeToHtml File overload rejects non-existent file")
-    void writeToHtmlFileRejectsNonExistent() throws Exception {
-        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
-        WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        assertThrows(IllegalArgumentException.class, () -> {
-            writer.writeToHtml(pkg, new File("/nonexistent/dir"));
         });
     }
 

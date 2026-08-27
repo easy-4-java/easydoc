@@ -178,7 +178,8 @@ class WordprocessingMLPackageWriterTest {
 
     @Test
     void writeToHtmlNoArgDelegatesToFileVersion() throws Exception {
-        // Covers lines 134-136: Assert.notNull, create temp file, delegate
+        // 覆盖无参重载：构造临时路径后委托给 File 重载；导出空包时
+        // Docx4J.toHTML 会确定性失败（MainDocumentPart 为空），与预期一致
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
         assertThrows(Exception.class, () -> {
@@ -203,13 +204,17 @@ class WordprocessingMLPackageWriterTest {
     }
 
     @Test
-    void writeToHtmlStringPathDelegatesToFileVersion() throws Exception {
-        // Covers lines 148-150: Assert.notNull pkg, Assert.notNull outPath, delegate
+    void writeToHtmlStringPathCreatesMissingParentDirs(@TempDir java.nio.file.Path tempDir) throws Exception {
+        // String 路径重载委托给 File 重载；File 即目标 html 文件，
+        // 多级不存在的父目录会被自动创建（Files.createDirectories）
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        assertThrows(IllegalArgumentException.class, () -> {
-            writer.writeToHtml(pkg, "/nonexistent/path");
-        });
+        pkg.getMainDocumentPart().addParagraphOfText("hello easydoc");
+        File outFile = tempDir.resolve("level1/level2/report.html").toFile();
+        File result = writer.writeToHtml(pkg, outFile.getAbsolutePath());
+        assertNotNull(result);
+        assertTrue(result.isFile(), "target html file should be created");
+        assertTrue(result.length() > 0, "html output should be non-empty");
     }
 
     @Test
@@ -221,26 +226,29 @@ class WordprocessingMLPackageWriterTest {
     }
 
     @Test
-    void writeToHtmlFileRejectsNonExistentFile() throws Exception {
-        // Covers line 162 (Assert.notNull) and line 163 (Assert.isTrue)
+    void writeToHtmlFileUncreatableParentThrowsIOException(@TempDir java.nio.file.Path tempDir) throws Exception {
+        // 目标文件的父路径中存在同名普通文件时，无法创建父目录：
+        // Files.createDirectories 抛出 IOException（FileAlreadyExistsException/FileSystemException 族）
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        assertThrows(IllegalArgumentException.class, () -> {
-            writer.writeToHtml(pkg, new File("/nonexistent/dir"));
+        File blocker = tempDir.resolve("blocked").toFile();
+        assertTrue(blocker.createNewFile(), "blocker file should be created");
+        assertThrows(IOException.class, () -> {
+            writer.writeToHtml(pkg, new File(blocker, "report.html"));
         });
     }
 
     @Test
-    void writeToHtmlFileWithDirectory(@TempDir java.nio.file.Path tempDir) throws Exception {
-        // Covers lines 162-167, then may fail at listFiles or FileOutputStream
+    void writeToHtmlFileRejectsExistingDirectoryTarget(@TempDir java.nio.file.Path tempDir) throws Exception {
+        // 缺陷修复后的语义：outFile 必须是“目标文件”，传入已存在的目录
+        // 时抛出带明确提示的 IOException（而非旧版要求目录却又对其建流的自相矛盾行为）
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
-        // tempDir is an existing directory
-        try {
+        IOException e = assertThrows(IOException.class, () -> {
             writer.writeToHtml(pkg, tempDir.toFile());
-        } catch (Exception e) {
-            // Expected: NPE from files.length or IOException from FileOutputStream on directory
-        }
+        });
+        assertTrue(e.getMessage() != null && e.getMessage().contains("directory"),
+                "exception message should mention directory, but was: " + e.getMessage());
     }
 
     // --- writeToPDF tests ---

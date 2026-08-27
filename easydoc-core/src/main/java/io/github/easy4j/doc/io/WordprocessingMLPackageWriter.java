@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.docx4j.Docx4J;
 import org.docx4j.Docx4jProperties;
@@ -153,22 +154,34 @@ public class WordprocessingMLPackageWriter  {
 
 	/**
 	 * 将 {@link org.docx4j.openpackaging.packages.WordprocessingMLPackage} 存为 html
+	 * <p>缺陷修复后语义已统一：{@code outFile} 即待写入的目标 html 文件，
+	 * 与 {@link #writeToDocx(WordprocessingMLPackage, File)}、
+	 * {@link #writeToPDF(WordprocessingMLPackage, File)} 保持一致，不再要求其为目录。
+	 * 父目录不存在时自动创建（{@link Files#createDirectories}）；
+	 * 若 {@code outFile} 为已存在的目录则抛出 {@link IOException}。</p>
 	 * @param wmlPackage {@link WordprocessingMLPackage} 对象
-	 * @param outFile 文件输出路径
-	 * @return {@link File} docx 文档
+	 * @param outFile 目标 html 文件（父目录自动创建；不可为已存在的目录）
+	 * @return {@link File} html 文档
 	 * @throws IOException ：IO异常
 	 * @throws Docx4JException ： Docx4j异常
 	 */
 	public File writeToHtml(WordprocessingMLPackage wmlPackage,File outFile) throws IOException, Docx4JException {
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
-		// 方法语义是写入目录：先校验是目录，避免下面 outFile.listFiles(...) 返回 null 导致 NPE
-		if (!outFile.isDirectory()) {
-			throw new IllegalArgumentException("outFile must be a directory: " + outFile);
+		Assert.notNull(outFile, " outFile is not specified!");
+		// 缺陷修复：File 参数统一语义为“目标文件”，不可为已存在的目录（目录无法作为文件写出）
+		if (outFile.isDirectory()) {
+			throw new IOException("outFile must be a file, but is a directory: " + outFile);
 		}
+		// 图片资源目录以目标 html 文件所在目录为基准；父目录不存在时自动创建而不是失败
+		File baseDir = outFile.getAbsoluteFile().getParentFile();
+		Assert.notNull(baseDir, " outFile has no parent directory: " + outFile);
+		Files.createDirectories(baseDir.toPath());
 		String imageTargetUri = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_CONVERT_OUT_HTML_IMAGETARGETURI, "images");
-		File[] files = outFile.listFiles(new OutputDirFilterHandler(imageTargetUri));
-		if(files.length != 1){
-			File imageDir = new File(outFile, imageTargetUri);
+		// 在基准目录下查找名为 imageTargetUri 的子目录，缺失时补建
+		// （原缺陷版本对 outFile 自身 listFiles 且要求其必须是目录）
+		File[] files = baseDir.listFiles(new OutputDirFilterHandler(imageTargetUri));
+		if(files == null || files.length != 1){
+			File imageDir = new File(baseDir, imageTargetUri);
 			imageDir.setWritable(true);
 			imageDir.setReadable(true);
 			imageDir.mkdir();
@@ -177,7 +190,7 @@ public class WordprocessingMLPackageWriter  {
 		try (OutputStream output = new FileOutputStream(outFile)) {
 			//创建Html输出设置
 			HTMLSettings htmlSettings = Docx4J.createHTMLSettings();
-			htmlSettings.setImageDirPath(outFile.getParent());
+			htmlSettings.setImageDirPath(baseDir.getPath());
 			htmlSettings.setImageTargetUri(imageTargetUri);
 			htmlSettings.setWmlPackage(wmlPackage);
 
@@ -194,7 +207,13 @@ public class WordprocessingMLPackageWriter  {
 			try {
 				Docx4J.toHTML(htmlSettings, output, Docx4J.FLAG_EXPORT_PREFER_XSL);
 			} finally {
-				Docx4jProperties.setProperty(Docx4jConstants.DOCX4J_PARAM_04, prevValue);
+				// 恢复原值；若属性原本未设置则直接移除该键 —— Properties 底层
+				// Hashtable 不接受 null 值，setProperty(key, null) 会抛 NPE
+				if (prevValue != null) {
+					Docx4jProperties.setProperty(Docx4jConstants.DOCX4J_PARAM_04, prevValue);
+				} else {
+					Docx4jProperties.getProperties().remove(Docx4jConstants.DOCX4J_PARAM_04);
+				}
 			}
 		}
 
