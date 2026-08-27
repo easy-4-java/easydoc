@@ -46,7 +46,7 @@
         <java.version>1.8</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <!-- CI-friendly 版本单一来源，Maven 3 需 flatten 插件，发布用 -Drevision 覆盖 -->
-        <revision>1.0.x.20260630-SNAPSHOT</revision>
+        <revision>1.0.x.20260831</revision>
         <maven.version>3.9.16</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
