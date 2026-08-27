@@ -3,6 +3,7 @@ package io.github.easy4j.doc.xhtml.markdown;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -92,12 +93,15 @@ public final class EasyMarkdown {
 	// DocxStructureExtractor 直接解析 OOXML 语义（标题层级、有序/无序列表、内联格式、
 	// 表格、图片）。null 策略差异有意为之：旧 docxToMarkdown 系列 null 返回空串（宽松），
 	// 新结构化系列 null 抛 NPE（requireNonNull 边界严格校验，尽早暴露调用方缺陷）。
+	// 受检异常统一收紧为 IOException：底层仅可能因文件不存在/包损坏抛出，
+	// 不再泄漏 Exception 这种"究极捕获"签名（包加载 pkg 重载实际不会抛 IO，保留
+	// 同组一致签名并预留未来降级空间）。
 
 	/**
 	 * 结构化 docx 文件 → Markdown（OOXML 直读，高保真；对照 HTML 路径 {@link #docxToMarkdown(File)}）。
-	 * null 输入抛 NPE；文件不存在抛 IOException。
+	 * null 输入抛 NPE；文件不存在或包损坏抛 IOException。
 	 */
-	public static String docxToStructuredMarkdown(File docx) throws Exception {
+	public static String docxToStructuredMarkdown(File docx) throws IOException {
 		return DocxToMarkdownConverter.convert(docx);
 	}
 
@@ -105,7 +109,7 @@ public final class EasyMarkdown {
 	 * 结构化 docx 输入流 → Markdown（流由底层负责关闭，勿重复关闭）。
 	 * null 输入抛 NPE；损坏包抛 IOException。
 	 */
-	public static String docxToStructuredMarkdown(InputStream in) throws Exception {
+	public static String docxToStructuredMarkdown(InputStream in) throws IOException {
 		return DocxToMarkdownConverter.convert(in);
 	}
 
@@ -113,15 +117,15 @@ public final class EasyMarkdown {
 	 * 已加载结构化 docx 包 → Markdown（OOXML 直读，高保真）。
 	 * null 输入抛 NPE。
 	 */
-	public static String docxToStructuredMarkdown(WordprocessingMLPackage pkg) throws Exception {
+	public static String docxToStructuredMarkdown(WordprocessingMLPackage pkg) throws IOException {
 		return DocxToMarkdownConverter.convert(pkg);
 	}
 
 	/**
 	 * 结构化 docx 文件 → {@link DocxDocument} POJO 树（供智能体/调用方深度遍历块元素与行内片段）。
-	 * null 输入抛 NPE；文件不存在抛 IOException。
+	 * null 输入抛 NPE；文件不存在或包损坏抛 IOException。
 	 */
-	public static DocxDocument docxToStructured(File docx) throws Exception {
+	public static DocxDocument docxToStructured(File docx) throws IOException {
 		return DocxStructureExtractor.extract(docx);
 	}
 
@@ -129,7 +133,7 @@ public final class EasyMarkdown {
 	 * 结构化 docx 输入流 → {@link DocxDocument} POJO 树（流由底层负责关闭，勿重复关闭）。
 	 * null 输入抛 NPE；损坏包抛 IOException。
 	 */
-	public static DocxDocument docxToStructured(InputStream in) throws Exception {
+	public static DocxDocument docxToStructured(InputStream in) throws IOException {
 		return DocxStructureExtractor.extract(in);
 	}
 
@@ -137,7 +141,7 @@ public final class EasyMarkdown {
 	 * 已加载结构化 docx 包 → {@link DocxDocument} POJO 树。
 	 * null 输入抛 NPE。
 	 */
-	public static DocxDocument docxToStructured(WordprocessingMLPackage pkg) throws Exception {
+	public static DocxDocument docxToStructured(WordprocessingMLPackage pkg) throws IOException {
 		return DocxStructureExtractor.extract(pkg);
 	}
 }
