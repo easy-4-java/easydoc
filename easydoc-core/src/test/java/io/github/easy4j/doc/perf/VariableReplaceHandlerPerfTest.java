@@ -28,6 +28,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +79,9 @@ import io.github.easy4j.doc.handler.VariableReplaceSaTXHandler;
  * {@code WordprocessingMLDocxSaxTemplate#assertJdkCompatible}）；
  * 此时通过 Assumption 跳过 SAX 计时用例，仅对现代 JDK 可用的 StAX 路径计时。</p>
  */
+// perf 用例标记：本文件为负载容忍比值断言，留在默认构建亦安全；
+// 专用 perf 任务可用 -Dgroups=perf-absolute 单独调度（审计 #28）。
+@Tag("perf-absolute")
 class VariableReplaceHandlerPerfTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(VariableReplaceHandlerPerfTest.class);

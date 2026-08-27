@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
@@ -46,6 +47,10 @@ import io.github.easy4j.doc.utils.Docx4jUtils;
  *   - mergeDocx(single stream): ~4 ms per round-trip (median over 10 runs)
  * The asserted bound is 100 ms (~25x headroom).</p>
  */
+// 绝对时间门（render 中位数上限）：对持续高负载敏感，建议以
+// -DexcludedGroups=perf-absolute 移出常规 CI，由专用 perf 任务
+// 以 -Dgroups=perf-absolute 单独调度（审计 #28）。
+@Tag("perf-absolute")
 class Docx4jUtilsPerfTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(Docx4jUtilsPerfTest.class);
