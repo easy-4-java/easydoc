@@ -12,8 +12,21 @@ public abstract class DocxElement {
 		this.elementType = elementType;
 	}
 
-	/** 转为 Markdown 片段。 */
+	/** 转为 Markdown 片段（默认渲染选项）。 */
 	public abstract String toMarkdown();
+
+	/**
+	 * 转为 Markdown 片段（指定渲染选项）。
+	 *
+	 * <p>默认实现委托给 {@link #toMarkdown()}；仅 {@link DocxTable} 覆写以支持
+	 * 可选颜色渲染。其它子类无需覆写，除非需要响应 {@link MarkdownRenderOptions} 中的开关。</p>
+	 *
+	 * @param opts 渲染选项；null 等价于 {@link MarkdownRenderOptions#DEFAULT}
+	 * @return Markdown 片段
+	 */
+	public String toMarkdown(MarkdownRenderOptions opts) {
+		return toMarkdown();
+	}
 
 	/** 返回元素类型标签。 */
 	public String getElementType() {

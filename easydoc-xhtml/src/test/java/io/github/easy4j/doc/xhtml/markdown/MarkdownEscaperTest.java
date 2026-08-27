@@ -155,7 +155,7 @@ class MarkdownEscaperTest {
 
 	@Test
 	void tableCellEscapesPipesAndEmphasis() {
-		DocxTable table = new DocxTable(Collections.singletonList("表头"),
+		DocxTable table = DocxTable.ofStrings(Collections.singletonList("表头"),
 				Collections.singletonList(Collections.singletonList("**加粗**|正文")));
 		assertEquals("| 表头 |\n|---|\n| \\*\\*加粗\\*\\*\\|正文 |", table.toMarkdown());
 	}
