@@ -106,6 +106,9 @@
 
         <!-- ═══ 第七段: Maven 插件版本 ═══ -->
         <maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>
+        <!-- surefire 的 @{argLine} 晚绑定兜底默认值：无 jacoco（-Djacoco.skip=true）
+             且未在命令行传 -DargLine 时避免字面量 "@{argLine}" 混入 fork JVM 参数；
+             jacoco prepare-agent 执行时会以 agent 参数覆盖该工程属性 -->
         <maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
         <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
@@ -866,7 +869,15 @@
         <plugins>
 
             <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
-            <!-- JaCoCo（代码覆盖率：prepare-agent + report + check，行覆盖率阈值 90%） -->
+            <!-- JaCoCo（代码覆盖率：prepare-agent + report + check）。
+                 双层门槛（审计 #18）：
+                   1) BUNDLE 级 LINE ≥ 0.92：v20260830 基线（原 0.90 名义门槛实际全模块 91.45%~100%）；
+                   2) PACKAGE 级 LINE ≥ 0.85：此前 BUNDLE 汇总掩盖了子包短板
+                      （easydoc-core/io.github.easy4j.doc.handler 曾仅 84.34%、
+                       easydoc-xhtml/io.github.easy4j.doc.xhtml.markdown 曾为 88.99%），
+                      先以 VariableReplaceGuardsPathTest / DocxStructureExtractorExtendedTest
+                      抬升至 91.57% / 91.04%，再启用包级硬门。
+                 棘轮计划：后续每次发版将两级下限各收紧约 5~10 个百分点，向 1.00 渐进 -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -900,7 +911,34 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.90</minimum>
+                                            <minimum>0.92</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                                <!-- 包级硬门：VM 记法包名（见 jacoco check 规则的 element-name 匹配） -->
+                                <rule>
+                                    <element>PACKAGE</element>
+                                    <includes>
+                                        <include>io/github/easy4j/doc/handler</include>
+                                    </includes>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.85</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                                <rule>
+                                    <element>PACKAGE</element>
+                                    <includes>
+                                        <include>io/github/easy4j/doc/xhtml/markdown</include>
+                                    </includes>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.85</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
