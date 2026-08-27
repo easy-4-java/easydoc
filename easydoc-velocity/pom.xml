@@ -26,13 +26,7 @@
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-engine-core</artifactId>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-engine-scripting -->
-		<!-- Velocity Scripting（JSR 223 脚本引擎支持） -->
-		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity-engine-scripting</artifactId>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.velocity.tools/velocity-tools-generic -->
+		<!-- https://mvnrepository.com/artifact/org.apache.velocity/tools -->
 		<!-- Velocity Tools Generic（3.x 通用工具集，含 DateTool；不再依赖 Struts，无需排除） -->
 		<dependency>
 			<groupId>org.apache.velocity.tools</groupId>
