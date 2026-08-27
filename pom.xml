@@ -157,12 +157,13 @@
                 <version>${assertj.version}</version>
             </dependency>
 
-            <!-- javax.servlet-api / tomcat-jasper 已从全局 dependencyManagement 移除：
-                 这两个 javax 时代构件只被 easydoc-core（provided）、easydoc-xhtml（provided）、
-                 easydoc-jsp（compile）使用，各模块自行声明版本（属性 ${servlet-api.version} /
-                 ${tomcat-jasper.version} 仍由此处统一管理）。这样以本 pom 为 parent 的
-                 Spring Boot 3 / Jakarta EE 下游项目不会在它们的 dependencyManagement
-                 里继承到 javax 命名空间的条目 -->
+            <!-- jakarta.servlet-api / tomcat-jasper 已从全局 dependencyManagement 移除：
+                 这两个 Servlet 构件只被 easydoc-jsp 使用，由该模块自行声明
+                 （版本属性 ${jakarta.servlet-api.version} / ${tomcat-jasper.version}
+                 仍由此处统一管理）。这样以本 pom 为 parent 的下游项目不会在它们的
+                 dependencyManagement 里继承到 Servlet 相关条目；
+                 旧 javax.servlet-api 已随 3.0.x 的 Jakarta 迁移（easydoc-core/
+                 easydoc-xhtml 均无 servlet 引用）从全仓库移除 -->
 
             <!-- ======== 日志 ======== -->
 
