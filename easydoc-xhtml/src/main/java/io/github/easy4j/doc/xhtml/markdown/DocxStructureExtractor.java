@@ -69,6 +69,10 @@ import org.slf4j.LoggerFactory;
  * <li>图片：w:drawing → a:blip r:embed → BinaryPart 字节内联为 data URI；
  * alt 取 docPr descr（其次 name）；blip/关系/字节任一环失败仅 LOG.debug 并跳过该图片；
  * 列表段落中的图片延后到其所属列表输出之后，避免图片插进列表 Markdown 片段中间。</li>
+ * <li>页眉/页脚/脚注：正文之后按 页眉（部件名序）→ 页脚（部件名序）→ 脚注（仅 normal
+ * 类型，跳过分隔线项）顺序遍历 HeaderPart/FooterPart/FootnotesPart，复用正文同款
+ * 块级解析追加到文档模型末尾；面向"智能体阅读 Word 文档"场景保留此类语境内容，
+ * 部件缺失或解析失败一律 debug 跳过。</li>
  * <li>失败降级：单个顶层元素解析异常时 LOG.warn 并继续（跳过坏元素不中断全文）；
  * 空段落（无可见文本且无图片）整体跳过。</li>
  * </ul>
@@ -130,6 +134,8 @@ public final class DocxStructureExtractor {
 		}
 		ctx.flushPendingList();
 
+		appendAncillaryParts(pkg, ctx);
+
 		org.docx4j.docProps.core.CoreProperties props = corePropertiesOf(pkg);
 		return new DocxDocument(titleOf(pkg), props == null ? null : literalOf(props.getCreator()),
 				modifiedOf(props), ctx.elements);
@@ -151,6 +157,101 @@ public final class DocxStructureExtractor {
 			LOG.debug("Unable to read document body: {}", ex.getMessage());
 			return Collections.emptyList();
 		}
+	}
+
+	// ==================== 页眉 / 页脚 / 脚注 ====================
+
+	/**
+	 * 正文之后的辅助部件内容落地（audit 22）：依次遍历 HeaderPart、FooterPart（各按
+	 * 部件名排序）与 FootnotesPart（仅 normal 类型，分隔线脚注跳过），复用同一套
+	 * 块级解析规则追加到文档模型末尾。设计取向：面向"智能体阅读 Word 文档"的主场景，
+	 * 页眉页脚常含标题与关键元信息，直接丢弃会损失语境；部件缺失或解析失败一律
+	 * debug 记录并跳过，绝不影响正文。每个部件之间 flush 列表 run，避免跨部件并表。
+	 */
+	private static void appendAncillaryParts(WordprocessingMLPackage pkg, ParseContext ctx) {
+		List<org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart> headers =
+				new ArrayList<org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart>();
+		List<org.docx4j.openpackaging.parts.WordprocessingML.FooterPart> footers =
+				new ArrayList<org.docx4j.openpackaging.parts.WordprocessingML.FooterPart>();
+		List<org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart> footnotes =
+				new ArrayList<org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart>();
+		try {
+			for (Part part : pkg.getParts().getParts().values()) {
+				if (part instanceof org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart) {
+					headers.add((org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart) part);
+				} else if (part instanceof org.docx4j.openpackaging.parts.WordprocessingML.FooterPart) {
+					footers.add((org.docx4j.openpackaging.parts.WordprocessingML.FooterPart) part);
+				} else if (part instanceof org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart) {
+					footnotes.add((org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart) part);
+				}
+			}
+		} catch (RuntimeException ex) {
+			LOG.debug("Unable to enumerate ancillary parts: {}", ex.getMessage());
+			return;
+		}
+		headers.sort(java.util.Comparator.comparing(DocxStructureExtractor::partNameOf));
+		footers.sort(java.util.Comparator.comparing(DocxStructureExtractor::partNameOf));
+
+		for (org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart header : headers) {
+			try {
+				ctx.flushPendingList();
+				processAncillaryChildren(header.getContent(), ctx);
+			} catch (Exception ex) {
+				LOG.debug("Skipping unreadable header: {}", ex.getMessage());
+			}
+		}
+		for (org.docx4j.openpackaging.parts.WordprocessingML.FooterPart footer : footers) {
+			try {
+				ctx.flushPendingList();
+				processAncillaryChildren(footer.getContent(), ctx);
+			} catch (Exception ex) {
+				LOG.debug("Skipping unreadable footer: {}", ex.getMessage());
+			}
+		}
+		for (org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart footnotePart : footnotes) {
+			appendFootnotes(footnotePart, ctx);
+		}
+		ctx.flushPendingList();
+	}
+
+	/** 单个页眉/页脚部件的块级子元素逐一分发；单元素异常不中断整个部件。 */
+	private static void processAncillaryChildren(List<Object> children, ParseContext ctx) {
+		if (children == null) {
+			return;
+		}
+		for (Object child : children) {
+			try {
+				processBlockChild(unwrap(child), ctx);
+			} catch (Exception ex) {
+				LOG.debug("Skipping malformed element in header/footer: {}", ex.getMessage());
+			}
+		}
+	}
+
+	/** 脚注部件：仅落地 normal（或缺省类型）脚注，separator/continuation 分隔项跳过。 */
+	private static void appendFootnotes(org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart part,
+			ParseContext ctx) {
+		try {
+			org.docx4j.wml.CTFootnotes footnotes = part.getContents();
+			if (footnotes == null || footnotes.getFootnote() == null) {
+				return;
+			}
+			for (org.docx4j.wml.CTFtnEdn footnote : footnotes.getFootnote()) {
+				if (footnote == null || (footnote.getType() != null
+						&& footnote.getType() != org.docx4j.wml.STFtnEdn.NORMAL)) {
+					continue;
+				}
+				ctx.flushPendingList();
+				processAncillaryChildren(footnote.getContent(), ctx);
+			}
+		} catch (Exception ex) {
+			LOG.debug("Skipping unreadable footnotes part: {}", ex.getMessage());
+		}
+	}
+
+	/** 排序用的部件名（无名称返回空串保持稳定次序）。 */
+	private static String partNameOf(Part part) {
+		return part == null || part.getPartName() == null ? "" : part.getPartName().getName();
 	}
 
 	/** 顶层内容分发：P/Tbl/SdtBlock 走解析，其余静默忽略。 */
