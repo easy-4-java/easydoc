@@ -119,4 +119,47 @@ class MarkdownConverterTest {
 		String result = MarkdownConverter.htmlToMarkdown("");
 		assertTrue(result.trim().isEmpty(), "empty input must return empty/blank string");
 	}
+
+	// -------- OUTPUT_UNKNOWN_TAGS 行为验证（3.6 工程债） --------
+
+	/**
+	 * 默认行为（OUTPUT_UNKNOWN_TAGS=false）：{@code <span>} 是 flexmark 未知标签，
+	 * 转换后内容保留但 {@code <span style="...">} 标签本身被剥离。
+	 */
+	@Test
+	void htmlToMarkdownDefaultStripsSpanStyle() {
+		String html = "<p><span style=\"color:#FF0000\">red</span></p>";
+		String md = MarkdownConverter.htmlToMarkdown(html);
+		// 文本内容必须保留
+		assertTrue(md.contains("red"), "text content 'red' must be preserved");
+		// 默认模式下 span 标签被剥离（不包含 style 属性）
+		assertFalse(md.contains("color"), "default mode should strip span style attribute");
+	}
+
+	/**
+	 * OUTPUT_UNKNOWN_TAGS=true 也不能保留 docx4j 的 {@code <span style="color:...">} 输出。
+	 * flexmark-html2md 0.64.8 将 {@code <span>} 视为 inline 级标签，style 属性被剥离，
+	 * 仅保留文本内容。这是快路径（htmlToMarkdown）与结构化路径（docxToStructuredMarkdown）
+	 * 的已知能力边界：颜色渲染仅在结构化路径通过 {@link MarkdownRenderOptions} 实现。
+	 *
+	 * @see <a href="https://github.com/vsch/flexmark-java/issues/501">flexmark #501</a>
+	 */
+	@Test
+	void htmlToMarkdownOutputUnknownTagsDoesNotPreserveSpanColor() {
+		com.vladsch.flexmark.util.data.MutableDataSet opts = new com.vladsch.flexmark.util.data.MutableDataSet();
+		opts.set(com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.OUTPUT_UNKNOWN_TAGS, true);
+		opts.set(com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.SETEXT_HEADINGS, false);
+		opts.set(com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.UNORDERED_LIST_DELIMITER, '-');
+		com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter converter =
+				com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.builder(opts).build();
+
+		String html = "<p><span style=\"color:#FF0000\">red</span></p>";
+		String md = converter.convert(html);
+		// 文本内容必须保留
+		assertTrue(md.contains("red"), "text content 'red' must be preserved");
+		// 已知边界：OUTPUT_UNKNOWN_TAGS=true 也不能保留 span style 属性
+		// flexmark 将 <span> 视为 inline 标签，style 属性被剥离
+		assertFalse(md.contains("color") || md.contains("FF0000") || md.contains("<span"),
+				"OUTPUT_UNKNOWN_TAGS=true still strips span style (known boundary); got: " + md);
+	}
 }
