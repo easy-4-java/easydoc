@@ -678,17 +678,25 @@ public final class DocxStructureExtractor {
 			numbering = NumberingResolver.of(main.getNumberingDefinitionsPart());
 		}
 
-		/** 关闭当前列表 run 并按 ilvl 升序落地各分桶，随后追加 run 内延迟图片。 */
+		/**
+		 * 关闭当前列表 run 并按 ilvl 升序落地各分桶，随后追加 run 内延迟图片。
+		 *
+		 * <p>缩进几何（CommonMark）：子块缩进列数必须 ≥ 父项内容起始列。落地第 k 级前，
+		 * 累计其所有祖先级（j&lt;k）的“最宽标记宽度”：无序 {@code "- "} 固定 2 列；
+		 * 有序取最大编号位宽 + 2（如 10+ 项的 {@code "10. "} 占 4 列）。</p>
+		 */
 		void flushPendingList() {
 			if (openNumId == null && buckets.isEmpty()) {
 				appendDeferredImages();
 				return;
 			}
 			openNumId = null;
+			int cumulativeColumns = 0;
 			for (Map.Entry<Integer, ListBuilder> entry : buckets.entrySet()) {
 				ListBuilder builder = entry.getValue();
 				if (!builder.items.isEmpty()) {
-					elements.add(builder.build());
+					elements.add(builder.build(cumulativeColumns));
+					cumulativeColumns += builder.widestMarkerWidth();
 				}
 			}
 			buckets.clear();
@@ -741,8 +749,18 @@ public final class DocxStructureExtractor {
 						: Collections.unmodifiableList(spans));
 			}
 
-			DocxList build() {
-				return new DocxList(ordered, indent, items, richItems);
+			DocxList build(int indentColumns) {
+				return new DocxList(ordered, indent, items, richItems, Integer.valueOf(indentColumns));
+			}
+
+			/**
+			 * 本级“最宽标记”所占列数（含标记后的一个空格）：无序 "-" 固定 2；
+			 * 有序为最大编号的位宽 + 2（"9. " 占 3 列、"10. " 起占 4 列）。
+			 * 供下级层级累计缩进使用；仅对非空桶调用。
+			 */
+			int widestMarkerWidth() {
+				int count = Math.max(items.size(), richItems.size());
+				return ordered ? Integer.toString(count).length() + 2 : 2;
 			}
 
 			private static String plainSpansText(List<InlineSpan> spans) {
