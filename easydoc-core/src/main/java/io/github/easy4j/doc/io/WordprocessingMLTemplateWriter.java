@@ -36,6 +36,13 @@ import io.github.easy4j.doc.utils.Assert;
 /**
  * Implementation of wordprocessing m l template writer functionality.
  *
+ * <p>已知遗留问题（不在本次修复范围，需接口层协同）：
+ * {@link io.github.easy4j.doc.WordprocessingMLTemplate#process(String, java.util.Map)}
+ * 的默认实现直接 {@code new FileInputStream(template)} 传入 {@code process(InputStream, Map)}，
+ * 该流从未显式关闭 —— 存在文件句柄泄漏。修复需要调整接口/抽象类约定
+ * （如约定实现方关闭入参流并在此处使用 try-with-resources 包装），涉及
+ * 模板处理链各实现方，待统一规划后处理。</p>
+ *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class WordprocessingMLTemplateWriter {
@@ -75,7 +82,12 @@ public class WordprocessingMLTemplateWriter {
 	}
 	
 	public static void writeToFile(WordprocessingMLPackage wmlPackage,File outFile) throws IOException, Docx4JException {
-		writeToStream(wmlPackage, new FileOutputStream(outFile));
+		// P1 资源修复（#14，port from 3.0.x）：原实现裸 new FileOutputStream 不关闭；
+		// 本地流改为 try-with-resources，异常路径同样保证释放。writeToStream 对入参流的
+		// close 语义保持不变。
+		try (OutputStream output = new FileOutputStream(outFile)) {
+			writeToStream(wmlPackage, output);
+		}
 	}
 	
 	public static void writeToStream(WordprocessingMLPackage wmlPackage, OutputStream output) throws IOException, Docx4JException {
