@@ -40,12 +40,16 @@ public final class InlineSpan {
 		this.hyperlinkUrl = hyperlinkUrl;
 	}
 
-	/** 转 Markdown：按下划线/粗/斜包裹文本；有链接输出 [文本](url)；空文本返回空串。 */
+	/**
+	 * 转 Markdown：文本先经 {@link MarkdownEscaper#escapeText} 转义（防结构性字符
+	 * 误渲染与 HTML 注入），再按下划线/粗/斜包裹；有链接输出 [文本](url)，
+	 * url 经 {@link MarkdownEscaper#escapeUrl} 转义；空文本返回空串。
+	 */
 	public String toMarkdown() {
 		if (text == null || text.isEmpty()) {
 			return "";
 		}
-		String rendered = text;
+		String rendered = MarkdownEscaper.escapeText(text);
 		if (italic) {
 			rendered = "*" + rendered + "*";
 		}
@@ -56,7 +60,7 @@ public final class InlineSpan {
 			rendered = "<u>" + rendered + "</u>";
 		}
 		if (hyperlinkUrl != null && !hyperlinkUrl.isEmpty()) {
-			return "[" + rendered + "](" + hyperlinkUrl + ")";
+			return "[" + rendered + "](" + MarkdownEscaper.escapeUrl(hyperlinkUrl) + ")";
 		}
 		return rendered;
 	}

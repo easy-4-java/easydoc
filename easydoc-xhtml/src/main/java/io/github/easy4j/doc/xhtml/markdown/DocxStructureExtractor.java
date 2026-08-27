@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.docx4j.dml.CTBlip;
@@ -67,6 +69,10 @@ import org.slf4j.LoggerFactory;
  * <li>图片：w:drawing → a:blip r:embed → BinaryPart 字节内联为 data URI；
  * alt 取 docPr descr（其次 name）；blip/关系/字节任一环失败仅 LOG.debug 并跳过该图片；
  * 列表段落中的图片延后到其所属列表输出之后，避免图片插进列表 Markdown 片段中间。</li>
+ * <li>页眉/页脚/脚注：正文之后按 页眉（部件名序）→ 页脚（部件名序）→ 脚注（仅 normal
+ * 类型，跳过分隔线项）顺序遍历 HeaderPart/FooterPart/FootnotesPart，复用正文同款
+ * 块级解析追加到文档模型末尾；面向"智能体阅读 Word 文档"场景保留此类语境内容，
+ * 部件缺失或解析失败一律 debug 跳过。</li>
  * <li>失败降级：单个顶层元素解析异常时 LOG.warn 并继续（跳过坏元素不中断全文）；
  * 空段落（无可见文本且无图片）整体跳过。</li>
  * </ul>
@@ -128,6 +134,8 @@ public final class DocxStructureExtractor {
 		}
 		ctx.flushPendingList();
 
+		appendAncillaryParts(pkg, ctx);
+
 		org.docx4j.docProps.core.CoreProperties props = corePropertiesOf(pkg);
 		return new DocxDocument(titleOf(pkg), props == null ? null : literalOf(props.getCreator()),
 				modifiedOf(props), ctx.elements);
@@ -151,9 +159,103 @@ public final class DocxStructureExtractor {
 		}
 	}
 
+	// ==================== 页眉 / 页脚 / 脚注 ====================
+
+	/**
+	 * 正文之后的辅助部件内容落地（audit 22）：依次遍历 HeaderPart、FooterPart（各按
+	 * 部件名排序）与 FootnotesPart（仅 normal 类型，分隔线脚注跳过），复用同一套
+	 * 块级解析规则追加到文档模型末尾。设计取向：面向"智能体阅读 Word 文档"的主场景，
+	 * 页眉页脚常含标题与关键元信息，直接丢弃会损失语境；部件缺失或解析失败一律
+	 * debug 记录并跳过，绝不影响正文。每个部件之间 flush 列表 run，避免跨部件并表。
+	 */
+	private static void appendAncillaryParts(WordprocessingMLPackage pkg, ParseContext ctx) {
+		List<org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart> headers =
+				new ArrayList<org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart>();
+		List<org.docx4j.openpackaging.parts.WordprocessingML.FooterPart> footers =
+				new ArrayList<org.docx4j.openpackaging.parts.WordprocessingML.FooterPart>();
+		List<org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart> footnotes =
+				new ArrayList<org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart>();
+		try {
+			for (Part part : pkg.getParts().getParts().values()) {
+				if (part instanceof org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart) {
+					headers.add((org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart) part);
+				} else if (part instanceof org.docx4j.openpackaging.parts.WordprocessingML.FooterPart) {
+					footers.add((org.docx4j.openpackaging.parts.WordprocessingML.FooterPart) part);
+				} else if (part instanceof org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart) {
+					footnotes.add((org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart) part);
+				}
+			}
+		} catch (RuntimeException ex) {
+			LOG.debug("Unable to enumerate ancillary parts: {}", ex.getMessage());
+			return;
+		}
+		headers.sort(java.util.Comparator.comparing(DocxStructureExtractor::partNameOf));
+		footers.sort(java.util.Comparator.comparing(DocxStructureExtractor::partNameOf));
+
+		for (org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart header : headers) {
+			try {
+				ctx.flushPendingList();
+				processAncillaryChildren(header.getContent(), ctx);
+			} catch (Exception ex) {
+				LOG.debug("Skipping unreadable header: {}", ex.getMessage());
+			}
+		}
+		for (org.docx4j.openpackaging.parts.WordprocessingML.FooterPart footer : footers) {
+			try {
+				ctx.flushPendingList();
+				processAncillaryChildren(footer.getContent(), ctx);
+			} catch (Exception ex) {
+				LOG.debug("Skipping unreadable footer: {}", ex.getMessage());
+			}
+		}
+		for (org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart footnotePart : footnotes) {
+			appendFootnotes(footnotePart, ctx);
+		}
+		ctx.flushPendingList();
+	}
+
+	/** 单个页眉/页脚部件的块级子元素逐一分发；单元素异常不中断整个部件。 */
+	private static void processAncillaryChildren(List<Object> children, ParseContext ctx) {
+		if (children == null) {
+			return;
+		}
+		for (Object child : children) {
+			try {
+				processBlockChild(unwrap(child), ctx);
+			} catch (Exception ex) {
+				LOG.debug("Skipping malformed element in header/footer: {}", ex.getMessage());
+			}
+		}
+	}
+
+	/** 脚注部件：仅落地 normal（或缺省类型）脚注，separator/continuation 分隔项跳过。 */
+	private static void appendFootnotes(org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart part,
+			ParseContext ctx) {
+		try {
+			org.docx4j.wml.CTFootnotes footnotes = part.getContents();
+			if (footnotes == null || footnotes.getFootnote() == null) {
+				return;
+			}
+			for (org.docx4j.wml.CTFtnEdn footnote : footnotes.getFootnote()) {
+				if (footnote == null || (footnote.getType() != null
+						&& footnote.getType() != org.docx4j.wml.STFtnEdn.NORMAL)) {
+					continue;
+				}
+				ctx.flushPendingList();
+				processAncillaryChildren(footnote.getContent(), ctx);
+			}
+		} catch (Exception ex) {
+			LOG.debug("Skipping unreadable footnotes part: {}", ex.getMessage());
+		}
+	}
+
+	/** 排序用的部件名（无名称返回空串保持稳定次序）。 */
+	private static String partNameOf(Part part) {
+		return part == null || part.getPartName() == null ? "" : part.getPartName().getName();
+	}
+
 	/** 顶层内容分发：P/Tbl/SdtBlock 走解析，其余静默忽略。 */
-	private static void processBlockChild(Object child, ParseContext ctx) {
-		Object childValue = unwrap(child);
+	private static void processBlockChild(Object child, ParseContext ctx) {		Object childValue = unwrap(child);
 		if (childValue instanceof P) {
 			handleParagraph((P) childValue, ctx);
 		} else if (childValue instanceof Tbl) {
@@ -196,7 +298,9 @@ public final class DocxStructureExtractor {
 
 		if (headingLevel >= 0) {
 			ctx.flushPendingList();
-			ctx.elements.add(new DocxHeading(headingLevel, plainText(pc.spans), firstLink(pc.spans)));
+			// 标题必须单行：正文中的换行/制表（含首个子元素即换行的场景）折叠为单空格并 trim
+			String headingText = MarkdownEscaper.collapseLineBreaks(plainText(pc.spans));
+			ctx.elements.add(new DocxHeading(headingLevel, headingText, firstLink(pc.spans)));
 			appendImages(pc.images, ctx);
 			return;
 		}
@@ -447,7 +551,13 @@ public final class DocxStructureExtractor {
 
 	// ==================== 表格 ====================
 
-	/** 首行作表头，其余为数据行；无 Tr 返回 null。 */
+	/**
+	 * 首行作表头，其余为数据行；无 Tr 返回 null。
+	 *
+	 * <p>合并单元格处理（audit2 F7）：横向 gridSpan 展开为重复单元格；纵向 vMerge 的
+	 * 延续行（tcPr/vMerge 存在且 val 非 "restart"，缺省 val 即延续）以空字符串占位，
+	 * 保证每行列数一致、GFM 表格不破碎。列位置逐格累计，跨行跟踪已开启的纵向合并。</p>
+	 */
 	static HeadersAndRows parseTable(Tbl tbl) {
 		if (tbl.getContent() == null) {
 			return null;
@@ -461,10 +571,11 @@ public final class DocxStructureExtractor {
 		if (rows.isEmpty()) {
 			return null;
 		}
-		List<String> headers = rowCells(rows.get(0));
+		Set<Integer> vMergedColumns = new LinkedHashSet<Integer>();
+		List<String> headers = extractRowCells(rows.get(0), vMergedColumns);
 		List<List<String>> dataRows = new ArrayList<List<String>>();
 		for (int i = 1; i < rows.size(); i++) {
-			dataRows.add(rowCells(rows.get(i)));
+			dataRows.add(extractRowCells(rows.get(i), vMergedColumns));
 		}
 		return new HeadersAndRows(headers, dataRows);
 	}
@@ -481,19 +592,66 @@ public final class DocxStructureExtractor {
 		}
 	}
 
-	private static List<String> rowCells(Tr tr) {
+	/**
+	 * 单行单元格抽取（含合并展开）：gridSpan&gt;1 展开为重复单元格；vMerge 延续格输出
+	 * 空串占位（仅当该列确有更早行的 restart 开启），使每行列数与网格一致。列号按
+	 * gridSpan 逐格推进；普通格抵达时视为该列合并链结束。
+	 */
+	private static List<String> extractRowCells(Tr tr, Set<Integer> vMergedColumns) {
 		List<String> cells = new ArrayList<String>();
 		if (tr.getContent() == null) {
 			return cells;
 		}
+		int column = 0;
 		for (Object child : tr.getContent()) {
-			if (unwrap(child) instanceof org.docx4j.wml.Tc) {
-				StringBuilder sb = new StringBuilder();
-				flatText(((org.docx4j.wml.Tc) unwrap(child)).getContent(), sb);
-				cells.add(sb.toString().trim());
+			Object cellValue = unwrap(child);
+			if (!(cellValue instanceof org.docx4j.wml.Tc)) {
+				continue;
 			}
+			org.docx4j.wml.Tc tc = (org.docx4j.wml.Tc) cellValue;
+			int span = gridSpanOf(tc);
+			Integer key = Integer.valueOf(column);
+
+			org.docx4j.wml.TcPr tcPr = tc.getTcPr();
+			boolean hasVMerge = tcPr != null && tcPr.getVMerge() != null;
+			boolean restart = hasVMerge && "restart".equals(tcPr.getVMerge().getVal());
+
+			if (hasVMerge && restart) {
+				cells.addAll(flattenedCell(tc, span));
+				vMergedColumns.add(key);
+			} else if (hasVMerge && vMergedColumns.contains(key)) {
+				// 纵向延续：内容归并到上方格，此处仅空占位以对齐网格
+				cells.add("");
+			} else {
+				// 普通格（含"孤立延续"的容错：无前置 restart 则按普通内容保留）
+				cells.addAll(flattenedCell(tc, span));
+				vMergedColumns.remove(key);
+			}
+			column += span;
 		}
 		return cells;
+	}
+
+	/** 取单元格扁平文本；横向合并（span&gt;1）展开为重复占位。 */
+	private static List<String> flattenedCell(org.docx4j.wml.Tc tc, int span) {
+		StringBuilder sb = new StringBuilder();
+		flatText(tc.getContent(), sb);
+		String text = sb.toString().trim();
+		List<String> expanded = new ArrayList<String>(Math.max(span, 1));
+		for (int i = 0; i < span; i++) {
+			expanded.add(text);
+		}
+		return expanded;
+	}
+
+	/** tcPr/gridSpan 跨列数；缺省为 1，非法值钳为 1。 */
+	private static int gridSpanOf(org.docx4j.wml.Tc tc) {
+		if (tc.getTcPr() == null || tc.getTcPr().getGridSpan() == null
+				|| tc.getTcPr().getGridSpan().getVal() == null) {
+			return 1;
+		}
+		int val = tc.getTcPr().getGridSpan().getVal().intValue();
+		return val >= 1 ? val : 1;
 	}
 
 	/** 单元格扁平化：递归收集全部后代 Text（含嵌套表格/Sdt），Br 与 Tab 折叠为空格。 */
@@ -678,17 +836,25 @@ public final class DocxStructureExtractor {
 			numbering = NumberingResolver.of(main.getNumberingDefinitionsPart());
 		}
 
-		/** 关闭当前列表 run 并按 ilvl 升序落地各分桶，随后追加 run 内延迟图片。 */
+		/**
+		 * 关闭当前列表 run 并按 ilvl 升序落地各分桶，随后追加 run 内延迟图片。
+		 *
+		 * <p>缩进几何（CommonMark）：子块缩进列数必须 ≥ 父项内容起始列。落地第 k 级前，
+		 * 累计其所有祖先级（j&lt;k）的“最宽标记宽度”：无序 {@code "- "} 固定 2 列；
+		 * 有序取最大编号位宽 + 2（如 10+ 项的 {@code "10. "} 占 4 列）。</p>
+		 */
 		void flushPendingList() {
 			if (openNumId == null && buckets.isEmpty()) {
 				appendDeferredImages();
 				return;
 			}
 			openNumId = null;
+			int cumulativeColumns = 0;
 			for (Map.Entry<Integer, ListBuilder> entry : buckets.entrySet()) {
 				ListBuilder builder = entry.getValue();
 				if (!builder.items.isEmpty()) {
-					elements.add(builder.build());
+					elements.add(builder.build(cumulativeColumns));
+					cumulativeColumns += builder.widestMarkerWidth();
 				}
 			}
 			buckets.clear();
@@ -741,8 +907,18 @@ public final class DocxStructureExtractor {
 						: Collections.unmodifiableList(spans));
 			}
 
-			DocxList build() {
-				return new DocxList(ordered, indent, items, richItems);
+			DocxList build(int indentColumns) {
+				return new DocxList(ordered, indent, items, richItems, Integer.valueOf(indentColumns));
+			}
+
+			/**
+			 * 本级“最宽标记”所占列数（含标记后的一个空格）：无序 "-" 固定 2；
+			 * 有序为最大编号的位宽 + 2（"9. " 占 3 列、"10. " 起占 4 列）。
+			 * 供下级层级累计缩进使用；仅对非空桶调用。
+			 */
+			int widestMarkerWidth() {
+				int count = Math.max(items.size(), richItems.size());
+				return ordered ? Integer.toString(count).length() + 2 : 2;
 			}
 
 			private static String plainSpansText(List<InlineSpan> spans) {
