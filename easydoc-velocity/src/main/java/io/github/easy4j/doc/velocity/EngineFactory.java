@@ -16,6 +16,7 @@
 package io.github.easy4j.doc.velocity;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Properties;
 
 import org.apache.velocity.app.VelocityEngine;
@@ -41,26 +42,25 @@ public final class EngineFactory {
             synchronized (this) {
                 local = engine;
                 if (local == null) {
-                    VelocityEngine e = new VelocityEngine();
-
                     Properties ps = new Properties();
-                    ps.setProperty(";runtime.log", Docx4jProperties.getProperty("docx4j.velocity.runtime.log", "velocity.log"));
-                    ps.setProperty(";runtime.log.logsystem.class", Docx4jProperties.getProperty("docx4j.velocity.runtime.log.logsystem.class", "org.apache.velocity.runtime.log.NullLogSystem"));
+                    // 资源加载器：文件系统（classpath 中的模板目录）
                     ps.setProperty("resource.loader", Docx4jProperties.getProperty("docx4j.velocity.resource.loader", "file"));
+                    ps.setProperty("file.resource.loader.class", Docx4jProperties.getProperty("docx4j.velocity.file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.FileResourceLoader"));
                     ps.setProperty("file.resource.loader.cache", Docx4jProperties.getProperty("docx4j.velocity.file.resource.loader.cache", "true"));
-                    ps.setProperty("file.resource.loader.class ", Docx4jProperties.getProperty("docx4j.velocity.file.resource.loader.class", "Velocity.Runtime.Resource.Loader.FileResourceLoader"));
-                    ps.setProperty(";resource.loader", Docx4jProperties.getProperty("docx4j.velocity.resource.loader", "webapp"));
-                    ps.setProperty(";webapp.resource.loader.class", Docx4jProperties.getProperty("docx4j.velocity.webapp.resource.loader.class", "org.apache.velocity.tools.view.servlet.WebappLoader"));
-                    ps.setProperty(";webapp.resource.loader.cache", Docx4jProperties.getProperty("docx4j.velocity.webapp.resource.loader.cache", "true"));
-                    ps.setProperty(";webapp.resource.loader.modificationCheckInterval", Docx4jProperties.getProperty("docx4j.velocity.webapp.resource.loader.modificationCheckInterval", "3"));
-                    ps.setProperty(";directive.foreach.counter.name", Docx4jProperties.getProperty("docx4j.velocity.directive.foreach.counter.name", "velocityCount"));
-                    ps.setProperty(";directive.foreach.counter.initial.value", Docx4jProperties.getProperty("docx4j.velocity.directive.foreach.counter.initial.value", "1"));
-                    ps.setProperty("file.resource.loader.path", this.getClass().getResource(Docx4jProperties.getProperty("docx4j.velocity.file.resource.loader.path", "/template")).getPath());
+                    // 模板目录：从 classpath 解析出物理路径，资源不存在时给出可诊断的错误而非 NPE
+                    String loaderPath = Docx4jProperties.getProperty("docx4j.velocity.file.resource.loader.path", "/template");
+                    URL templateUrl = this.getClass().getResource(loaderPath);
+                    if (templateUrl == null) {
+                        throw new IOException("Velocity 模板目录未找到: 请确认 classpath 中存在 '" + loaderPath
+                                + "'，或通过属性 docx4j.velocity.file.resource.loader.path 指定有效的 classpath 模板目录");
+                    }
+                    ps.setProperty("file.resource.loader.path", templateUrl.getPath());
                     //模板输入输出编码格式
                     String input_charset = Docx4jProperties.getProperty("docx4j.velocity.input.encoding", Docx4jConstants.DEFAULT_CHARSETNAME);
                     String output_charset = Docx4jProperties.getProperty("docx4j.velocity.output.encoding", Docx4jConstants.DEFAULT_CHARSETNAME);
                     ps.setProperty("input.encoding", input_charset);
                     ps.setProperty("output.encoding", output_charset);
+                    VelocityEngine e = new VelocityEngine();
                     e.init(ps);
                     local = e;
                     engine = local;
