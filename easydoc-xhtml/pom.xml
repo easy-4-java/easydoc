@@ -47,10 +47,34 @@
 		    <artifactId>docx4j-ImportXHTML-core</artifactId>
 		</dependency>
 
-		<!-- flexmark：Markdown → HTML（GFM 表格/代码块扩展） -->
+		<!-- flexmark 最小依赖集（#24）：仅取 MarkdownConverter 实际使用的四个构件，
+		     替换原 flexmark-all 聚合件（其 POM 声明 30+ 全家桶传递依赖）。
+		     注意：0.64.x 系列扩展构件名为 flexmark-ext-*（任务书中的 flexmark-tables
+		     等是 0.4x 旧命名，Central 上无此版本）；版本沿用根 pom 的 flexmark.version
+		     属性（根 dependencyManagement 未纳管分构件，故此处显式声明）。 -->
+		<!-- flexmark 核心（Parser/HtmlRenderer/util 基础设施，传递引入 flexmark-util-* 系列） -->
 		<dependency>
 		    <groupId>com.vladsch.flexmark</groupId>
-		    <artifactId>flexmark-all</artifactId>
+		    <artifactId>flexmark</artifactId>
+		    <version>${flexmark.version}</version>
+		</dependency>
+		<!-- flexmark GFM 表格扩展（pipe tables；TablesExtension 位于 ext.tables 包） -->
+		<dependency>
+			<groupId>com.vladsch.flexmark</groupId>
+			<artifactId>flexmark-ext-tables</artifactId>
+			<version>${flexmark.version}</version>
+		</dependency>
+		<!-- flexmark GFM 删除线扩展（~~strikethrough~~） -->
+		<dependency>
+			<groupId>com.vladsch.flexmark</groupId>
+			<artifactId>flexmark-ext-gfm-strikethrough</artifactId>
+			<version>${flexmark.version}</version>
+		</dependency>
+		<!-- flexmark 自动链接扩展（裸 URL/邮箱识别，传递引入 org.nibor.autolink） -->
+		<dependency>
+			<groupId>com.vladsch.flexmark</groupId>
+			<artifactId>flexmark-ext-autolink</artifactId>
+			<version>${flexmark.version}</version>
 		</dependency>
 
 		<!-- ======== Test ======== -->
