@@ -136,7 +136,8 @@ public class VariableReplaceSaTXHandler extends StAXHandlerAbstract {
 							throw new IllegalStateException("Failed to evaluate OGNL expression '" + placeholderStart + key + placeholderEnd
 									+ "' (strict mode: easydoc.variable.strict=true)", e);
 						}
-						LOG.warn("Failed to evaluate expression '" + placeholderStart + key + placeholderEnd + "': {}", e.getMessage());
+						// 记录完整异常（含 cause 链）而非仅 e.getMessage()，便于定位求值失败根因
+						LOG.warn("Failed to evaluate expression '{}{}{}'", placeholderStart, key, placeholderEnd, e);
 						strB.append(key);
 					}
 				} else {
