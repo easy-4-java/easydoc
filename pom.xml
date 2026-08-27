@@ -67,7 +67,7 @@
         <docx4j.version>8.3.15</docx4j.version>
         <!-- Markdown 解析（MD→HTML 渲染，Java 8 兼容；0.64.x 起为 Java 11 字节码，故固定 0.62.2） -->
         <!-- fastjson 版本锚定：rythm-engine 传递依赖，1.2.x < 1.2.83 存在反序列化 RCE（CVE-2022-25845） -->
-        <fastjson.version>1.2.83</fastjson.version>
+        <fastjson.version>2.0.57</fastjson.version>
         <flexmark.version>0.62.2</flexmark.version>
         <freemarker.version>2.3.34</freemarker.version>
         <httl.version>1.0.12</httl.version>
