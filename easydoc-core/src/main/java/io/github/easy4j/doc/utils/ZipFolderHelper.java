@@ -36,10 +36,14 @@ class ZipFolderHelper {
         this.includeInitialFolder = includeInitialFolder;   
     }   
     
-    public void process(File folderToZip, OutputStream output) throws Exception {   
-    	ZipOutputStream zip = new ZipOutputStream(output);   
-		addFolderToZip("", folderToZip.getPath(), zip);   
-		zip.flush();
+    public void process(File folderToZip, OutputStream output) throws Exception {
+    	// 缺陷修复（对齐 3.0.x 同名修复）：try-with-resources 确保 ZipOutputStream 的
+    	// close() 被调用（finish() 负责写入中央目录与 END 记录），否则产出的压缩包
+    	// 缺少收尾记录、无法解压（java.util.zip.ZipFile 报 “zip END header not found”）。
+    	try (ZipOutputStream zip = new ZipOutputStream(output)) {
+			addFolderToZip("", folderToZip.getPath(), zip);
+			zip.flush();
+    	}
     }
     
     private void addFileToZip(String path, String srcFile, ZipOutputStream zip)  throws Exception {   
