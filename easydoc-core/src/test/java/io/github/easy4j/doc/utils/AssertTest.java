@@ -73,7 +73,16 @@ class AssertTest {
     void hasLengthRejectsNullAndEmpty() {
         assertThrows(IllegalArgumentException.class, () -> Assert.hasLength(null));
         assertThrows(IllegalArgumentException.class, () -> Assert.hasLength(""));
-        assertThrows(IllegalArgumentException.class, () -> Assert.hasLength("  "));
+        assertThrows(IllegalArgumentException.class, () -> Assert.hasLength(null, "boom"));
+        assertThrows(IllegalArgumentException.class, () -> Assert.hasLength("", "boom"));
+    }
+
+    @Test
+    void hasLengthAcceptsWhitespaceOnlyString() {
+        // 语义修正后（#25）：hasLength 只要求非 null 且长度 > 0，
+        // 纯空白字符串是合法输入；需要拒绝纯空白请使用 hasText
+        assertDoesNotThrow(() -> Assert.hasLength("  "));
+        assertDoesNotThrow(() -> Assert.hasLength("  ", "ok"));
     }
 
     @Test

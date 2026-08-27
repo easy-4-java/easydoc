@@ -125,25 +125,28 @@ public abstract class Assert {
 	}
 
 	/*
-	 * Assert that the given String is not empty; that is,
-	 * it must not be <code>null</code> and not the empty String.
+	 * 断言给定的 String 不为空；即它不能为 <code>null</code>，且长度必须大于 0。
+	 * <p>语义选择说明：依据方法名 hasLength 的字面含义，本方法只校验
+	 * 「非 null 且 length &gt; 0」—— 纯空白字符串（如 <code>"  "</code>）视为合法；
+	 * 需要拒绝纯空白内容时请使用 {@link #hasText(String, String)}。
+	 * （此前实现借用的是 isBlank 判断，会误拒纯空白字符串，与文档不符。）
 	 * <pre class="code">Assert.hasLength(name, "Name must not be empty");</pre>
 	 * @param text the String to check
 	 * @param message the exception message to use if the assertion fails
-	 * @see StringUtils#hasLength
+	 * @see #hasText(String, String)
 	 */
 	public static void hasLength(String text, String message) {
-		if (StringUtils.isBlank(text)) {
+		if (text == null || text.isEmpty()) {
 			throw new IllegalArgumentException(message);
 		}
 	}
 
 	/*
-	 * Assert that the given String is not empty; that is,
-	 * it must not be <code>null</code> and not the empty String.
+	 * 断言给定的 String 不为空；即它不能为 <code>null</code>，且长度必须大于 0
+	 * （纯空白字符串视为合法，见带消息重载的语义说明）。
 	 * <pre class="code">Assert.hasLength(name);</pre>
 	 * @param text the String to check
-	 * @see StringUtils#hasLength
+	 * @see #hasText(String)
 	 */
 	public static void hasLength(String text) {
 		hasLength(text,
