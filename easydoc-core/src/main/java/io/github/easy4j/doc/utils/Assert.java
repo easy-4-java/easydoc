@@ -125,26 +125,20 @@ public abstract class Assert {
 	}
 
 	/*
-	 * 断言给定的 String 不为空；即它不能为 <code>null</code>，且长度必须大于 0。
-	 * <p>语义选择说明：依据方法名 hasLength 的字面含义，本方法只校验
-	 * 「非 null 且 length &gt; 0」—— 纯空白字符串（如 <code>"  "</code>）视为合法；
-	 * 需要拒绝纯空白内容时请使用 {@link #hasText(String, String)}。
-	 * （此前实现借用的是 isBlank 判断，会误拒纯空白字符串，与文档不符。）
-	 * <pre class="code">Assert.hasLength(name, "Name must not be empty");</pre>
-	 *
-	 * <p>语义约定（P2 修复说明）：本实现历史上与 {@link #hasText(String, String)} 共用
-	 * <code>StringUtils.isBlank</code> 判定，即 null、空串<b>以及纯空白字符串</b>均视为无效。
-	 * 为保持既有调用方与测试锁定的行为不变，此处沿用“拒绝空白”的严格语义，
-	 * 而不是改回经典 Spring 的 hasLength（仅要求 length &gt; 0）。
+	 * 断言给定的 String 不为空。
+	 * <p>语义约定：本实现历史上与 {@link #hasText(String, String)} 共用
+	 * <code>StringUtils.isBlank</code> 判定，即 null、空串以及纯空白字符串均视为无效。
 	 * 在本工具类中，{@link #hasLength(String, String)} 与
 	 * {@link #hasText(String, String)} 是同一契约的两个别名。</p>
+	 *
+	 * <pre class="code">Assert.hasLength(name, "Name must not be empty");</pre>
 	 *
 	 * @param text the String to check
 	 * @param message the exception message to use if the assertion fails
 	 * @see #hasText(String, String)
 	 */
 	public static void hasLength(String text, String message) {
-		if (text == null || text.isEmpty()) {
+		if (StringUtils.isBlank(text)) {
 			throw new IllegalArgumentException(message);
 		}
 	}
