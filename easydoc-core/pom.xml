@@ -78,7 +78,17 @@
 	      	<groupId>org.eclipse.persistence</groupId>
 	      	<artifactId>org.eclipse.persistence.moxy</artifactId>
 	    </dependency>
-	     
+
+		<!-- ======== 日志桥接 ======== -->
+		<!-- jcl-over-slf4j：HTML/PDF 导出路径中 xmlgraphics-commons（docx4j 字体处理）依赖
+		     commons-logging 接口，根 pom 已排除 docx4j-core 自带的 jcl-over-slf4j 并约定
+		     由本 SLF4J 2.x 桥接替代（同 easydoc-xhtml 的做法） -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+
+
 	    <!-- Docx4j JAXB ReferenceImpl
 	    <dependency>
 	        <groupId>org.docx4j</groupId>

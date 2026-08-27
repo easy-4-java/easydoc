@@ -285,7 +285,10 @@
                     <configuration>
                         <skip>false</skip>
                         <skipTests>false</skipTests>
-                        <argLine>-Xmx1024m -Dfile.encoding=UTF-8 @{argLine}</argLine>
+                        <!-- -da:org.docx4j...：docx4j 内嵌 fop 的字体表解析含仅在 -ea（surefire 默认开启）
+                             下触发的断言，扫描本机系统字体时可能误报 AssertionError；生产运行不带 -ea，
+                             故仅对 org.docx4j 包树关闭断言以对齐真实运行语义（其余包的断言保持生效） -->
+                        <argLine>-Xmx1024m -Dfile.encoding=UTF-8 -da:org.docx4j... @{argLine}</argLine>
                         <includes>
                             <include>**/*Test.java</include>
                             <include>**/*Tests.java</include>
