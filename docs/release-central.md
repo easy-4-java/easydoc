@@ -69,8 +69,23 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
 保留原始 pom（modelVersion 4.1.0、注释齐全）替换 `${revision}` 后发布，与
 3.0.x.20260630 的已发布构件形态一致。
 
+## 自动化修包脚本
+
+上述手工修包流程已固化为 `scripts/central-bundle-fix.sh`：
+
+```bash
+# 用法：./scripts/central-bundle-fix.sh <bundle-zip> <version> <output-zip>
+./scripts/central-bundle-fix.sh \
+  target/central-publishing/central-bundle.zip \
+  3.0.x.20260831 \
+  /tmp/central-bundle-fixed.zip
+```
+
+脚本自动完成：解包 → 删除 `*-consumer.pom*` → 替换 `${revision}` → 重算 md5/sha1/sha256/sha512 → GPG 重签（`--output .asc`）→ 重打包。
+
+GPG 密钥默认 `AF1B6E00`，可通过 `GPG_KEY_ID` 环境变量覆盖。
+
 ## 长期修复方向（待办）
 
 - 让 Maven 4 不部署原始 pom/consumer.pom 双份（关注 maven-deploy-plugin 对
   consumer pom 的处理配置或插件 issue），使 `-P central deploy` 真正一键可用
-- 或将上述修包脚本固化为 `scripts/central-bundle-fix.sh`

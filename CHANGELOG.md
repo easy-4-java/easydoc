@@ -185,6 +185,11 @@ PDF 路径颜色已由 docx4j XSL-FO 内置保留；快路径 Markdown 不在本
 
 ### 已知边界
 
+- **快路径（htmlToMarkdown）不保留颜色信息**：docx4j 结构化路径输出
+  `<span style="color:#FF0000">` 用于字体颜色渲染（`MarkdownRenderOptions`），
+  但快路径的 flexmark-html2md 0.64.8 即使开启 `OUTPUT_UNKNOWN_TAGS=true`
+  也会剥离 `<span>` 的 style 属性，仅保留文本内容。颜色渲染仅在结构化路径
+  （`docxToStructuredMarkdown` + `MarkdownRenderOptions`）下可用。
 - `DocxMode.SAX` 在 JDK 21 实际执行 StAX 路径——`DocxTemplates` 工厂在 JDK 21+ 上静态短路
   直接返回 StAX 模板（行为一致，运行时降级保留防御直接 new 实例化）。
 - httl / rythm / webit 引擎标记 `@Deprecated`（上游停更 2014–2016），可用但建议新项目选用
@@ -196,3 +201,17 @@ PDF 路径颜色已由 docx4j XSL-FO 内置保留；快路径 Markdown 不在本
 ## [1.0.x] — 1.0.1.RELEASE（JDK 8 基线）
 
 首个发布线：docx4j 8.x、8 模板引擎 + JSP、基础变量替换管线。
+
+### 1.0.x 残留 CVE（无上游修复，已知风险）
+
+1.0.x 版本线已停止活跃维护（JDK 8 基线，docx4j 8.3.15），以下 CVE 无可用升级修复，
+记录为已知风险供下游评估：
+
+| 构件 | 版本 | CVE | 严重性 | 缓解措施 |
+|---|---|---|---|---|
+| org.docx4j:docx4j-core | 8.3.15 | CVE-2026-53752（OOXML 解析 RCE） | CRITICAL | 无上游修复；限制不可信 docx 输入，建议升级到 3.0.x（docx4j 17.0.3 已修复） |
+| com.lowagie:itext | 2.1.7 | XXE via XML 解析 | HIGH | 已停止发布（死构件）；仅 easydoc-xhtml PDF 路径使用，建议升级到 3.0.x（openhtmltopdf 替代） |
+| ch.qos.logback:logback-classic | 1.3.15 | 多个 CVE（CVE-2023-6378 等） | MEDIUM | 1.3.x 线已 EOL；建议升级到 1.4.x+ 或使用 3.0.x 分支（logback 通过 SLF4J 2.x 统一管理） |
+
+> **建议**：生产环境应迁移到 3.0.x（JDK 21 + docx4j 17.0.3），上述构件在 3.0.x 版本线中
+> 均已升级或替换。1.0.x 仅作遗留系统临时使用。
