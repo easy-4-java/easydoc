@@ -66,7 +66,10 @@ public class DocxElementWmlRender {
 	public Tc newCell(Tr tableRow,String content) {
         Tc tbCell = factory.createTc();
         tbCell.getContent().add(newParagraph(content));
-        tbCell.getContent().add(tbCell);
+        // P0 缺陷修复：原实现误写为 tbCell.getContent().add(tbCell)（单元格自引用，
+        // 既未挂到行上，还会造成 XML 编组时的无限递归）。与 newCell(Tbl,int,String)
+        // 重载保持一致：将新单元格追加到目标行的内容列表中。
+        tableRow.getContent().add(tbCell);
         return tbCell;
     }
 	
