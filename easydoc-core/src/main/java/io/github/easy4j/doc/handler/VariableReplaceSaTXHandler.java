@@ -107,8 +107,9 @@ public class VariableReplaceSaTXHandler extends StAXHandlerAbstract {
 		} else {
 			strB.append(wmlTemplateString.substring(offset, startKey));
 			int keyEnd = wmlTemplateString.indexOf(placeholderEnd, startKey);
-			if (keyEnd > 0) {
-				String key = wmlTemplateString.substring(startKey + 2, keyEnd);
+				if (keyEnd > 0) {
+					// 使用占位符前缀长度而非硬编码 +2，保证自定义多字符前缀（如 "#{$"）时 key 切片正确
+					String key = wmlTemplateString.substring(startKey + placeholderStart.length(), keyEnd);
 				Object val = mappings.get(key);
 				if (val == null) {
 					try {
@@ -141,7 +142,8 @@ public class VariableReplaceSaTXHandler extends StAXHandlerAbstract {
 				} else {
 					strB.append(val.toString());
 				}
-				return replace(wmlTemplateString, keyEnd + 1, strB, mappings);
+				// 前进量基于结束占位符长度而非硬编码 +1，保证多字符结束符（如 "}}"）时不错位
+				return replace(wmlTemplateString, keyEnd + placeholderEnd.length(), strB, mappings);
 			} else {
 				LOG.warn("Invalid key: could not find '}}' ");
 				strB.append("$");
