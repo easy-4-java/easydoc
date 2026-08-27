@@ -62,19 +62,19 @@
         <jakarta-activation.version>2.1.3</jakarta-activation.version>
 
         <!-- ═══ 模板引擎版本 ═══ -->
-        <beetl.version>3.1.3.RELEASE</beetl.version>
+        <beetl.version>3.21.2.RELEASE</beetl.version>
         <freemarker.version>2.3.34</freemarker.version>
         <httl.version>1.0.12</httl.version>
         <jetbrick.version>2.1.10</jetbrick.version>
-        <rythm.version>1.3.0</rythm.version>
-        <thymeleaf.version>3.0.14.RELEASE</thymeleaf.version>
+        <rythm.version>1.4.2</rythm.version>
+        <thymeleaf.version>3.1.5.RELEASE</thymeleaf.version>
         <velocity.version>2.4.1</velocity.version>
         <velocity-tools.version>3.1</velocity-tools.version>
         <webit-script.version>1.5.2</webit-script.version>
 
         <!-- ═══ Third-Party Dependencies（按字母序） ═══ -->
         <antlr4.version>4.7.1</antlr4.version>
-        <assertj.version>3.27.3</assertj.version>
+        <assertj.version>3.27.7</assertj.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
         <commons-io.version>2.22.0</commons-io.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
@@ -83,7 +83,7 @@
         <flexmark.version>0.64.8</flexmark.version>
         <jackson-bom.version>2.22.1</jackson-bom.version>
         <javax.mail-api.version>1.6.2</javax.mail-api.version>
-        <jsoup.version>1.16.1</jsoup.version>
+        <jsoup.version>1.23.1</jsoup.version>
         <junit.version>4.13.2</junit.version>
         <junit-jupiter.version>6.1.0</junit-jupiter.version>
         <ognl.version>3.4.2</ognl.version>
