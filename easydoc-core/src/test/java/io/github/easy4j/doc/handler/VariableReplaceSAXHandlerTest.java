@@ -156,15 +156,91 @@ class VariableReplaceSAXHandlerTest {
         Map<String, Object> vars = new HashMap<>();
         VariableReplaceSAXHandler handler = buildHandler(vars);
 
-        // Text that starts with placeholder-like syntax but has no closing brace
-        // before the end of the string. The indexOf(placeholderEnd) will return -1,
-        // causing a StringIndexOutOfBoundsException in substring.
-        // This is a known limitation of the replace logic.
+        // 未闭合占位符（无结束 '}'）：修复后不应抛 StringIndexOutOfBoundsException，
+        // 而是保留字面文本并继续处理（宽松容错语义）
         char[] input = "text ${incomplete".toCharArray();
-        try {
-            handler.characters(input, 0, input.length);
-        } catch (Exception e) {
-            // Expected: StringIndexOutOfBoundsException from replace() when no closing '}'
+        assertDoesNotThrow(() -> handler.characters(input, 0, input.length));
+    }
+
+    /**
+     * 捕获 characters() 输出的 ContentHandler，用于断言替换结果。
+     */
+    private static class CapturingContentHandler extends DefaultHandler {
+        final StringBuilder collected = new StringBuilder();
+
+        @Override
+        public void characters(char[] ch, int start, int length) {
+            collected.append(ch, start, length);
         }
+    }
+
+    private static VariableReplaceSAXHandler buildHandler(Map<String, Object> vars,
+            String placeholderStart, String placeholderEnd) throws Exception {
+        VariableReplaceSAXHandler handler = allocateHandler();
+        setField(handler, "placeholderStart", placeholderStart);
+        setField(handler, "placeholderEnd", placeholderEnd);
+        setField(handler, "variables", vars);
+        Method initContext = VariableReplaceSAXHandler.class.getDeclaredMethod("initContext");
+        initContext.setAccessible(true);
+        initContext.invoke(handler);
+        setField(handler, "ch", new DefaultHandler());
+        return handler;
+    }
+
+    @Test
+    void charactersWithUnterminatedPlaceholderKeepsLiteralText() throws Exception {
+        // 决策行为（#15）：未闭合占位符不抛异常，占位符前缀原样保留输出 + WARN 日志后继续
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("name", "World");
+        VariableReplaceSAXHandler handler = buildHandler(vars);
+        CapturingContentHandler capture = new CapturingContentHandler();
+        setField(handler, "ch", capture);
+
+        char[] input = "A ${name} B ${foo".toCharArray();
+        handler.characters(input, 0, input.length);
+
+        assertEquals("A World B ${foo", capture.collected.toString());
+    }
+
+    @Test
+    void charactersWithOnlyUnterminatedPlaceholderDoesNotThrow() throws Exception {
+        Map<String, Object> vars = new HashMap<>();
+        VariableReplaceSAXHandler handler = buildHandler(vars);
+        CapturingContentHandler capture = new CapturingContentHandler();
+        setField(handler, "ch", capture);
+
+        handler.characters("${foo".toCharArray(), 0, "${foo".length());
+
+        assertEquals("${foo", capture.collected.toString());
+    }
+
+    @Test
+    void charactersWithLongCustomPlaceholderPrefix() throws Exception {
+        // 占位符前缀长度 > 2：key 切片必须基于前缀长度而非硬编码 +2
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("name", "张三");
+        VariableReplaceSAXHandler handler =
+                buildHandler(vars, "{{!", "}}");
+        CapturingContentHandler capture = new CapturingContentHandler();
+        setField(handler, "ch", capture);
+
+        char[] input = "你好 {{!name}} ~ {{!missing}} !".toCharArray();
+        handler.characters(input, 0, input.length);
+
+        // 已闭合部分正常替换；未闭合场景不触发；缺失变量回退 OGNL 为空 → 原样保留 key
+        assertEquals("你好 张三 ~ missing !", capture.collected.toString());
+    }
+
+    @Test
+    void charactersWithLongPrefixAndUnterminatedPlaceholder() throws Exception {
+        // 多字符前缀 + 未闭合占位符：前缀需完整保留，且不能死循环
+        Map<String, Object> vars = new HashMap<>();
+        VariableReplaceSAXHandler handler = buildHandler(vars, "{{!", "}}");
+        CapturingContentHandler capture = new CapturingContentHandler();
+        setField(handler, "ch", capture);
+
+        handler.characters("x {{!oops".toCharArray(), 0, "x {{!oops".length());
+
+        assertEquals("x {{!oops", capture.collected.toString());
     }
 }

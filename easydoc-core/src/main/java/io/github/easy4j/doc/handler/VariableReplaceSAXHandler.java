@@ -107,7 +107,16 @@ public class VariableReplaceSAXHandler extends SAXHandler implements ContentHand
 		} else {
 			strB.append(wmlTemplateString.substring(offset, startKey));
 			int keyEnd = wmlTemplateString.indexOf(placeholderEnd, startKey);
-			String key = wmlTemplateString.substring(startKey + 2, keyEnd);
+			if (keyEnd == -1) {
+				// 未闭合占位符（如 "${foo" 缺少 "}"）不视为致命错误：记录告警并将
+				// 占位符前缀原样保留输出，再从前缀之后继续扫描。既不抛异常也不死循环，
+				// 与 {@link VariableReplaceSaTXHandler} 对未闭合占位符的宽松处理保持一致。
+				LOG.warn("Invalid variable placeholder: could not find '{}'; leaving '{}' as literal text",
+						placeholderEnd, placeholderStart);
+				strB.append(placeholderStart);
+				return replace(wmlTemplateString, startKey + placeholderStart.length(), strB, mappings);
+			}
+			String key = wmlTemplateString.substring(startKey + placeholderStart.length(), keyEnd);
 			Object val = mappings.get(key);
 			if (val == null) {
 				try {
@@ -140,7 +149,8 @@ public class VariableReplaceSAXHandler extends SAXHandler implements ContentHand
 			} else {
 				strB.append(val.toString());
 			}
-			return replace(wmlTemplateString, keyEnd + 1, strB, mappings);
+			// 前进量基于结束占位符长度而非硬编码 +1，保证多字符结束符（如 "}}"）时不错位
+			return replace(wmlTemplateString, keyEnd + placeholderEnd.length(), strB, mappings);
 		}
 	}
 }
