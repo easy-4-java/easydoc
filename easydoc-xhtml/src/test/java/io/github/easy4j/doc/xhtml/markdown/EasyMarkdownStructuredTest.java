@@ -189,6 +189,32 @@ class EasyMarkdownStructuredTest {
 		assertTrue(fromFile.fullMarkdown().contains("**加粗**"));
 	}
 
+	// ==================== 受检异常契约（#19） ====================
+
+	/**
+	 * 结构化路径的受检异常收紧为 IOException（不再泄漏 Exception "究极捕获"签名）；
+	 * 旧 HTML 路径 docxToMarkdown 系列因 docx4j load/toHTML 保持 throws Exception 不变。
+	 */
+	@Test
+	void structuredOverloadsDeclareIOExceptionOnly() throws Exception {
+		Class<?>[] inputTypes = { File.class, InputStream.class, WordprocessingMLPackage.class };
+		for (Class<?> type : inputTypes) {
+			assertArrayEquals(new Class<?>[] { IOException.class },
+					EasyMarkdown.class.getMethod("docxToStructuredMarkdown", type).getExceptionTypes(),
+					"docxToStructuredMarkdown(" + type.getSimpleName() + ") must throw only IOException");
+			assertArrayEquals(new Class<?>[] { IOException.class },
+					EasyMarkdown.class.getMethod("docxToStructured", type).getExceptionTypes(),
+					"docxToStructured(" + type.getSimpleName() + ") must throw only IOException");
+		}
+		assertEquals(Exception.class,
+				EasyMarkdown.class.getMethod("docxToMarkdown", File.class).getExceptionTypes()[0],
+				"legacy HTML path keeps its original throws clause");
+	}
+
+	private static void assertArrayEquals(Class<?>[] expected, Class<?>[] actual, String message) {
+		org.junit.jupiter.api.Assertions.assertArrayEquals(expected, actual, message);
+	}
+
 	// ==================== null 输入快速失败 ====================
 
 	/**
