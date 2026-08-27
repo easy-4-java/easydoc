@@ -27,8 +27,17 @@ public final class DocxDocument {
 		this.elements = elements;
 	}
 
-	/** 渲染整篇 Markdown：按序以空行拼接各块并 trim；跳过空白块；无内容返回空串。 */
+	/** 渲染整篇 Markdown（默认渲染选项）：按序以空行拼接各块并 trim；跳过空白块；无内容返回空串。 */
 	public String fullMarkdown() {
+		return fullMarkdown(MarkdownRenderOptions.DEFAULT);
+	}
+
+	/**
+	 * 渲染整篇 Markdown（指定渲染选项）：按序以空行拼接各块并 trim；跳过空白块；无内容返回空串。
+	 *
+	 * @param opts 渲染选项；null 等价于 {@link MarkdownRenderOptions#DEFAULT}
+	 */
+	public String fullMarkdown(MarkdownRenderOptions opts) {
 		if (elements == null || elements.isEmpty()) {
 			return "";
 		}
@@ -37,7 +46,7 @@ public final class DocxDocument {
 			if (element == null) {
 				continue;
 			}
-			String part = element.toMarkdown();
+			String part = element.toMarkdown(opts);
 			if (part == null || part.trim().isEmpty()) {
 				continue;
 			}

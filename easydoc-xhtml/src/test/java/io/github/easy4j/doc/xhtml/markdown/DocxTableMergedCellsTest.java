@@ -116,9 +116,9 @@ class DocxTableMergedCellsTest {
 		tbl.getContent().add(row(cellWithSpan("横跨两列", 2), cellWithText("越界普通格")));
 
 		DocxTable table = extractSingleTable(pkgWithTable(tbl));
-		assertEquals(Arrays.asList("列甲", "列乙"), table.getHeaders());
+		assertEquals(Arrays.asList("列甲", "列乙"), table.getHeadersAsText());
 		assertEquals(Arrays.asList("横跨两列", "横跨两列", "越界普通格"),
-				table.getRows().get(0),
+				table.getRowsAsText().get(0),
 				"gridSpan=2 expands to two repeated grid cells so POJO keeps grid truth");
 		// 渲染端以表头列数为基准：超过表头宽度的物理格截断（归一化契约）
 		assertEquals("| 列甲 | 列乙 |\n|---|---|\n| 横跨两列 | 横跨两列 |",
@@ -135,8 +135,8 @@ class DocxTableMergedCellsTest {
 		DocxTable table = extractSingleTable(pkgWithTable(tbl));
 		assertEquals(2, table.getHeaders().size());
 		assertEquals(2, table.getRows().size());
-		assertEquals(Arrays.asList("水果", "苹果"), table.getRows().get(0), "restart row keeps content");
-		assertEquals(Arrays.asList("", "香蕉"), table.getRows().get(1),
+		assertEquals(Arrays.asList("水果", "苹果"), table.getRowsAsText().get(0), "restart row keeps content");
+		assertEquals(Arrays.asList("", "香蕉"), table.getRowsAsText().get(1),
 				"vMerge continuation (val omitted => continue) collapses to empty placeholder");
 		String md = table.toMarkdown();
 		String[] lines = md.split("\n");
@@ -158,10 +158,10 @@ class DocxTableMergedCellsTest {
 
 		DocxTable table = extractSingleTable(pkgWithTable(tbl));
 		// 孤立延续（无前置 restart）按普通内容保留，不误吞
-		assertEquals(Arrays.asList("孤儿内容", "b1"), table.getRows().get(0));
-		assertEquals(Arrays.asList("重启", "b2"), table.getRows().get(1));
+		assertEquals(Arrays.asList("孤儿内容", "b1"), table.getRowsAsText().get(0));
+		assertEquals(Arrays.asList("重启", "b2"), table.getRowsAsText().get(1));
 		// 有前置 restart 后，显式 val="continue" 归并为空占位
-		assertEquals(Arrays.asList("", "b3"), table.getRows().get(2));
+		assertEquals(Arrays.asList("", "b3"), table.getRowsAsText().get(2));
 	}
 
 	@Test
@@ -173,8 +173,8 @@ class DocxTableMergedCellsTest {
 		tbl.getContent().add(row(cellWithText("独立格"), cellWithText("b3")));
 
 		DocxTable table = extractSingleTable(pkgWithTable(tbl));
-		assertEquals(Arrays.asList("", "b2"), table.getRows().get(1));
-		assertEquals(Arrays.asList("独立格", "b3"), table.getRows().get(2),
+		assertEquals(Arrays.asList("", "b2"), table.getRowsAsText().get(1));
+		assertEquals(Arrays.asList("独立格", "b3"), table.getRowsAsText().get(2),
 				"plain cell ends the merge chain; no phantom empties afterwards");
 	}
 
@@ -182,7 +182,7 @@ class DocxTableMergedCellsTest {
 
 	@Test
 	void rendererPadsShortRowsAndTruncatesLongRows() {
-		DocxTable table = new DocxTable(
+		DocxTable table = DocxTable.ofStrings(
 				Arrays.asList("一", "二", "三"),
 				Arrays.asList(
 						Arrays.asList("短"),
@@ -201,7 +201,7 @@ class DocxTableMergedCellsTest {
 				new java.util.ArrayList<java.util.List<String>>();
 		rows.add(null);
 		rows.add(Collections.singletonList("含|竖线"));
-		String md = new DocxTable(Collections.singletonList("表头"), rows).toMarkdown();
+		String md = DocxTable.ofStrings(Collections.singletonList("表头"), rows).toMarkdown();
 		assertEquals("| 表头 |\n|---|\n|  |\n| 含\\|竖线 |", md);
 	}
 
