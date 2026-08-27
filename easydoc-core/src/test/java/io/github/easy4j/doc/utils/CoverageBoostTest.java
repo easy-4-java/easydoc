@@ -30,40 +30,39 @@ import org.junit.jupiter.api.io.TempDir;
 class CoverageBoostTest {
 
     // ---------------------------------------------------------------
-    // Assert.notEmpty(Object[], String) — inverted logic bug
-    // The condition is (array!=null && array.length>0) which throws
-    // when array is NOT empty. This is a production bug.
+    // Assert.notEmpty(Object[], String) — 契约行为（生产缺陷已修复）
+    // 修复前条件写反：非空数组抛异常、null/空数组放行。
+    // 现按 javadoc 契约断言：null/空抛 IllegalArgumentException，非空放行。
     // ---------------------------------------------------------------
 
     @Test
-    @DisplayName("Assert.notEmpty array — BUG: throws when array is non-empty")
-    void assertNotEmptyArrayThrowsWhenNonEmpty() {
-        // TODO: fix production bug — Assert.notEmpty(Object[], String) has inverted logic
-        // It throws when array is NOT empty (should throw when IS empty)
+    @DisplayName("Assert.notEmpty array — does not throw for non-empty array")
+    void assertNotEmptyArrayAcceptsNonEmpty() {
         String[] nonEmpty = {"a", "b"};
-        assertThrows(IllegalArgumentException.class, () -> {
-            Assert.notEmpty(nonEmpty, "should not throw for non-empty");
-        }, "BUG: notEmpty throws for non-empty array due to inverted condition");
-    }
-
-    @Test
-    @DisplayName("Assert.notEmpty array — BUG: does not throw when array is empty")
-    void assertNotEmptyArrayDoesNotThrowWhenEmpty() {
-        // TODO: fix production bug — Assert.notEmpty(Object[], String) has inverted logic
-        String[] empty = new String[0];
         assertDoesNotThrow(() -> {
-            Assert.notEmpty(empty, "should throw for empty");
-        }, "BUG: notEmpty does not throw for empty array due to inverted condition");
+            Assert.notEmpty(nonEmpty, "should not throw for non-empty array");
+        }, "notEmpty must accept a non-empty array");
     }
 
     @Test
-    @DisplayName("Assert.notEmpty array no-message overload delegates")
+    @DisplayName("Assert.notEmpty array — throws when array is null or empty")
+    void assertNotEmptyArrayThrowsWhenNullOrEmpty() {
+        assertThrows(IllegalArgumentException.class,
+                () -> Assert.notEmpty((String[]) null, "null array must be rejected"),
+                "notEmpty must reject a null array");
+        assertThrows(IllegalArgumentException.class,
+                () -> Assert.notEmpty(new String[0], "empty array must be rejected"),
+                "notEmpty must reject an empty array");
+    }
+
+    @Test
+    @DisplayName("Assert.notEmpty array no-message overload delegates to fixed logic")
     void assertNotEmptyArrayNoMessage() {
-        // TODO: fix production bug — same inverted logic
         String[] nonEmpty = {"x"};
-        assertThrows(IllegalArgumentException.class, () -> {
-            Assert.notEmpty(nonEmpty);
-        });
+        assertDoesNotThrow(() -> Assert.notEmpty(nonEmpty),
+                "no-message overload must accept non-empty arrays");
+        assertThrows(IllegalArgumentException.class, () -> Assert.notEmpty((Object[]) null),
+                "no-message overload must reject null arrays");
     }
 
     // ---------------------------------------------------------------

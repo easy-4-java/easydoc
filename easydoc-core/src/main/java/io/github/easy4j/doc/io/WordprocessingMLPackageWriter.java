@@ -42,14 +42,34 @@ import io.github.easy4j.doc.utils.Docx4jUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * {@link WordprocessingMLPackage} 导出器（docx / html / pdf）。
+ *
+ * <p><b>线程契约（#10/#12 修复说明）</b>：本类默认以单例提供
+ * （{@link #getWMLPackageWriter()}），无参导出重载仅使用局部状态，
+ * 不再修改任何 docx4j 全局静态属性（见 {@link #writeToHtml(WordprocessingMLPackage, File)}
+ * 内注释）。三个可替换处理器字段（hyperlink / styleElement / scriptElement）
+ * 属共享可变状态：字段声明为 {@code volatile} 保证跨线程可见，写入口
+ * （setter）以类内 {@code handlerLock} 监视器同步互斥。需注意“读取处理器组合→
+ * 执行转换”并非原子事务：并发替换处理器与转换过程重叠时，不保证某次转换使用
+ * 完全一致的三个处理器组合。为保证既有 API 兼容而保留可变设计而非改为不可变
+ * 工厂；需要严格隔离的多线程调用方可自建实例。getter 返回的是外部传入的
+ * 处理器实例，其线程安全性由实现方自行保证。</p>
+ */
 public class WordprocessingMLPackageWriter  {
 
 	protected final Logger LOG = LoggerFactory.getLogger(this.getClass());
 	protected final String PDF_SUFFIX = ".pdf";
 	protected final String DOCX_SUFFIX = ".docx";
-	protected ConversionHyperlinkHandler hyperlinkHandler = OutputConversionHyperlinkHandler.getHyperlinkHandler();
-	protected ConversionHTMLStyleElementHandler styleElementHandler = OutputConversionHTMLStyleElementHandler.getStyleElementHandler();
-	protected ConversionHTMLScriptElementHandler scriptElementHandler = OutputConversionHTMLScriptElementHandler.getScriptElementHandler();
+	// P1 缺陷修复（#13）：原 writeToHtml(pkg) 无路径重载误用 PDF_SUFFIX，
+	// 导致生成的是 .pdf 扩展名的 html 文件；补充专用后缀常量。
+	protected final String HTML_SUFFIX = ".html";
+	// 处理器字段的写锁（#10）：并发 setter 互斥由 synchronized 保证；
+	// 字段本身的 volatile 保证读端（转换路径）的可见性。
+	private final Object handlerLock = new Object();
+	protected volatile ConversionHyperlinkHandler hyperlinkHandler = OutputConversionHyperlinkHandler.getHyperlinkHandler();
+	protected volatile ConversionHTMLStyleElementHandler styleElementHandler = OutputConversionHTMLStyleElementHandler.getStyleElementHandler();
+	protected volatile ConversionHTMLScriptElementHandler scriptElementHandler = OutputConversionHTMLScriptElementHandler.getScriptElementHandler();
 
 	private static final WordprocessingMLPackageWriter WML_PACKAGE_WRITER = new WordprocessingMLPackageWriter();
 
@@ -74,7 +94,8 @@ public class WordprocessingMLPackageWriter  {
 	 */
 	public File writeToDocx(WordprocessingMLPackage wmlPackage) throws  IOException, Docx4JException{
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
-		File outFile = new File( Docx4jUtils.getTempPath() + DOCX_SUFFIX );
+		// P1 资源修复（#14）：改用 createTempFile 原子命名，消除毫秒级路径碰撞
+		File outFile = Docx4jUtils.newTempOutputFile(DOCX_SUFFIX);
 		return writeToDocx(wmlPackage, outFile);
 	}
 
@@ -134,7 +155,9 @@ public class WordprocessingMLPackageWriter  {
 	 */
 	public File writeToHtml(WordprocessingMLPackage wmlPackage) throws IOException, Docx4JException{
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
-		File outFile = new File( Docx4jUtils.getTempPath() + PDF_SUFFIX );
+		// P1 缺陷修复（#13）：原实现误用 PDF_SUFFIX（生成 .pdf 后缀的 html 文件）；
+		// P1 资源修复（#14）：同时改用 createTempFile 原子命名避免碰撞
+		File outFile = Docx4jUtils.newTempOutputFile(HTML_SUFFIX);
 		return writeToHtml(wmlPackage, outFile);
 	}
 
@@ -198,23 +221,17 @@ public class WordprocessingMLPackageWriter  {
 			htmlSettings.setScriptElementHandler(getScriptElementHandler());
 			htmlSettings.setStyleElementHandler(getStyleElementHandler());
 
-			// DOCX4J_PARAM_04 的值 "docx4j.Convert.Out.HTML.OutputMethodXM" 实际上
-			// 与 docx4j 内部读取的 "docx4j.Convert.Out.HTML.OutputMethodXML" 不匹配
-			// （常量名末尾缺少 "L"），因此此处 setProperty 是无效操作。
-			// 但仍用 try/finally 保护，以防将来常量被修正后产生并发覆盖问题。
-			String prevValue = Docx4jProperties.getProperty(Docx4jConstants.DOCX4J_PARAM_04);
-			Docx4jProperties.setProperty(Docx4jConstants.DOCX4J_PARAM_04, true);
-			try {
-				Docx4J.toHTML(htmlSettings, output, Docx4J.FLAG_EXPORT_PREFER_XSL);
-			} finally {
-				// 恢复原值；若属性原本未设置则直接移除该键 —— Properties 底层
-				// Hashtable 不接受 null 值，setProperty(key, null) 会抛 NPE
-				if (prevValue != null) {
-					Docx4jProperties.setProperty(Docx4jConstants.DOCX4J_PARAM_04, prevValue);
-				} else {
-					Docx4jProperties.getProperties().remove(Docx4jConstants.DOCX4J_PARAM_04);
-				}
-			}
+			// 线程安全修复（#12）：原实现曾对全局静态 Docx4jProperties 写入
+			// DOCX4J_PARAM_04（"docx4j.Convert.Out.HTML.OutputMethodXM"，注意末尾缺少
+			// 结尾字母 L）并在 finally 中恢复，形成“读旧值→写入→转换→恢复”的
+			// 全局竞态窗口。经核实（docx4j-core 的 HTMLExporterXslt$
+			// HTMLExporterXsltDelegate 字节码），docx4j 运行期实际读取的键是
+			// "docx4j.Convert.Out.HTML.OutputMethodXML"（带 L）：原写入因拼写错位
+			// 从未被 docx4j 读到，属无效操作。据此删除该全局变更可保持行为完全不变
+			// （对 docx4j 而言该键等价于恒未设置），同时彻底消除线程敌性窗口。
+			// 原注释保留备查：若将来确需启用 OutputMethodXML（输出 well-formed XHTML），
+			// 应由应用启动时显式配置 Docx4jProperties，而非在单次转换中临时改写全局态。
+			Docx4J.toHTML(htmlSettings, output, Docx4J.FLAG_EXPORT_PREFER_XSL);
 		}
 
 		return outFile;
@@ -229,7 +246,8 @@ public class WordprocessingMLPackageWriter  {
 	 */
 	public File writeToPDF(WordprocessingMLPackage wmlPackage) throws  IOException, Docx4JException{
 		Assert.notNull(wmlPackage, " wmlPackage is not specified!");
-		File outFile = new File( Docx4jUtils.getTempPath() + PDF_SUFFIX );
+		// P1 资源修复（#14）：改用 createTempFile 原子命名，消除毫秒级路径碰撞
+		File outFile = Docx4jUtils.newTempOutputFile(PDF_SUFFIX);
 		return writeToPDF(wmlPackage, outFile);
 	}
 
@@ -327,24 +345,33 @@ public class WordprocessingMLPackageWriter  {
 		return hyperlinkHandler;
 	}
 
+	/** 线程契约：以 handlerLock 同步写入；字段为 volatile，读端立即可见（见类注释）。 */
 	public void setHyperlinkHandler(ConversionHyperlinkHandler hyperlinkHandler) {
-		this.hyperlinkHandler = hyperlinkHandler;
+		synchronized (handlerLock) {
+			this.hyperlinkHandler = hyperlinkHandler;
+		}
 	}
 
 	public ConversionHTMLStyleElementHandler getStyleElementHandler() {
 		return styleElementHandler;
 	}
 
+	/** 线程契约：以 handlerLock 同步写入；字段为 volatile，读端立即可见（见类注释）。 */
 	public void setStyleElementHandler(ConversionHTMLStyleElementHandler styleElementHandler) {
-		this.styleElementHandler = styleElementHandler;
+		synchronized (handlerLock) {
+			this.styleElementHandler = styleElementHandler;
+		}
 	}
 
 	public ConversionHTMLScriptElementHandler getScriptElementHandler() {
 		return scriptElementHandler;
 	}
 
+	/** 线程契约：以 handlerLock 同步写入；字段为 volatile，读端立即可见（见类注释）。 */
 	public void setScriptElementHandler(ConversionHTMLScriptElementHandler scriptElementHandler) {
-		this.scriptElementHandler = scriptElementHandler;
+		synchronized (handlerLock) {
+			this.scriptElementHandler = scriptElementHandler;
+		}
 	}
 
 }
