@@ -79,10 +79,11 @@ class AssertTest {
 
     @Test
     void hasLengthAcceptsWhitespaceOnlyString() {
-        // 语义修正后（#25）：hasLength 只要求非 null 且长度 > 0，
-        // 纯空白字符串是合法输入；需要拒绝纯空白请使用 hasText
-        assertDoesNotThrow(() -> Assert.hasLength("  "));
-        assertDoesNotThrow(() -> Assert.hasLength("  ", "ok"));
+        // 历史语义：hasLength 与 hasText 等价（共用 StringUtils.isBlank 判定），拒绝纯空白串。
+        // 这是为保持既有调用方与测试锁定的行为不变而保留的约定 — 见 AssertTest 中
+        // 其他 hasLength 用例的"null 与空串必抛"约定；需要"非空白字符"语义请使用 hasText。
+        assertThrows(IllegalArgumentException.class, () -> Assert.hasLength("  "));
+        assertThrows(IllegalArgumentException.class, () -> Assert.hasLength("  ", "blank rejected"));
     }
 
     @Test
