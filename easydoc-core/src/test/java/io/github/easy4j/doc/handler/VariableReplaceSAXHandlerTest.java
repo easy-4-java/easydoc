@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +17,15 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * <p>重点覆盖占位符替换的容错契约（#15）：
  * 未闭合占位符不抛异常（保留字面文本），多字符自定义前缀/结束符切片正确。</p>
+ *
+ * <p>实现说明：测试类路径携带 docx4j 自带的 xalan-metainf（META-INF/services 指向
+ * 重打包的 org.docx4j.org.apache.xalan 工厂），该工厂的 identity transform
+ * 不回调 SAXSource reader 的 {@code setContentHandler}，导致 docx4j SAXHandler
+ * 构造器必然抛出 “Transformer didn't set ContentHandler”（3.0.x 在 JDK 21+
+ * 遇到的是同一失败模式）。与 3.0.x 的处理一致：实例化时绕过构造器，
+ * 再以反射补齐字段并调用 initContext。区别在于本分支按 release=8 编译约束，
+ * 通过反射调用 {@code sun.misc.Unsafe#allocateInstance}（仅字符串/反射，无编译期依赖）。
+ * 注意 @AfterAll 中恢复属性——不需要了。</p>
  *
  * [@Loong Wan](https://github.com/loong10k)
  */
@@ -34,10 +44,16 @@ class VariableReplaceSAXHandlerTest {
         }
     }
 
-    /**
-     * 将（继承自 SAXHandler 的）私有 ContentHandler 字段替换为捕获器，
-     * 以便断言替换后的最终输出。
-     */
+    /** 绕过构造器分配实例（对齐 3.0.x 做法；sun.misc.Unsafe 经反射调用）。 */
+    private static VariableReplaceSAXHandler allocateHandler() throws Exception {
+        Field f = Class.forName("sun.misc.Unsafe").getDeclaredField("theUnsafe");
+        f.setAccessible(true);
+        Object unsafe = f.get(null);
+        Method allocate = unsafe.getClass().getMethod("allocateInstance", Class.class);
+        return (VariableReplaceSAXHandler) allocate.invoke(unsafe, VariableReplaceSAXHandler.class);
+    }
+
+    /** 在目标类或其父类上查找声明字段（供设置继承私有字段使用）。 */
     private static void setField(Object target, String fieldName, Object value) throws Exception {
         Field field = null;
         Class<?> clz = target.getClass();
@@ -57,17 +73,36 @@ class VariableReplaceSAXHandlerTest {
 
     private static VariableReplaceSAXHandler buildHandler(Map<String, Object> vars,
             String placeholderStart, String placeholderEnd) throws Exception {
-        // 本分支运行环境（docx4j 8 + JDK17 测试运行时）下 SAXHandler 构造器
-        // 可正常完成（Transformer 会回设 ContentHandler），无需绕过构造器；
-        // 构造后仅替换私有 ch 字段为捕获器。
-        VariableReplaceSAXHandler handler =
-                new VariableReplaceSAXHandler(placeholderStart, placeholderEnd, vars);
+        VariableReplaceSAXHandler handler = allocateHandler();
+        setField(handler, "placeholderStart", placeholderStart);
+        setField(handler, "placeholderEnd", placeholderEnd);
+        setField(handler, "variables", vars);
+
+        Method initContext = VariableReplaceSAXHandler.class.getDeclaredMethod("initContext");
+        initContext.setAccessible(true);
+        initContext.invoke(handler);
+
+        // 私有 ch（ContentHandler）字段换为捕获器，便于断言替换后的最终输出
         setField(handler, "ch", new CapturingContentHandler());
         return handler;
     }
 
     private static VariableReplaceSAXHandler buildHandler(Map<String, Object> vars) throws Exception {
         return buildHandler(vars, "${", "}");
+    }
+
+    @Test
+    void charactersWithPlainTextNoPlaceholders() throws Exception {
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("name", "World");
+        VariableReplaceSAXHandler handler = buildHandler(vars);
+        CapturingContentHandler capture = new CapturingContentHandler();
+        setField(handler, "ch", capture);
+
+        char[] input = "plain text".toCharArray();
+        handler.characters(input, 0, input.length);
+
+        assertEquals("plain text", capture.collected.toString());
     }
 
     @Test
