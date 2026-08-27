@@ -6,7 +6,7 @@
 <dependency>
     <groupId>io.github.easy4j</groupId>
     <artifactId>easydoc-xhtml</artifactId>
-    <version>3.0.x.20260730-SNAPSHOT</version>
+    <version>3.0.x.20260831</version>
 </dependency>
 ```
 

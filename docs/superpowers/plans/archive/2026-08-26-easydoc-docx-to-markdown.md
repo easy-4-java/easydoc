@@ -1,4 +1,4 @@
-# easydoc DOCX → Markdown 增强计划（OOXML 直读 / 三分支同步）
+# [DONE] easydoc DOCX → Markdown 增强计划（OOXML 直读 / 三分支同步）
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
