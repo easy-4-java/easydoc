@@ -26,22 +26,30 @@ import org.docx4j.wml.Tbl;
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
-public class MyTblFinder extends CallbackImpl { 
-	
-    public List<Tbl> tblList = new ArrayList<Tbl>();  
-  
-    public List<Object> apply(Object o) {  
-        if (o instanceof Tbl) {  
-            tblList.add((Tbl) o);  
-        }  
-        return null;  
-    }  
-  
-    public boolean shouldTraverse(Object o) {  
-        return !(o instanceof Tbl);  
-    }  
-  
-    public List<Tbl> getTbls() {  
-        return tblList;  
-    }  
-}  
+public class MyTblFinder extends CallbackImpl {
+
+    public List<Tbl> tblList = new ArrayList<Tbl>();
+
+    /**
+     * 访问节点：命中 {@link Tbl} 时记入 tblList。
+     * <p>修复点（port from 3.0.x #26）：对齐其他 {@link CallbackImpl} 子类的约定 ——
+     * 返回当前节点的子节点列表（{@link #getChildren(Object)}），而不是 null。返回值本身不参与
+     * docx4j 遍历决策，但 null 不是回调约定的返回值，且会让调用方在自定义遍历/
+     * 调试时丢失继续下钻所需的信息；子节点获取失败时（非容器节点）仍按契约返回 null。
+     */
+    @Override
+    public List<Object> apply(Object o) {
+        if (o instanceof Tbl) {
+            tblList.add((Tbl) o);
+        }
+        return getChildren(o);
+    }
+
+    public boolean shouldTraverse(Object o) {
+        return !(o instanceof Tbl);
+    }
+
+    public List<Tbl> getTbls() {
+        return tblList;
+    }
+}

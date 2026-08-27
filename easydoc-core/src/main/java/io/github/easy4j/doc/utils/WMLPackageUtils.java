@@ -206,7 +206,11 @@ public class WMLPackageUtils {
 				theList.add(rangeStart, run);
 			//}
 		} catch (ClassCastException cce) {
-			//Log.error(cce);
+			// 不再静默吞掉类型转换失败（port from 3.0.x）：此处期望书签父节点为
+			// P/ContentAccessor 结构，记录 WARN 并带上具体类型信息，
+			// 便于排查结构异常的模板文档
+			LOG.warn("Unexpected class while replacing bookmark '{}' text: expected P/ContentAccessor structure; details: {}",
+					bm.getName(), cce.getMessage(), cce);
 		}
 	}
 	
