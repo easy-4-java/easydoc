@@ -15,13 +15,19 @@ import java.nio.file.Path;
 import java.util.Arrays;
 
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.wml.CTShd;
+import org.docx4j.wml.Color;
 import org.docx4j.wml.ObjectFactory;
 import org.docx4j.wml.P;
 import org.docx4j.wml.PPr;
 import org.docx4j.wml.PPrBase;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
+import org.docx4j.wml.Tc;
+import org.docx4j.wml.TcPr;
 import org.docx4j.wml.Text;
+import org.docx4j.wml.Tr;
+import org.docx4j.wml.Tbl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -235,5 +241,63 @@ class EasyMarkdownStructuredTest {
 				() -> EasyMarkdown.docxToStructured((InputStream) null));
 		assertThrows(NullPointerException.class,
 				() -> EasyMarkdown.docxToStructured((WordprocessingMLPackage) null));
+	}
+
+	// ==================== MarkdownRenderOptions 重载 ====================
+
+	/** 构造含字体色的表格辅助方法。 */
+	private static Tbl tableWithColoredCell() {
+		Tbl tbl = new org.docx4j.wml.Tbl();
+		// 表头行
+		Tr headerRow = F.createTr();
+		headerRow.getContent().add(plainTc("列甲"));
+		headerRow.getContent().add(plainTc("列乙"));
+		tbl.getContent().add(headerRow);
+		// 数据行：第一个单元格带 w:color w:val="FF0000"
+		Tr dataRow = F.createTr();
+		Tc coloredCell = F.createTc();
+		R r = F.createR();
+		RPr rPr = F.createRPr();
+		Color color = new Color();
+		color.setVal("FF0000");
+		rPr.setColor(color);
+		r.setRPr(rPr);
+		r.getContent().add(text("红色"));
+		P p = F.createP();
+		p.getContent().add(r);
+		coloredCell.getContent().add(p);
+		dataRow.getContent().add(coloredCell);
+		dataRow.getContent().add(plainTc("普通"));
+		tbl.getContent().add(dataRow);
+		return tbl;
+	}
+
+	private static Tc plainTc(String value) {
+		Tc tc = F.createTc();
+		P p = F.createP();
+		p.getContent().add(run(value));
+		tc.getContent().add(p);
+		return tc;
+	}
+
+	@Test
+	void optsOverloadWithColorEnabledEmitsSpan() throws Exception {
+		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+		pkg.getMainDocumentPart().getContent().add(tableWithColoredCell());
+
+		String md = EasyMarkdown.docxToStructuredMarkdown(pkg, MarkdownRenderOptions.of(true));
+		assertTrue(md.contains("<span style=\"color:#FF0000;\">红色</span>"),
+				"opts overload must render color when enabled, got: " + md);
+	}
+
+	@Test
+	void optsOverloadDefaultMatchesNoOptsOverload() throws Exception {
+		WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+		pkg.getMainDocumentPart().getContent().add(tableWithColoredCell());
+
+		String noOpts = EasyMarkdown.docxToStructuredMarkdown(pkg);
+		String explicitDefault = EasyMarkdown.docxToStructuredMarkdown(pkg, MarkdownRenderOptions.DEFAULT);
+		assertEquals(noOpts, explicitDefault, "default opts must match no-opts overload byte-for-byte");
+		assertFalse(noOpts.contains("<span"), "default (OFF) must not emit span");
 	}
 }
