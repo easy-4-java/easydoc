@@ -147,6 +147,13 @@ Maven 4 构建基线、安全加固与一系列正确性修复。相对 1.0.x（
 
 ### 安全
 
+- **XXE 防护硬化（XHTMLImporterUtils）**：之前依赖 System.setProperty 序列化窗口
+  （accessExternalDTD/SCHEMA）作为间接缓解，未实际禁用 DOCTYPE 解析本身。新增
+  `SecureDocumentBuilderFactory`（继承 DocumentBuilderFactory，构造器内统一应用
+  disallow-doctype-decl / FEATURE_SECURE_PROCESSING / 关闭外部实体与 XInclude），通过
+  javax.xml.parsers.DocumentBuilderFactory 系统属性指向该类，作为 docx4j 内部工厂
+  实例化的拦截器。恶意 XHTML 输入中的 DOCTYPE 与外部实体引用将被解析器直接拒绝。
+  新增 3 个回归测试覆盖 DOCTYPE 拒绝与系统属性恢复。
 - OGNL 注入：`DefaultMemberAccess(false, false, false)` 仅允许 public 成员。
 - Zip Slip：解压目标 canonical path 校验。
 - XML 注入：输出转义。
