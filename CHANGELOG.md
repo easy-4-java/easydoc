@@ -5,6 +5,16 @@
 
 ## [3.0.x] — Unreleased（feature/3.0.x，面向 JDK 21）
 
+### fast-path docx→Markdown 保真度升级（F1 系列修复）
+
+- **htmlToMarkdown 内部实现替换**：`MarkdownConverter.htmlToMarkdown` 从 12 个 `.replaceAll` 正则映射
+  升级为 `FlexmarkHtmlConverter`（flexmark-html2md-converter 0.64.8，AST 驱动），解决 F1 系列审计项根源。
+- **修复场景**：标题带属性正确解析、嵌套列表保留层级缩进、有序列表保留编号（1./2./3.）、
+  GFM 表格含分隔行（`|---|---|`）、内联代码保留反引号、锚点保留 `[text](href)`。
+- **方法签名不变**：`htmlToMarkdown(String)` 返回类型、null→空串语义完全保持，API 兼容。
+- **新增依赖**：`com.vladsch.flexmark:flexmark-html2md-converter:0.64.8`（easydoc-xhtml 模块）。
+- **测试覆盖**：新增 8 个 `MarkdownConverterTest` 用例（属性标题/嵌套列表/有序列表/表格分隔行/内联代码/锚点/null/空串）。
+
 > **已知版本事故：** Maven Central 上同时存在 `3.0.x.20260730`（版本号低于前序发布 `3.0.x.20260830`，属误操作发布）与本版本 `3.0.x.20260831`。两者携带相同内容（Sprint 1 修复 + fastjson2 迁移）；请使用 `3.0.x.20260831` 作为最新版本，`3.0.x.20260730` 应视为已废弃。
 
 ## [3.0.x.20260831] — 2026-08-27
