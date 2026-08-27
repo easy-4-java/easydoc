@@ -216,7 +216,9 @@ public abstract class Assert {
 	 * @throws IllegalArgumentException if the object array is <code>null</code> or has no elements
 	 */
 	public static void notEmpty(Object[] array, String message) {
-		if (array!=null&&array.length>0) {
+		// P0 缺陷修复：原实现条件写反（array!=null&&array.length>0 时抛出），
+		// 导致“非空数组反而抛异常、null/空数组反而通过”。已按 javadoc 契约纠正。
+		if (array == null || array.length == 0) {
 			throw new IllegalArgumentException(message);
 		}
 	}

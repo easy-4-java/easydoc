@@ -146,17 +146,24 @@ class Assert_Test {
     }
 
     // --- notEmpty (Object[]) ---
-    // Note: The source code has an inverted condition - it throws when array is NOT empty
+    // 契约行为（生产缺陷已修复）：修复前条件写反——非空数组抛异常、null/空数组放行；
+    // 现按 javadoc 契约断言：null/空抛 IllegalArgumentException，非空放行。
 
     @Test
-    void test_notEmpty_array_withEmpty_doesNotThrow() {
-        Assert.notEmpty(new Object[0], "should not throw");
+    void test_notEmpty_array_withEmpty_throwsException() {
+        assertThatThrownBy(() -> Assert.notEmpty(new Object[0], "must not be empty"))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void test_notEmpty_array_withNonEmpty_throwsException() {
-        assertThatThrownBy(() -> Assert.notEmpty(new Object[]{"a"}, "must be empty"))
+    void test_notEmpty_array_withNull_throwsException() {
+        assertThatThrownBy(() -> Assert.notEmpty((Object[]) null, "must not be null"))
             .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void test_notEmpty_array_withNonEmpty_doesNotThrow() {
+        Assert.notEmpty(new Object[]{"a"}, "should not throw");
     }
 
     // --- noNullElements ---
