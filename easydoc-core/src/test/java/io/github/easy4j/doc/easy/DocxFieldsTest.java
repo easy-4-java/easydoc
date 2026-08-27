@@ -61,4 +61,26 @@ class DocxFieldsTest {
 		assertTrue(m.containsKey("x"), "null value still appears with its placeholder key");
 		assertEquals(null, m.get("x"));
 	}
+
+	/**
+	 * 非 static 成员内部类：JVM 规范要求编译器为其合成 this$0 字段（指向外部类
+	 * 实例），用于验证反射循环能安全跳过合成字段。
+	 */
+	class SyntheticHolder {
+		// 非 final 静态字段：确保一定以 Field 形式出现在 getDeclaredFields() 中
+		static String SHARED = "static-state";
+		@DocxField("vis")
+		private String visible = "v";
+		private String plain = "p";
+	}
+
+	@Test
+	void fromSkipsStaticAndSyntheticFields() {
+		SyntheticHolder bean = new SyntheticHolder();
+		Map<String, Object> map = DocxFields.from(bean);
+		assertEquals("v", map.get("vis"), "普通实例字段仍需正常提取");
+		assertEquals("p", map.get("plain"));
+		assertFalse(map.containsKey("this$0"), "编译器合成的 this$0 字段必须被跳过且不得抛异常");
+		assertFalse(map.containsKey("SHARED"), "静态字段必须被跳过（防止静态状态写入变量 Map）");
+	}
 }
