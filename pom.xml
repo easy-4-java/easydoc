@@ -45,7 +45,7 @@
     <properties>
         <!-- ═══ 第一段: 基础属性（自然排序）═══ -->
         <!-- CI-friendly 版本单一来源：发布/发版只改此一处，Maven 4 构建产物自动扁平化 -->
-        <revision>3.0.x.20260730</revision>
+        <revision>3.0.x.20261031-SNAPSHOT</revision>
         <java.version>21</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.version>4.0.0-rc-5</maven.version>
