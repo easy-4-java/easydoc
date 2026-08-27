@@ -72,4 +72,24 @@ class WriterTempOutputRegressionTest {
             second.delete();
         }
     }
+
+    @Test
+    @DisplayName("writeToHtml(pkg) produces an .html artifact (was .pdf before fix #13)")
+    void writeToHtmlNoArgUsesHtmlSuffix() throws Exception {
+        WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
+        WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
+        pkg.getMainDocumentPart().addParagraphOfText("easydoc html suffix regression");
+        // 修复前：无路径重载把目标命名为 *.pdf（#13）。修复后必须是 *.html。
+        File html = writer.writeToHtml(pkg);
+        try {
+            assertNotNull(html);
+            assertTrue(html.getName().endsWith(".html"),
+                    "无路径 html 导出应以 .html 结尾，实际为: " + html.getName());
+            assertTrue(html.length() > 0, "html 输出不应为空");
+            assertEquals(0, html.getName().indexOf("easydoc-"),
+                    "临时输出应由 createTempFile 统一命名");
+        } finally {
+            html.delete();
+        }
+    }
 }
