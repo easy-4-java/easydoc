@@ -48,15 +48,23 @@ public final class EngineFactory {
             synchronized (this) {
                 local = engine;
                 if (local == null) {
+                    /*
+                     * 配置优先级：
+                     * 1) 优先加载 Jetbrick 自身的默认配置文件 classpath:/jetbrick-template.properties（存在即整份生效）；
+                     * 2) 仅当其不存在时，才回退使用 docx4j.properties 中以 docx4j.jetx.* 命名的配置
+                     *    （键名中的下划线会被还原为点号，见 ConfigUtils#filterWithPrefix 的 escape 语义）。
+                     */
                     Properties ps = new Properties();
                     ConfigLoader loader = new ConfigLoader();
                     try {
                         LOG.info("Loading config file: {}", JetConfig.DEFAULT_CONFIG_FILE);
                         loader.load(JetConfig.DEFAULT_CONFIG_FILE);
                         ps = loader.asProperties();
-                    } catch (Exception e) {
-                        // 默认配置文件不存在
-                        LOG.warn("No default config file found: {}", JetConfig.DEFAULT_CONFIG_FILE);
+                    } catch (IllegalStateException e) {
+                        // ConfigLoader 在默认配置文件不存在（或读取失败）时抛出 IllegalStateException，
+                        // 记录回退原因后改用 docx4j.jetx.* 属性，避免整个异常链被静默吞掉
+                        LOG.warn("无法从 '{}' 加载 Jetbrick 配置（{}），回退为 docx4j.properties 中 docx4j.jetx.* 前缀的配置",
+                                JetConfig.DEFAULT_CONFIG_FILE, e.getMessage(), e);
                         ps = ConfigUtils.filterWithPrefix("docx4j.jetx.", "docx4j.", Docx4jProperties.getProperties(), true);
                     }
                     local = JetEngine.create(ps);
