@@ -204,14 +204,14 @@ class DocxDocumentTest {
 
 	@Test
 	void tableRendersStandardGfmFormat() {
-		DocxTable table = new DocxTable(Arrays.asList("列一", "列二"),
+		DocxTable table = DocxTable.ofStrings(Arrays.asList("列一", "列二"),
 				Arrays.asList(Arrays.asList("甲", "乙"), Arrays.asList("丙", "丁")));
 		assertEquals("| 列一 | 列二 |\n|---|---|\n| 甲 | 乙 |\n| 丙 | 丁 |", table.toMarkdown());
 	}
 
 	@Test
 	void tableWithoutHeadersSynthesizesHeaderFromFirstRowKeepingItAsDataRow() {
-		DocxTable table = new DocxTable(Collections.<String>emptyList(),
+		DocxTable table = DocxTable.ofStrings(Collections.<String>emptyList(),
 				Arrays.asList(Arrays.asList("首行甲", "首行乙"), Arrays.asList("次行", "补充")));
 		assertEquals("| 首行甲 | 首行乙 |\n|---|---|\n| 首行甲 | 首行乙 |\n| 次行 | 补充 |",
 				table.toMarkdown());
@@ -219,7 +219,7 @@ class DocxDocumentTest {
 
 	@Test
 	void tableEscapesLiteralPipeInCellText() {
-		DocxTable table = new DocxTable(Collections.singletonList("表头"),
+		DocxTable table = DocxTable.ofStrings(Collections.singletonList("表头"),
 				Collections.singletonList(Collections.singletonList("含|竖线")));
 		assertEquals("| 表头 |\n|---|\n| 含\\|竖线 |", table.toMarkdown());
 	}
@@ -227,26 +227,26 @@ class DocxDocumentTest {
 	@Test
 	void tableWithOnlyHeadersStillEmitsSeparatorLine() {
 		assertEquals("| 表头 |\n|---|",
-				new DocxTable(Collections.singletonList("表头"), Collections.<List<String>>emptyList()).toMarkdown());
+				DocxTable.ofStrings(Collections.singletonList("表头"), Collections.<List<String>>emptyList()).toMarkdown());
 	}
 
 	@Test
 	void tableTreatsNullRowsAndCellsGracefully() {
-		assertEquals("", new DocxTable(null, null).toMarkdown());
-		assertEquals("", new DocxTable(Collections.<String>emptyList(),
+		assertEquals("", DocxTable.ofStrings(null, null).toMarkdown());
+		assertEquals("", DocxTable.ofStrings(Collections.<String>emptyList(),
 				Collections.<List<String>>emptyList()).toMarkdown());
 		// null 数据行与 null 单元格不抛异常，按空单元格渲染
 		List<List<String>> rows = new ArrayList<List<String>>();
 		rows.add(null);
 		rows.add(Arrays.asList((String) null));
-		String md = new DocxTable(Collections.singletonList("表头"), rows).toMarkdown();
+		String md = DocxTable.ofStrings(Collections.singletonList("表头"), rows).toMarkdown();
 		assertNotNull(md);
 		assertTrue(md.startsWith("| 表头 |\n|---|\n"), "header block must stay intact");
 	}
 
 	@Test
 	void tableGettersToStringAndElementType() {
-		DocxTable table = new DocxTable(Arrays.asList("列一", "列二"),
+		DocxTable table = DocxTable.ofStrings(Arrays.asList("列一", "列二"),
 				Collections.singletonList(Arrays.asList("甲", "乙")));
 		assertEquals("table", table.getElementType());
 		assertEquals(2, table.getHeaders().size());
@@ -280,7 +280,7 @@ class DocxDocumentTest {
 		assertEquals("heading", new DocxHeading(1, "t").getElementType());
 		assertEquals("paragraph", new DocxParagraph(null).getElementType());
 		assertEquals("list", new DocxList(false, 0, null).getElementType());
-		assertEquals("table", new DocxTable(null, null).getElementType());
+		assertEquals("table", DocxTable.ofStrings(null, null).getElementType());
 		assertEquals("image", new DocxImage(null, null, null).getElementType());
 	}
 
@@ -292,7 +292,7 @@ class DocxDocumentTest {
 						new DocxParagraph(Arrays.asList(new InlineSpan("这是 "), new InlineSpan("正文", true, false, false))),
 						new DocxParagraph(Collections.<InlineSpan>emptyList()),
 						new DocxList(false, 0, Arrays.asList("要点一", "要点二")),
-						new DocxTable(Arrays.asList("指标", "数值"), Collections.singletonList(Arrays.asList("营收", "100"))),
+						DocxTable.ofStrings(Arrays.asList("指标", "数值"), Collections.singletonList(Arrays.asList("营收", "100"))),
 						new DocxImage("data:image/png;base64,AAAA", "配图", "image/png")));
 		assertEquals("# 总览\n\n"
 				+ "这是 **正文**\n\n"

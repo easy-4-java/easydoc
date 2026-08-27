@@ -38,6 +38,18 @@ for (DocxElement e : doc.getElements()) {
 // 整篇 Markdown：doc.fullMarkdown()；元信息：getTitle() / getAuthor() / getModified()
 ```
 
+### 颜色渲染（默认 OFF）
+
+要开启单元格颜色输出，传入 `MarkdownRenderOptions.renderHtmlColor(true)`：
+
+```java
+String md = EasyMarkdown.docxToStructuredMarkdown(new File("demo.docx"),
+    MarkdownRenderOptions.of(true));
+```
+
+输出形如 `<span style="color:#FF0000;background-color:#FFFF00">cell</span>`，
+GitHub 上完整渲染；其它渲染器可能降级为源代码。不开启时输出与之前字节级一致。
+
 ## 4. 备注
 
 - 快路径：`EasyMarkdown.docxToMarkdown(File/InputStream/byte[]/路径)` 走 docx4j HTML 导出 +

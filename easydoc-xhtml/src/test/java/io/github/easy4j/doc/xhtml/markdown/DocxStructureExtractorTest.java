@@ -606,9 +606,9 @@ class DocxStructureExtractorTest {
 		DocxDocument doc = DocxStructureExtractor.extract(pkg);
 		assertEquals(2, doc.getElements().size());
 		DocxTable table = (DocxTable) doc.getElements().get(0);
-		assertEquals(java.util.Arrays.asList("列甲", "列乙"), table.getHeaders());
+		assertEquals(java.util.Arrays.asList("列甲", "列乙"), table.getHeadersAsText());
 		assertEquals(1, table.getRows().size());
-		assertEquals(java.util.Arrays.asList("a1", "b1 内嵌格"), table.getRows().get(0),
+		assertEquals(java.util.Arrays.asList("a1", "b1 内嵌格"), table.getRowsAsText().get(0),
 				"nested table text flattens into its holder cell");
 		assertTrue(table.toMarkdown().startsWith("| 列甲 | 列乙 |"));
 		assertTrue(doc.fullMarkdown().contains("| a1 | b1 内嵌格 |"));

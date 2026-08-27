@@ -68,6 +68,13 @@ Maven 4 构建基线、安全加固与一系列正确性修复。相对 1.0.x（
 - **null 语义差异（有意为之）**：旧 `docxToMarkdown` 系列 null 返回空串（宽松）；
   新结构化系列 null 抛 NPE（`requireNonNull` 边界严格校验，尽早暴露调用方缺陷）
 
+### 颜色渲染（结构化 Markdown 路径）
+
+新增 `MarkdownRenderOptions`（默认 OFF 保持"纯 GFM"承诺），开启 `renderHtmlColor(true)` 后
+单元格级字体颜色（`<w:color w:val="FF0000"/>`）和背景色（`<w:shd w:fill="FFFF00"/>`）通过
+`<span style="...">` 输出。主题色（`theme=`）解析复杂，首版不支持（返回 null 不渲染）。
+PDF 路径颜色已由 docx4j XSL-FO 内置保留；快路径 Markdown 不在本 plan 范围。
+
 ### JDK 21 特性
 
 - **sealed + record**：三模板（DEFAULT/SAX/STAX）收敛到 `AbstractWmlTemplate` 骨架 +
