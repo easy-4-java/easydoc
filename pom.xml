@@ -126,6 +126,12 @@
         <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+
+        <!-- 测试进程额外参数默认值（可被命令行 -DargLine=... 覆盖；
+             与 1.0.x / 2.0.x 分支的 @{argLine} 晚绑定风格保持一致，见审计 #30：
+             晚绑定才能在同一构建里正确吃到 jacoco prepare-agent 注入的
+             -javaagent 参数，${argLine} 早绑定会被 pom 构建期求值吞掉） -->
+        <argLine></argLine>
     </properties>
 
 
@@ -789,8 +795,11 @@
                     <configuration>
                         <skip>false</skip>
                         <skipTests>false</skipTests>
+                        <!-- @{argLine} 为 surefire 3.x 晚绑定写法（与 1.0.x/2.0.x 统一）：
+                             运行期才求值，能取到 jacoco prepare-agent 注入的 -javaagent；
+                             早绑定 ${argLine} 在 pom 构建期展开，jacoco 的注入会丢失 -->
                         <!--suppress UnresolvedMavenProperty -->
-                        <argLine>${argLine} -Xmx1024m -Dfile.encoding=UTF-8</argLine>
+                        <argLine>@{argLine} -Xmx1024m -Dfile.encoding=UTF-8</argLine>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/target/test-classes</additionalClasspathElement>
                         </additionalClasspathElements>
