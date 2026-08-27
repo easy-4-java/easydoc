@@ -43,7 +43,7 @@
     <!-- 版本属性定义：Java 版本、依赖版本与 Maven 插件版本统一管理 -->
     <properties>
         <!-- ═══ CI-friendly 版本：单一来源，Maven 3 需 flatten-maven-plugin 将 ${revision} 展开 ═══ -->
-        <revision>2.0.x.20260831</revision>
+        <revision>2.0.x.20261031-SNAPSHOT</revision>
 
         <!-- ═══ 核心配置：JDK / 编译 / 编码 ═══ -->
         <java.version>17</java.version>
