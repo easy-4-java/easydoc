@@ -128,9 +128,16 @@ public abstract class Assert {
 	 * Assert that the given String is not empty; that is,
 	 * it must not be <code>null</code> and not the empty String.
 	 * <pre class="code">Assert.hasLength(name, "Name must not be empty");</pre>
+	 *
+	 * <p>语义约定（P2 修复说明）：本实现历史上与 {@link #hasText(String, String)} 共用
+	 * <code>StringUtils.isBlank</code> 判定，即 null、空串<b>以及纯空白字符串</b>均视为无效。
+	 * 为保持既有调用方与测试锁定的行为不变，此处沿用“拒绝空白”的严格语义，
+	 * 而不是改回经典 Spring 的 hasLength（仅要求 length &gt; 0）。
+	 * 在本工具类中，{@link #hasLength(String, String)} 与
+	 * {@link #hasText(String, String)} 是同一契约的两个别名。</p>
+	 *
 	 * @param text the String to check
 	 * @param message the exception message to use if the assertion fails
-	 * @see StringUtils#hasLength
 	 */
 	public static void hasLength(String text, String message) {
 		if (StringUtils.isBlank(text)) {
@@ -143,7 +150,7 @@ public abstract class Assert {
 	 * it must not be <code>null</code> and not the empty String.
 	 * <pre class="code">Assert.hasLength(name);</pre>
 	 * @param text the String to check
-	 * @see StringUtils#hasLength
+	 * @see #hasLength(String, String)（含语义约定说明：本类中同样拒绝纯空白字符串）
 	 */
 	public static void hasLength(String text) {
 		hasLength(text,
@@ -211,7 +218,9 @@ public abstract class Assert {
 	 * @throws IllegalArgumentException if the object array is <code>null</code> or has no elements
 	 */
 	public static void notEmpty(Object[] array, String message) {
-		if (array!=null&&array.length>0) {
+		// P0 缺陷修复：原实现条件写反（array!=null&&array.length>0 时抛出），
+		// 导致“非空数组反而抛异常、null/空数组反而通过”。已按 javadoc 契约纠正。
+		if (array == null || array.length == 0) {
 			throw new IllegalArgumentException(message);
 		}
 	}
