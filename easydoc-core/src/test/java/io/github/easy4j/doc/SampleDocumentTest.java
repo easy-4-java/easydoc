@@ -25,53 +25,45 @@ import org.docx4j.wml.ContentAccessor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import io.github.easy4j.doc.testutil.FontDiscoveryTestBase;
+
 /**
  * Unit tests for {@link SampleDocument}.
  *
  * <p>Tests both {@code createContent(MainDocumentPart)} and the package-private
  * {@code addObject(MainDocumentPart, String, String)} method.
+ *
+ * <p>Tests that trigger {@code PhysicalFonts.discoverPhysicalFonts()} extend
+ * {@link FontDiscoveryTestBase} and SKIP on machines where discovery throws,
+ * instead of swallowing {@code AssertionError} and passing vacuously.</p>
  */
 @DisplayName("SampleDocument Tests")
-class SampleDocumentTest {
+class SampleDocumentTest extends FontDiscoveryTestBase {
 
     @Test
     @DisplayName("createContent with a real MainDocumentPart runs without error")
     void createContent_realMainDocumentPart_doesNotThrow() throws Exception {
+        assumeFontDiscoveryWorks();
         WordprocessingMLPackage wmlPackage = WordprocessingMLPackage.createPackage();
         MainDocumentPart mdp = wmlPackage.getMainDocumentPart();
 
-        // Should not throw; may add content depending on system fonts.
-        // On some macOS environments, font discovery triggers an AssertionError
-        // inside FOP. The production code catches Exception but not Error.
-        // TODO: fix production bug — SampleDocument.createContent should catch Throwable
-        try {
-            SampleDocument.createContent(mdp);
-        } catch (AssertionError e) {
-            // Font discovery AssertionError: code was still executed for JaCoCo coverage
-        }
+        SampleDocument.createContent(mdp);
 
-        // The method always discovers fonts and adds paragraphs if available
         assertThat(mdp).isNotNull();
     }
 
     @Test
     @DisplayName("createContent adds paragraph content when fonts are available")
     void createContent_addsContentWhenFontsExist() throws Exception {
+        assumeFontDiscoveryWorks();
         WordprocessingMLPackage wmlPackage = WordprocessingMLPackage.createPackage();
         MainDocumentPart mdp = wmlPackage.getMainDocumentPart();
 
-        try {
-            SampleDocument.createContent(mdp);
-        } catch (AssertionError e) {
-            // Font discovery issue on macOS
-        }
+        SampleDocument.createContent(mdp);
 
-        // After createContent, the document body should have content (paragraphs)
-        // from discovered fonts. If no fonts found, the method silently returns.
         List<Object> content = mdp.getContent();
         assertThat(content).isNotNull();
-        // Note: content may be empty in environments with no physical fonts,
-        // but we assert the method executed without exception.
+        assertThat(content).isNotEmpty();
     }
 
     @Test
@@ -161,16 +153,15 @@ class SampleDocumentTest {
 
     @Test
     @DisplayName("createContent on null MainDocumentPart does not throw (catches internally)")
-    void createContent_null_doesNotThrowUncaught() {
-        // SampleDocument.createContent catches Exception internally, but
-        // font discovery may throw AssertionError on macOS.
-        try {
-            SampleDocument.createContent(null);
-        } catch (Throwable e) {
-            // Expected: either NPE caught inside, or AssertionError from font discovery
-            // The method wraps in try-catch(Exception), so NPE from null would be caught
-            // TODO: fix production bug — SampleDocument.createContent should catch Throwable
-        }
+    void createContent_null_doesNotThrowUncaught() throws Exception {
+        // SampleDocument.createContent catches Exception internally, so a null
+        // part produces an internal NPE that never escapes. Font discovery is
+        // assumed healthy, so no AssertionError can escape either (audit #17).
+        assumeFontDiscoveryWorks();
+        WordprocessingMLPackage wmlPackage = WordprocessingMLPackage.createPackage();
+        assertThat(wmlPackage).isNotNull();
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(
+                () -> SampleDocument.createContent(null));
     }
 
 }

@@ -33,12 +33,12 @@ import org.junit.jupiter.api.Test;
  * <p>Covers all three {@code process()} overloads for both null-input (create dummy
  * document) and non-null-input (load existing document) branches.
  *
- * <p>NOTE: The null-template paths call {@code SampleDocument.createContent()} which
- * calls {@code PhysicalFonts.discoverPhysicalFonts()}. On some macOS environments a
- * specific system font triggers an {@code AssertionError} inside FOP's
- * {@code GlyphPositioningTable}. The production code catches {@code Exception} but
- * not {@code Error}, so the assertion propagates.
- * TODO: fix production bug — SampleDocument.createContent should catch Throwable, not just Exception
+ * <p>Historical note: null-template paths call {@code SampleDocument.createContent()}
+ * which invokes {@code PhysicalFonts.discoverPhysicalFonts()}; on some macOS
+ * environments that used to throw {@code AssertionError} past the production
+ * {@code catch (Exception)} guard. Production now guards with
+ * {@code catch (Throwable)}, so these tests assert unconditionally again —
+ * the former catch(AssertionError) vacuous passes are removed (audit #17).</p>
  */
 @DisplayName("WordprocessingMLTemplate interface default methods")
 class WordprocessingMLTemplateContractTest {
@@ -55,29 +55,18 @@ class WordprocessingMLTemplateContractTest {
     @Test
     @DisplayName("process(File,null template) creates a non-null package")
     void processFile_nullTemplate_createsPackage() throws Exception {
-        // The null path calls SampleDocument.createContent which may throw AssertionError
-        // on some macOS fonts. JaCoCo still counts the executed lines.
-        try {
-            WordprocessingMLPackage result = template.process((File) null, emptyVars);
-            assertThat(result).isNotNull();
-            assertThat(result.getMainDocumentPart()).isNotNull();
-        } catch (AssertionError e) {
-            // TODO: fix production bug — SampleDocument.createContent catches Exception but not Error
-            // Font discovery AssertionError on macOS: code was still executed for JaCoCo coverage
-        }
+        WordprocessingMLPackage result = template.process((File) null, emptyVars);
+        assertThat(result).isNotNull();
+        assertThat(result.getMainDocumentPart()).isNotNull();
     }
 
     @Test
     @DisplayName("process(File,non-existent file) creates a dummy document")
     void processFile_nonExistentFile_createsDummy() throws Exception {
         File ghost = new File("/tmp/does_not_exist_42.docx");
-        try {
-            WordprocessingMLPackage result = template.process(ghost, emptyVars);
-            assertThat(result).isNotNull();
-            assertThat(result.getMainDocumentPart()).isNotNull();
-        } catch (AssertionError e) {
-            // TODO: fix production bug — Same font discovery issue
-        }
+        WordprocessingMLPackage result = template.process(ghost, emptyVars);
+        assertThat(result).isNotNull();
+        assertThat(result.getMainDocumentPart()).isNotNull();
     }
 
     @Test
@@ -94,13 +83,9 @@ class WordprocessingMLTemplateContractTest {
     @Test
     @DisplayName("process(InputStream,null stream) creates a non-null package")
     void processStream_nullStream_createsPackage() throws Exception {
-        try {
-            WordprocessingMLPackage result = template.process((InputStream) null, emptyVars);
-            assertThat(result).isNotNull();
-            assertThat(result.getMainDocumentPart()).isNotNull();
-        } catch (AssertionError e) {
-            // TODO: fix production bug — Same font discovery issue
-        }
+        WordprocessingMLPackage result = template.process((InputStream) null, emptyVars);
+        assertThat(result).isNotNull();
+        assertThat(result.getMainDocumentPart()).isNotNull();
     }
 
     @Test
@@ -128,12 +113,8 @@ class WordprocessingMLTemplateContractTest {
     void processFile_withVariables_returnsPackage() throws Exception {
         Map<String, Object> vars = new HashMap<>();
         vars.put("key", "value");
-        try {
-            WordprocessingMLPackage result = template.process((File) null, vars);
-            assertThat(result).isNotNull();
-        } catch (AssertionError e) {
-            // TODO: fix production bug — Same font discovery issue
-        }
+        WordprocessingMLPackage result = template.process((File) null, vars);
+        assertThat(result).isNotNull();
     }
 
     @Test
@@ -141,12 +122,8 @@ class WordprocessingMLTemplateContractTest {
     void processStream_withVariables_returnsPackage() throws Exception {
         Map<String, Object> vars = new HashMap<>();
         vars.put("key", "value");
-        try {
-            WordprocessingMLPackage result = template.process((InputStream) null, vars);
-            assertThat(result).isNotNull();
-        } catch (AssertionError e) {
-            // TODO: fix production bug — Same font discovery issue
-        }
+        WordprocessingMLPackage result = template.process((InputStream) null, vars);
+        assertThat(result).isNotNull();
     }
 
 }

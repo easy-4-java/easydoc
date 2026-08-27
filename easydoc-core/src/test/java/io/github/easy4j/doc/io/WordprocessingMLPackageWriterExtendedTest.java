@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.OutputStream;
 import java.nio.file.Path;
 
+import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -171,12 +172,9 @@ class WordprocessingMLPackageWriterExtendedTest {
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            writer.writeToPDF(pkg, baos);
-            // PDF generation may fail without FOP, but the code path is exercised
-        } catch (Throwable e) {
-            // Expected: PDF generation requires Apache FOP
-        }
+        // Empty package => deterministic Docx4JException from toPDF; the former
+        // catch(Throwable) masked that failure and any assertion inside the try.
+        assertThrows(Docx4JException.class, () -> writer.writeToPDF(pkg, baos));
     }
 
     @Test
@@ -184,10 +182,7 @@ class WordprocessingMLPackageWriterExtendedTest {
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
         WordprocessingMLPackageWriter writer = WordprocessingMLPackageWriter.getWMLPackageWriter();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            writer.writeToPDFWhithFo(pkg, baos);
-        } catch (Throwable e) {
-            // Expected: FO-based PDF generation requires Apache FOP
-        }
+        // Empty package => deterministic Docx4JException from the FO pipeline.
+        assertThrows(Docx4JException.class, () -> writer.writeToPDFWhithFo(pkg, baos));
     }
 }

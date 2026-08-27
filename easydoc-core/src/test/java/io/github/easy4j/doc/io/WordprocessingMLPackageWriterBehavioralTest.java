@@ -136,15 +136,10 @@ class WordprocessingMLPackageWriterBehavioralTest {
         File outFile = tempDir.resolve("output.pdf").toFile();
         outFile.createNewFile();
 
-        try {
-            File result = writer.writeToPDF(pkg, outFile);
-            // If PDF conversion succeeds
-            assertNotNull(result);
-            assertTrue(result.exists());
-        } catch (Throwable e) {
-            // Docx4J.toPDF may fail if FOP is not fully available,
-            // but lines 235-238 (File method) are covered
-        }
+        // An empty package has no MainDocumentPart content, so Docx4J.toPDF fails
+        // deterministically with Docx4JException (same as writeToPDF no-arg below);
+        // former catch(Throwable) masked both the failure and its assertions.
+        assertThrows(Docx4JException.class, () -> writer.writeToPDF(pkg, outFile));
     }
 
     @Test
@@ -154,14 +149,8 @@ class WordprocessingMLPackageWriterBehavioralTest {
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        try {
-            writer.writeToPDF(pkg, baos);
-            // If FOP is available, verify bytes were written
-            assertTrue(baos.size() > 0, "PDF output should be non-empty");
-        } catch (Throwable e) {
-            // Expected if FOP not fully available
-            // Lines 249-257 are still covered
-        }
+        // Empty package => deterministic Docx4JException from toPDF; do not mask it.
+        assertThrows(Docx4JException.class, () -> writer.writeToPDF(pkg, baos));
     }
 
     @Test
@@ -185,12 +174,9 @@ class WordprocessingMLPackageWriterBehavioralTest {
         File outFile = tempDir.resolve("out.pdf").toFile();
         outFile.createNewFile();
 
-        try {
-            File result = writer.writeToPDF(pkg, outFile.getAbsolutePath());
-            assertNotNull(result);
-        } catch (Throwable e) {
-            // PDF conversion may fail
-        }
+        // Empty package => deterministic Docx4JException from toPDF; do not mask it.
+        assertThrows(Docx4JException.class,
+                () -> writer.writeToPDF(pkg, outFile.getAbsolutePath()));
     }
 
     @Test
@@ -242,12 +228,9 @@ class WordprocessingMLPackageWriterBehavioralTest {
         WordprocessingMLPackage pkg = WordprocessingMLPackage.createPackage();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        try {
-            writer.writeToPDFWhithFo(pkg, baos);
-        } catch (Throwable e) {
-            // FO conversion requires FOP + fonts — may fail
-            // Lines 267-326 are still exercised
-        }
+        // Empty package => the FO pipeline fails deterministically with
+        // Docx4JException; do not mask the concrete failure with Throwable.
+        assertThrows(Docx4JException.class, () -> writer.writeToPDFWhithFo(pkg, baos));
     }
 
     @Test
