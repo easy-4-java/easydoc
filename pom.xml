@@ -78,7 +78,6 @@
         <jetbrick.version>2.1.10</jetbrick.version>
         <jsoup.version>1.23.1</jsoup.version>
         <junit-jupiter.version>5.11.4</junit-jupiter.version>
-        <junit.version>4.13.2</junit.version>
         <ognl.version>3.4.2</ognl.version>
         <persistence.version>2.7.6</persistence.version>
         <rythm.version>1.4.2</rythm.version>
@@ -797,13 +796,6 @@
                 <scope>import</scope>
             </dependency>
             <!-- ======== Test ======== -->
-            <!-- Source: https://mvnrepository.com/artifact/junit/junit -->
-            <!-- For Junit -->
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-            </dependency>
             <!-- Source: https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
             <!-- For JUnit 5 -->
             <dependency>
@@ -1172,12 +1164,6 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <!-- ======== Test ======== -->
-        <!-- For Junit：JUnit 4 测试框架 -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
         <!-- For JUnit 5：JUnit Jupiter 测试框架 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
