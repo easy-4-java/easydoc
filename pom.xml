@@ -95,8 +95,11 @@
         <tomcat-jasper.version>10.1.54</tomcat-jasper.version>
 
         <!-- ═══ 第六段: 测试框架版本 ═══ -->
+        <!-- JUnit 4 已随 3.0.x 移除：存量 JUnit 4 用例均无 vintage 引擎支撑
+             （surefire 走 JUnit Platform，不加载 junit:junit），且每个模块
+             都有语义等价、断言更强的 JUnit Jupiter 用例（Hello/Coverage/
+             Variants/perf）。详见 refactor/p0-test 分支的删除提交说明 -->
         <assertj.version>3.27.7</assertj.version>
-        <junit.version>4.13.2</junit.version>
         <junit-jupiter.version>6.1.0</junit-jupiter.version>
         <slf4j.version>2.0.18</slf4j.version>
         <lombok.version>1.18.46</lombok.version>
@@ -128,15 +131,11 @@
 
             <!-- ======== 测试框架 ======== -->
 
-            <!-- https://mvnrepository.com/artifact/junit/junit -->
-            <!-- JUnit 4（历史测试用例兼容） -->
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-            </dependency>
             <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
-            <!-- JUnit 5（聚合构件，包含 api + engine + params） -->
+            <!-- JUnit 6/Jupiter（聚合构件，包含 api + engine + params）；
+                 JUnit 4 已移除：无 vintage 引擎时 surefire（JUnit Platform）
+                 本就不会执行任何 org.junit.Test 用例，保留 junit:junit 只会
+                 伪装成"测试在跑" -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
@@ -574,12 +573,7 @@
         </dependency>
 
         <!-- ======== Test ======== -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- JUnit 5（聚合构件） -->
+        <!-- JUnit Jupiter（聚合构件，唯一测试框架；JUnit 4 已随死用例一并移除） -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
