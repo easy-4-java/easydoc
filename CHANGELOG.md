@@ -3,6 +3,20 @@
 本文件记录 easydoc 各版本线的显著变化。格式参考 [Keep a Changelog](https://keepachangelog.com/)，
 版本约定遵循 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)。
 
+## 支持状态声明（2026-08-28）
+
+**1.0.x 进入受限维护（EOL 路径）。**
+
+- **不要用 1.0.x 处理不可信文档**（用户上传、外部来源）。处理不可信输入请升级到
+  [2.0.x](https://github.com/easy-4-java/easydoc/tree/feature/2.0.x)（docx4j 11.5.14，
+  CVE-2026-53752 已修复）或 [3.0.x](https://github.com/easy-4-java/easydoc/tree/main)
+  （docx4j 17.0.3）。
+- 1.0.x 仍适用于 JDK 8 环境下基于**可信内部模板**的文档生成。
+- 残留安全债（详见下表，均无上游修复路径）：docx4j 8.3.15 的 CVE-2026-53752、
+  PDF 路径传递依赖 itext 2.1.7（XXE，CVE-2017-9096）、logback 1.3.x（EOL）。
+- 后续仅提供我们自行引入缺陷的修复；新功能与安全加固优先 2.0.x / 3.0.x，
+  仅当可干净适配 javax 基线时回移。
+
 ## [1.0.x.20260831] — 2026-08-27
 
 1.0.x 是面向 JDK 8 的兼容基线：docx4j 8.3.15（javax 时代终线）、8 个模板引擎 + JSP、

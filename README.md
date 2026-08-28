@@ -4,6 +4,11 @@
 
 [![Java](https://img.shields.io/badge/Java-8-orange)](https://github.com/easy-4-java/easydoc) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
 
+> [!WARNING]
+> **1.0.x is in restricted maintenance (EOL path).** This line is pinned to docx4j **8.3.15** (the terminal `javax`-namespace release), which carries **CVE-2026-53752** (DoS via cyclic `w:basedOn` style chains — no upstream fix exists for 8.x). The PDF export path additionally pulls in the abandoned **itext 2.1.7** (XXE, CVE-2017-9096) and **logback 1.3.x** (EOL).
+>
+> **Do NOT use 1.0.x to process untrusted documents** (user-uploaded files, external sources). For untrusted input, use the **2.0.x** (docx4j 11.5.14, patched) or **3.0.x** (docx4j 17.0.3, patched) lines. 1.0.x remains suitable for generating documents from **trusted internal templates** on JDK 8. See [Versioning & Branches](#10-versioning--branches) for the full support policy.
+
 A Word (.docx) generation component built on [docx4j](https://www.docx4java.org/) and a variety of template engines. Render WordprocessingML documents from templates (Freemarker, Velocity, Thymeleaf, Beetl, Rythm, Jetbrick, HTTL, Webit, JSP) or directly from XHTML.
 
 ## Table of Contents
@@ -224,7 +229,12 @@ Three parallel version lines are maintained:
 | `feature/2.0.x` | JDK 17 | `2.0.x.*` |
 | `feature/3.0.x` | JDK 21 | `3.0.x.*` |
 
-Maintenance strategy: the 1.0.x line receives bug fixes while JDK 8 remains the baseline; feature development primarily targets the 2.0.x / 3.0.x lines.
+Maintenance strategy (updated 2026-08-28): **1.0.x is in restricted maintenance on an EOL path.**
+
+- **Security fixes only for regressions we introduce**; upstream security fixes are generally unavailable (docx4j 8.3.15 is the terminal `javax` release — CVE-2026-53752 has no 8.x fix; `itext 2.1.7` and `logback 1.3.x` are abandoned/EOL transitives).
+- **Do not process untrusted documents** with this line (see the warning at the top of this README).
+- New deployments should target **2.0.x** (JDK 17, jakarta, patched docx4j) or **3.0.x** (JDK 21).
+- Feature development and security hardening land on 2.0.x / 3.0.x first and are back-ported to 1.0.x only when they apply cleanly to the javax baseline.
 
 ## 11. Contributing & License
 

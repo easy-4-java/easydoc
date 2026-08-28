@@ -4,6 +4,17 @@
 
 [![Java](https://img.shields.io/badge/Java-8-orange)](https://github.com/easy-4-java/easydoc) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
 
+> [!WARNING]
+> **1.0.x 处于受限维护（EOL 路径）。** 本版本线锁定 docx4j **8.3.15**（javax 命名空间的终线版本），
+> 该版本存在 **CVE-2026-53752**（通过循环 `w:basedOn` 样式链触发 DoS——8.x 无上游修复）。
+> PDF 导出路径还引入了已停止维护的 **itext 2.1.7**（XXE，CVE-2017-9096）与 **logback 1.3.x**（EOL）。
+>
+> **请勿使用 1.0.x 处理不可信文档**（用户上传文件、外部来源）。处理不可信输入请使用
+> **2.0.x**（docx4j 11.5.14，已修复）或 **3.0.x**（docx4j 17.0.3，已修复）版本线。
+> 1.0.x 仍适用于在 JDK 8 上基于**可信内部模板**生成文档。完整支持策略见
+> [版本线与分支](#10-版本线与分支)。
+
+
 基于 [docx4j](https://www.docx4java.org/) 与多种模板引擎实现的 Word（.docx）快速输出组件。支持从模板（Freemarker、Velocity、Thymeleaf、Beetl、Rythm、Jetbrick、HTTL、Webit、JSP）或直接由 XHTML 渲染 WordprocessingML 文档。
 
 ## 目录
@@ -233,7 +244,13 @@ WordprocessingMLPackage doc = html.process(new File("page.html"));
 | `feature/2.0.x` | JDK 17 | `2.0.x.*` |
 | `feature/3.0.x` | JDK 21 | `3.0.x.*` |
 
-维护策略：在 JDK 8 作为基线的同时，1.0.x 版本线接收缺陷修复；新功能开发主要面向 2.0.x / 3.0.x 版本线。
+维护策略（2026-08-28 更新）：**1.0.x 处于受限维护的 EOL 路径。**
+
+- 仅为我们自行引入的回归提供安全修复；上游安全修复总体不可用
+  （docx4j 8.3.15 是 javax 终线——CVE-2026-53752 无 8.x 修复；`itext 2.1.7`、`logback 1.3.x` 为弃用/EOL 传递依赖）。
+- **不要用本版本线处理不可信文档**（见本 README 顶部警示）。
+- 新部署应面向 **2.0.x**（JDK 17，jakarta，docx4j 已修复）或 **3.0.x**（JDK 21）。
+- 新功能与安全加固优先落地 2.0.x / 3.0.x，仅当能干净适配 javax 基线时才回移 1.0.x。
 
 <a id="11-contributing--license"></a>
 ## 11. 参与贡献与许可协议
