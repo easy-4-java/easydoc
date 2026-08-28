@@ -287,7 +287,7 @@ Three parallel version lines are maintained:
 | `feature/2.0.x` | JDK 17 | `2.0.x.*` |
 | `feature/3.0.x` | JDK 21 | `3.0.x.*` |
 
-Maintenance strategy: the 1.0.x line receives bug fixes while JDK 8 remains the baseline; feature development primarily targets the 2.0.x / 3.0.x lines.
+Maintenance strategy (updated 2026-08-28): **1.0.x is in restricted maintenance on an EOL path** — it is pinned to docx4j 8.3.15 (terminal `javax` release, CVE-2026-53752 with no upstream fix) and must **not be used to process untrusted documents**; use 2.0.x or 3.0.x for untrusted input. 1.0.x remains suitable for trusted internal templates on JDK 8 and receives only fixes for regressions we introduce. Feature development and security hardening target 2.0.x / 3.0.x first and are back-ported to 1.0.x only when they apply cleanly to the javax baseline.
 
 ## 11. Contributing & License
 
