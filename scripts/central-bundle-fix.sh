@@ -70,7 +70,7 @@ fi
 echo "[3/5] Substituting \${revision} -> $VERSION..."
 POM_COUNT=0
 while IFS= read -r -d '' pom; do
-    # shellcheck disable=SC2016 — 单引号是刻意的：这里匹配的是字面占位符而非变量展开
+    # shellcheck disable=SC2016 # 单引号是刻意的：这里匹配的是字面占位符而非变量展开
     if grep -q '${revision}' "$pom" 2>/dev/null; then
         sed -i '' "s|\\\${revision}|${VERSION}|g" "$pom"
         POM_COUNT=$((POM_COUNT + 1))
