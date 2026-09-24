@@ -72,7 +72,7 @@
 
         <!-- ═══ 第四段: 模板引擎版本 ═══ -->
         <beetl.version>3.21.2.RELEASE</beetl.version>
-        <freemarker.version>2.3.34</freemarker.version>
+        <freemarker.version>2.3.35</freemarker.version>
         <httl.version>1.0.12</httl.version>
         <jetbrick.version>2.1.10</jetbrick.version>
         <rythm.version>1.4.2</rythm.version>
